@@ -14,8 +14,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("lost_found")
-public class LostFound implements Serializable {
+@TableName("missing_notices")
+public class MissingNotices implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -30,19 +30,13 @@ public class LostFound implements Serializable {
     private String description;
     @Getter
     @Setter
-    private LocalDateTime foundDate;
+    private LocalDateTime lostDate;
     @Getter
     @Setter
-    private String foundLocation;
+    private String lostLocation;
     @Getter
     @Setter
-    private int status;
-    @Getter
-    @Setter
-    private int finderId;
-    @Getter
-    @Setter
-    private int claimantId;
+    private int ownerId;
     @Getter
     @Setter
     @TableField(fill = FieldFill.INSERT)
