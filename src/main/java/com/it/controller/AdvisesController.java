@@ -37,4 +37,22 @@ public class AdvisesController {
             return R.error(e.getMessage());
         }
     }
+    @DeleteMapping("/deleteIds")
+    public R<String> deleteBatch(@RequestParam List<Integer> ids){
+        boolean result = adivisesService.removeByIds(ids);
+        if (result){
+            return R.success("删除成功");
+        }else {
+            return R.error("删除失败");
+        }
+    }
+    @DeleteMapping("/deleteSingleid")
+    public R<String> deleteSingleid(@RequestParam Integer id){
+        boolean result = adivisesService.removeById(id);
+        if (result){
+            return R.success("删除成功");
+        }else {
+            return R.error("删除失败");
+        }
+    }
 }
