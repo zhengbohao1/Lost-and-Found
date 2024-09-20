@@ -1,5 +1,14 @@
 package com.it.constants;
 
+/**
+ * ClassName: appConfig
+ * Description:
+ * 常量类，避免硬编码
+ * @Author Joel
+ * @Create 2024/9/19
+ * @Version 1.0
+ */
+
 public class Constants {
     public static final String ZERO_STR = "0";
 
