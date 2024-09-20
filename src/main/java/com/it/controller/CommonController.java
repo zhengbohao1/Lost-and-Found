@@ -28,14 +28,14 @@ import java.util.List;
 @RequestMapping("/common")
 public class CommonController {
 
-    @Value("${reggie.path}")//读取配置文件里的值,写的是"${reggie.path}",它自动变成赋予的值了
+    @Value("${project.folder}")//读取配置文件里的值,写的是"${reggie.path}",它自动变成赋予的值了
     private String basepath;
     @PostMapping("/upload")
     public R<String> upload(MultipartFile file){
         //file是一个临时文件，需要转存到指定位置，否则会自动删除
         String filename = file.getOriginalFilename();
         try {
-            file.transferTo(new File(basepath+filename));
+            file.transferTo(new File(basepath+"lost_found_img/"+filename));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
