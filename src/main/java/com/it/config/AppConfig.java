@@ -25,11 +25,11 @@ public class AppConfig {
     @Value("${spring.mail.username}")
     private String sendUserName;
 
-    /**
+/*    *//**
      * 管理员邮箱
-     */
+     *//*
     @Value("${admin.emails}")
-    private String adminEmails;
+    private String adminEmails;*/
 
     /**
      * 项目文件根目录
@@ -41,9 +41,9 @@ public class AppConfig {
         return sendUserName;
     }
 
-    public String getAdminEmails() {
+/*    public String getAdminEmails() {
         return adminEmails;
-    }
+    }*/
 
     public String getProjectFolder() {
         return projectFolder;

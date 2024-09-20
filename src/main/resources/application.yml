@@ -84,7 +84,7 @@ spring:
 ---
 
 project:
-  floder: d:/webser/myapps/lost_and_found/ # 项目目录
+  folder: d:/webser/myapps/lost_and_found/ # 项目目录
 
 log:
   root:
