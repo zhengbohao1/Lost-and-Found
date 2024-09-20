@@ -55,4 +55,17 @@ public class AdvisesController {
             return R.error("删除失败");
         }
     }
+    /**
+     * 模糊查询，根据评论内容
+     */
+    @GetMapping("/query")
+    public R<List<Advises>> query(String content){
+        List<Advises> advises = null;
+        try {
+            advises = adivisesService.selectByCondition(content);
+        } catch (Exception e) {
+            return R.error(e.getMessage());
+        }
+        return R.success(advises);
+    }
 }
