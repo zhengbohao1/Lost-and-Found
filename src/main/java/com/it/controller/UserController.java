@@ -6,6 +6,7 @@ import com.it.constants.Constants;
 import com.it.exception.BusinessException;
 import com.it.query.EmailQuery;
 import com.it.query.UserQuery;
+import com.it.service.AdminInfoService;
 import com.it.service.EmailCodeService;
 import com.it.service.UserInfoService;
 import com.it.utils.CreateImageCode;
@@ -22,7 +23,7 @@ import java.io.IOException;
 /**
  * ClassName: UserController
  * Description:
- * 用户相关控制层
+ * 用户账号相关控制层
  * @Author Joel
  * @Create 2024/9/19
  * @Version 1.0
@@ -44,6 +45,9 @@ public class UserController {
 
     @Resource
     private UserInfoService userInfoService;
+
+    @Resource
+    private AdminInfoService adminInfoService;
 
     @Resource
     private AppConfig appConfig;
@@ -116,7 +120,7 @@ public class UserController {
      * @param userQuery
      * @return
      */
-    @RequestMapping("/login")
+    @PostMapping("/login")
     public R<String> login(HttpSession session,@RequestBody @Validated UserQuery userQuery){
         String email = userQuery.getEmail();
         String password = userQuery.getPassword();
@@ -127,8 +131,7 @@ public class UserController {
                 throw new BusinessException("图片验证码错误");
             }
             // TODO: 进行登录
-            userInfoService.login(email, password);
-            return R.success("登录成功");
+            return userInfoService.login(email, password);
         } finally {
             // 清除会话中存储的图片验证码
             session.removeAttribute(Constants.CHECK_CODE_KEY);
@@ -141,8 +144,8 @@ public class UserController {
      * @param userQuery
      * @return
      */
-    @RequestMapping("/admin/login")
-    public R adminLogin(HttpSession session,@RequestBody @Validated UserQuery userQuery){
+    @PostMapping("/admin/login")
+    public void adminLogin(HttpSession session,@RequestBody @Validated UserQuery userQuery){
         String email = userQuery.getEmail();
         String password = userQuery.getPassword();
         String checkCode = userQuery.getCheckCode();
@@ -152,8 +155,7 @@ public class UserController {
                 throw new BusinessException("图片验证码错误");
             }
             // TODO: 进行登录
-            userInfoService.login(email, password);
-            return R.success("登录成功");
+            adminInfoService.adminLogin(email, password);
         } finally {
             // 清除会话中存储的图片验证码
             session.removeAttribute(Constants.CHECK_CODE_KEY);

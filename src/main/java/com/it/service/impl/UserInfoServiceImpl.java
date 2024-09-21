@@ -84,10 +84,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
             throw new BusinessException("账户已被禁用");
         }
         // TODO: 登录成功后更新用户登录时间
-        UserInfo updateInfo = new UserInfo();
-        updateInfo.setUserId(userInfo.getUserId());
-        updateInfo.setLastLoginTime(new Date());
-        this.baseMapper.updateById(updateInfo);
+        this.baseMapper.updateLastLoginTimeById(userInfo.getUserId(), new Date());
         // TODO: 将用户信息存储到token令牌中
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userInfo.getUserId());
@@ -95,6 +92,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         String token = JwtUtil.genToken(claims);
         return R.success(token);
     }
+
 }
 
 

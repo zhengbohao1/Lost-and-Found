@@ -1,5 +1,6 @@
 package com.it.service;
 
+import com.it.common.R;
 import com.it.entity.AdminInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -10,4 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface AdminInfoService extends IService<AdminInfo> {
 
+    // 管理员登录
+    R<String> adminLogin(String email, String password);
 }

@@ -4,6 +4,9 @@ import com.it.entity.UserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
+import java.util.Date;
 
 /**
 * @author Yu
@@ -31,6 +34,14 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
     @Select("SELECT * FROM user_info WHERE nick_name = #{nickName}")
     UserInfo selectByNickName(String nickName);
 
+
+    /**
+     * 更新用户最后登录时间
+     * @param userId
+     * @param date
+     */
+    @Update("UPDATE user_info SET last_login_time = #{date} WHERE user_id = #{userId}")
+    void updateLastLoginTimeById(String userId, Date date);
 }
 
 

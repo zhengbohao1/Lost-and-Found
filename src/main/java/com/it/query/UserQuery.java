@@ -21,7 +21,6 @@ public class UserQuery {
     @NotEmpty
     private String email;
 
-    @NotEmpty
     private String nickName;
 
     @NotEmpty
@@ -31,7 +30,6 @@ public class UserQuery {
     @NotEmpty
     private String checkCode;
 
-    @NotEmpty
     private String emailCode;
 
 }
