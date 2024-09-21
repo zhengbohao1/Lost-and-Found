@@ -5,7 +5,7 @@ import com.it.config.AppConfig;
 import com.it.constants.Constants;
 import com.it.exception.BusinessException;
 import com.it.query.EmailQuery;
-import com.it.query.RegisterQuery;
+import com.it.query.UserQuery;
 import com.it.service.EmailCodeService;
 import com.it.service.UserInfoService;
 import com.it.utils.CreateImageCode;
@@ -86,16 +86,16 @@ public class UserController {
     /**
      * 用户注册
      * @param session
-     * @param registerQuery
+     * @param userQuery
      * @return
      */
     @PostMapping ("/register")
-    public R<String> register(HttpSession session, @RequestBody @Validated RegisterQuery registerQuery){
-        String email = registerQuery.getEmail();
-        String nickName = registerQuery.getNickName();
-        String password = registerQuery.getPassword();
-        String emailCode = registerQuery.getEmailCode();
-        String checkCode = registerQuery.getCheckCode();
+    public R<String> register(HttpSession session, @RequestBody @Validated UserQuery userQuery){
+        String email = userQuery.getEmail();
+        String nickName = userQuery.getNickName();
+        String password = userQuery.getPassword();
+        String emailCode = userQuery.getEmailCode();
+        String checkCode = userQuery.getCheckCode();
         try {
             // 校验图片验证码
             if(!checkCode.equalsIgnoreCase((String) session.getAttribute(Constants.CHECK_CODE_KEY))){
@@ -106,6 +106,56 @@ public class UserController {
             return R.success(null);
         } finally {
             // 清除会话中存储的验证码
+            session.removeAttribute(Constants.CHECK_CODE_KEY);
+        }
+    }
+
+    /**
+     * 普通用户登录
+     * @param session
+     * @param userQuery
+     * @return
+     */
+    @RequestMapping("/login")
+    public R<String> login(HttpSession session,@RequestBody @Validated UserQuery userQuery){
+        String email = userQuery.getEmail();
+        String password = userQuery.getPassword();
+        String checkCode = userQuery.getCheckCode();
+        try {
+            // 校验图片验证码
+            if(!checkCode.equalsIgnoreCase((String) session.getAttribute(Constants.CHECK_CODE_KEY))){
+                throw new BusinessException("图片验证码错误");
+            }
+            // TODO: 进行登录
+            userInfoService.login(email, password);
+            return R.success("登录成功");
+        } finally {
+            // 清除会话中存储的图片验证码
+            session.removeAttribute(Constants.CHECK_CODE_KEY);
+        }
+    }
+
+    /**
+     * 管理员登录登录
+     * @param session
+     * @param userQuery
+     * @return
+     */
+    @RequestMapping("/admin/login")
+    public R adminLogin(HttpSession session,@RequestBody @Validated UserQuery userQuery){
+        String email = userQuery.getEmail();
+        String password = userQuery.getPassword();
+        String checkCode = userQuery.getCheckCode();
+        try {
+            // 校验图片验证码
+            if(!checkCode.equalsIgnoreCase((String) session.getAttribute(Constants.CHECK_CODE_KEY))){
+                throw new BusinessException("图片验证码错误");
+            }
+            // TODO: 进行登录
+            userInfoService.login(email, password);
+            return R.success("登录成功");
+        } finally {
+            // 清除会话中存储的图片验证码
             session.removeAttribute(Constants.CHECK_CODE_KEY);
         }
     }

@@ -13,4 +13,7 @@ public interface UserInfoService extends IService<UserInfo> {
 
     //用户注册
     void register(String email, String nickName, String password, String emailCode);
+
+    //登录
+    R<String> login(String email, String password);
 }

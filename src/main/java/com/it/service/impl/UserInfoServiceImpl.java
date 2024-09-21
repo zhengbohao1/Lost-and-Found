@@ -1,6 +1,7 @@
 package com.it.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.it.common.R;
 import com.it.config.AppConfig;
 import com.it.constants.Constants;
 import com.it.entity.UserInfo;
@@ -9,12 +10,15 @@ import com.it.exception.BusinessException;
 import com.it.service.EmailCodeService;
 import com.it.service.UserInfoService;
 import com.it.mapper.UserInfoMapper;
+import com.it.utils.JwtUtil;
 import com.it.utils.StringTools;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
 * @author Yu
@@ -62,6 +66,34 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         userInfo.setJoinTime(new Date());
         userInfo.setStatus(UserStatusEnum.ENABLE.getStatus());
         this.baseMapper.insert(userInfo);
+    }
+
+    /**
+     * 普通用户登录
+     * @param email
+     * @param password
+     */
+    @Override
+    public R<String> login(String email, String password) {
+        // TODO：校验用户是否存在、密码是否正确、用户的账户是否被禁用
+        UserInfo userInfo = this.baseMapper.selectByEmail(email);
+        if(userInfo == null || !userInfo.getPassword().equals(StringTools.encodeByMD5(password))){
+            throw new BusinessException("邮箱或密码错误");
+        }
+        if(userInfo.getStatus() == UserStatusEnum.DISABLE.getStatus()){
+            throw new BusinessException("账户已被禁用");
+        }
+        // TODO: 登录成功后更新用户登录时间
+        UserInfo updateInfo = new UserInfo();
+        updateInfo.setUserId(userInfo.getUserId());
+        updateInfo.setLastLoginTime(new Date());
+        this.baseMapper.updateById(updateInfo);
+        // TODO: 将用户信息存储到token令牌中
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userInfo.getUserId());
+        claims.put("nickName", userInfo.getNickName());
+        String token = JwtUtil.genToken(claims);
+        return R.success(token);
     }
 }
 

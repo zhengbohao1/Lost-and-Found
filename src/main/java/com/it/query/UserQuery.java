@@ -8,14 +8,14 @@ import lombok.Data;
 /**
  * ClassName: UserQuery
  * Description:
- * 用户注册的请求体实体类
+ * 用户登录注册相关请求的请求体实体类
  * @Author Joel
- * @Create 2024/9/20 16:47
+ * @Create 2024/9/20
  * @Version 1.0
  */
 
 @Data
-public class RegisterQuery {
+public class UserQuery {
 
     @Email
     @NotEmpty
