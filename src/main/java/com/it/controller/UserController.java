@@ -3,6 +3,7 @@ package com.it.controller;
 import com.it.common.R;
 import com.it.config.AppConfig;
 import com.it.constants.Constants;
+import com.it.exception.BusinessException;
 import com.it.query.EmailQuery;
 import com.it.query.RegisterQuery;
 import com.it.service.EmailCodeService;
@@ -98,7 +99,7 @@ public class UserController {
         try {
             // 校验图片验证码
             if(!checkCode.equalsIgnoreCase((String) session.getAttribute(Constants.CHECK_CODE_KEY))){
-                return R.error("图片验证码错误");
+                throw new BusinessException("图片验证码错误");
             }
             // TODO: 进行注册
             userInfoService.register(email, nickName, password, emailCode);

@@ -62,7 +62,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         userInfo.setJoinTime(new Date());
         userInfo.setStatus(UserStatusEnum.ENABLE.getStatus());
         this.baseMapper.insert(userInfo);
-        throw new BusinessException("注册成功");
     }
 }
 
