@@ -17,4 +17,6 @@ public interface UserInfoService extends IService<UserInfo> {
     //普通用户登录
     R<String> login(String email, String password);
 
+    //根据昵称获取用户信息
+    R<UserInfo> getUserInfo(String nickName);
 }

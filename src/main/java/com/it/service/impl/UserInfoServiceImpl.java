@@ -93,6 +93,17 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         return R.success(token);
     }
 
+    /**
+     * 根据昵称获取用户信息
+     * @param nickName
+     * @return
+     */
+    @Override
+    public R<UserInfo> getUserInfo(String nickName) {
+        UserInfo userInfo = this.baseMapper.selectByNickName(nickName);
+        return R.success(userInfo);
+    }
+
 }
 
 

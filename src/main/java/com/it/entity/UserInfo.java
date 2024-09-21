@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.it.annotation.Password;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -19,12 +20,14 @@ import lombok.Data;
 @Data
 public class UserInfo implements Serializable {
 
+    @TableId
     private String userId;
 
     private String nickName;
 
     private String email;
 
+    @JsonIgnore
     private String password;
 
     private Date joinTime;

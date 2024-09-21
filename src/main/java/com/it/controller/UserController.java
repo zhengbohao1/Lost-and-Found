@@ -3,6 +3,7 @@ package com.it.controller;
 import com.it.common.R;
 import com.it.config.AppConfig;
 import com.it.constants.Constants;
+import com.it.entity.UserInfo;
 import com.it.exception.BusinessException;
 import com.it.query.EmailQuery;
 import com.it.query.UserQuery;
@@ -10,6 +11,7 @@ import com.it.service.AdminInfoService;
 import com.it.service.EmailCodeService;
 import com.it.service.UserInfoService;
 import com.it.utils.CreateImageCode;
+import com.it.utils.ThreadLocalUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -19,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * ClassName: UserController
@@ -145,7 +148,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/admin/login")
-    public void adminLogin(HttpSession session,@RequestBody @Validated UserQuery userQuery){
+    public R<String> adminLogin(HttpSession session,@RequestBody @Validated UserQuery userQuery){
         String email = userQuery.getEmail();
         String password = userQuery.getPassword();
         String checkCode = userQuery.getCheckCode();
@@ -155,11 +158,22 @@ public class UserController {
                 throw new BusinessException("图片验证码错误");
             }
             // TODO: 进行登录
-            adminInfoService.adminLogin(email, password);
+            return adminInfoService.adminLogin(email, password);
         } finally {
             // 清除会话中存储的图片验证码
             session.removeAttribute(Constants.CHECK_CODE_KEY);
         }
+    }
+
+    /**
+     * 获取用户详细信息
+     * @return
+     */
+    @GetMapping("/userInfo")
+    public R<UserInfo> getUserInfo(){
+        Map<String,Object> map = ThreadLocalUtil.get();
+        String nickName = (String) map.get("nickName");
+        return userInfoService.getUserInfo(nickName);
     }
 
 }

@@ -13,7 +13,13 @@ import lombok.Data;
 @TableName(value ="admin_info")
 @Data
 public class AdminInfo implements Serializable {
+
+    @TableId
+    private Integer adminId;
+
     private String email;
+
+    private String nickName;
 
     private String password;
 

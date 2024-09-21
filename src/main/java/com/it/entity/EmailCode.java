@@ -14,6 +14,7 @@ import lombok.Data;
 @TableName(value ="email_code")
 @Data
 public class EmailCode implements Serializable {
+
     private String email;
 
     private String code;

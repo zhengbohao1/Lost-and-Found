@@ -31,7 +31,8 @@ public class AdminInfoServiceImpl extends ServiceImpl<AdminInfoMapper, AdminInfo
         }
         // TODO: 将管理员信息存储到token令牌中
         Map<String, Object> claims = new HashMap<>();
-        claims.put("email",adminInfo.getEmail());
+        claims.put("adminId",adminInfo.getAdminId());
+        claims.put("nickName",adminInfo.getNickName());
         String token = JwtUtil.genToken(claims);
         return R.success(token);
     }
