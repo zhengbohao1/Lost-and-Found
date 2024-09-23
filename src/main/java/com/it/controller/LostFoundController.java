@@ -2,6 +2,7 @@ package com.it.controller;
 
 import com.it.common.R;
 import com.it.entity.LostFound;
+import com.it.exception.BusinessException;
 import com.it.service.LostFoundService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,7 @@ public class LostFoundController{
             List<LostFound> lostFounds = lostFoundService.legalList();
             return R.success(lostFounds);
         } catch (Exception e) {
-            return R.error(e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
     }
     @PostMapping
@@ -49,7 +50,7 @@ public class LostFoundController{
             lostFoundService.save(lostFound);
             return R.success(lostFound);
         } catch (Exception e) {
-            return R.error(e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
     }
     @DeleteMapping("/deleteIds")

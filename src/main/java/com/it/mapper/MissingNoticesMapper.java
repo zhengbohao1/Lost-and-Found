@@ -1,9 +1,10 @@
-package com.it.dao;
+package com.it.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.it.entity.LostFound;
+import com.it.entity.MissingNotices;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface LostFoundMapper extends BaseMapper<LostFound> {
+public interface MissingNoticesMapper extends BaseMapper<MissingNotices> {
 }

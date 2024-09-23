@@ -2,6 +2,7 @@ package com.it.controller;
 
 import com.it.common.R;
 import com.it.entity.Advises;
+import com.it.exception.BusinessException;
 import com.it.service.AdivisesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class AdvisesController {
             List<Advises> advises = adivisesService.list();
             return R.success(advises);
         } catch (Exception e) {
-            return R.error(e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
     }
     @PostMapping("/insert")
@@ -34,7 +35,7 @@ public class AdvisesController {
             adivisesService.save(advises);
             return R.success(advises);
         } catch (Exception e) {
-            return R.error(e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
     }
     @DeleteMapping("/deleteIds")
@@ -64,7 +65,7 @@ public class AdvisesController {
         try {
             advises = adivisesService.selectByCondition(content);
         } catch (Exception e) {
-            return R.error(e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
         return R.success(advises);
     }
