@@ -1,6 +1,7 @@
 package com.it.controller;
 
 import com.it.common.R;
+import com.it.entity.Advises;
 import com.it.entity.LostFound;
 import com.it.exception.BusinessException;
 import com.it.service.LostFoundService;
@@ -98,5 +99,15 @@ public class LostFoundController{
         lostFound.setReviewProcess(2);
         lostFoundService.updateById(lostFound);
         return R.success("拒绝成功~");
+    }
+    @GetMapping("/query")
+    public R<List<LostFound>> query(String content){
+        List<LostFound> advises = null;
+        try {
+            advises = lostFoundService.selectByCondition(content);
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return R.success(advises);
     }
 }

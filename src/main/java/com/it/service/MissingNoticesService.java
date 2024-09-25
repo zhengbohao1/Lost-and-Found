@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface MissingNoticesService extends IService<MissingNotices> {
     List<MissingNotices> legalList();
+    List<MissingNotices> selectByCondition(String content);
 }

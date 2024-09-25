@@ -96,4 +96,14 @@ public class MissingNoticesController {
         missingNoticesService.updateById(missingNotices);
         return R.success("拒绝成功~");
     }
+    @GetMapping("/query")
+    public R<List<MissingNotices>> query(String content){
+        List<MissingNotices> advises = null;
+        try {
+            advises = missingNoticesService.selectByCondition(content);
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return R.success(advises);
+    }
 }
