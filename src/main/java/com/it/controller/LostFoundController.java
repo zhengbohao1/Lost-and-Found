@@ -1,6 +1,7 @@
 package com.it.controller;
 
 import com.it.common.R;
+import com.it.dto.LostFoundDto;
 import com.it.entity.Advises;
 import com.it.entity.LostFound;
 import com.it.exception.BusinessException;
@@ -21,9 +22,9 @@ public class LostFoundController{
      * @return
      */
     @GetMapping("/list")
-    public R<List<LostFound>> list(){
+    public R<List<LostFoundDto>> list(){
         try {
-            List<LostFound> lostFounds = lostFoundService.list();
+            List<LostFoundDto> lostFounds = lostFoundService.get_list();
             return R.success(lostFounds);
         } catch (Exception e) {
             return R.error(e.getMessage());
@@ -35,20 +36,26 @@ public class LostFoundController{
      * @return
      */
     @GetMapping("/legal_list")
-    public R<List<LostFound>> legalList(){
+    public R<List<LostFoundDto>> legalList(){
         try {
-            List<LostFound> lostFounds = lostFoundService.legalList();
-            return R.success(lostFounds);
+            List<LostFoundDto> lostFoundsdto = lostFoundService.legalList();
+            return R.success(lostFoundsdto);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }
     }
+
+    /**
+     * 上传新帖（待审核）
+     * @param lostFound
+     * @return
+     */
     @PostMapping
     public R<LostFound> save(@RequestBody LostFound lostFound) {
 
         try {
             System.out.println(lostFound);
-            lostFoundService.save(lostFound);
+            lostFoundService.my_save(lostFound);
             return R.success(lostFound);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
@@ -86,6 +93,12 @@ public class LostFoundController{
         lostFoundService.updateById(lostFound);
         return R.success("审核成功~");
     }
+
+    /**
+     * 审核不通过
+     * @param id
+     * @return
+     */
     @PutMapping("/reject_by_id")
     public R<String> reject(@RequestParam Integer id){
         LostFound lostFound = lostFoundService.getById(id);
@@ -100,9 +113,15 @@ public class LostFoundController{
         lostFoundService.updateById(lostFound);
         return R.success("拒绝成功~");
     }
+
+    /**
+     * 模糊查询，用于查询与搜索内容相似的帖子
+     * @param content
+     * @return
+     */
     @GetMapping("/query")
-    public R<List<LostFound>> query(String content){
-        List<LostFound> advises = null;
+    public R<List<LostFoundDto>> query(String content){
+        List<LostFoundDto> advises = null;
         try {
             advises = lostFoundService.selectByCondition(content);
         } catch (Exception e) {
@@ -110,4 +129,7 @@ public class LostFoundController{
         }
         return R.success(advises);
     }
+    /**
+     * 用户查询审核状态
+     */
 }
