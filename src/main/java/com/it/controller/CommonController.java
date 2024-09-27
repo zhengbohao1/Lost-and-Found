@@ -47,9 +47,10 @@ public class CommonController {
 
     @GetMapping("/download")
     public void download(String name, HttpServletResponse response){
+        System.out.println(basepath+"lost_found_img/"+name);
         //输入流，通过输入流读取文件内容
         try {
-            FileInputStream fileInputStream = new FileInputStream(new File(basepath+name));
+            FileInputStream fileInputStream = new FileInputStream(new File(basepath+"lost_found_img/"+name));
             System.out.println(basepath);
             System.out.println(basepath+name);
             ServletOutputStream outputStream = response.getOutputStream();

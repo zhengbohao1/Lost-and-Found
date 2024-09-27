@@ -3,6 +3,7 @@ package com.it.controller;
 import com.it.common.R;
 import com.it.entity.LostFound;
 import com.it.entity.MissingNotices;
+import com.it.exception.BusinessException;
 import com.it.service.LostFoundService;
 import com.it.service.MissingNoticesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class MissingNoticesController {
             List<MissingNotices> missingNotices = missingNoticesService.list();
             return R.success(missingNotices);
         } catch (Exception e) {
-            return R.error(e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
     }
 
@@ -40,7 +41,7 @@ public class MissingNoticesController {
             List<MissingNotices> missingNotices = missingNoticesService.legalList();
             return R.success(missingNotices);
         } catch (Exception e) {
-            return R.error(e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
     }
     @PostMapping
@@ -49,7 +50,7 @@ public class MissingNoticesController {
             missingNoticesService.save(missingNotices);
             return R.success(missingNotices);
         } catch (Exception e) {
-            return R.error(e.getMessage());
+            throw new BusinessException(e.getMessage());
         }
     }
     @DeleteMapping("/deleteIds")
@@ -94,5 +95,15 @@ public class MissingNoticesController {
         missingNotices.setReviewProcess(2);
         missingNoticesService.updateById(missingNotices);
         return R.success("拒绝成功~");
+    }
+    @GetMapping("/query")
+    public R<List<MissingNotices>> query(String content){
+        List<MissingNotices> advises = null;
+        try {
+            advises = missingNoticesService.selectByCondition(content);
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return R.success(advises);
     }
 }
