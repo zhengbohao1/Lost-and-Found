@@ -8,7 +8,7 @@ import lombok.Data;
 /**
  * ClassName: UserQuery
  * Description:
- * 用户登录注册相关请求的请求体实体类
+ * 用户登录相关请求的请求体实体类
  * @Author Joel
  * @Create 2024/9/20
  * @Version 1.0

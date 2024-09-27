@@ -6,6 +6,7 @@ import com.it.constants.Constants;
 import com.it.entity.UserInfo;
 import com.it.exception.BusinessException;
 import com.it.query.EmailQuery;
+import com.it.query.PasswordQuery;
 import com.it.query.UserQuery;
 import com.it.service.AdminInfoService;
 import com.it.service.EmailCodeService;
@@ -19,7 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -35,7 +38,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 @Validated
-public class UserController {
+public class UserController extends CommonController{
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -142,7 +145,7 @@ public class UserController {
     }
 
     /**
-     * 管理员登录登录
+     * 管理员登录
      * @param session
      * @param userQuery
      * @return
@@ -174,6 +177,87 @@ public class UserController {
         Map<String,Object> map = ThreadLocalUtil.get();
         String nickName = (String) map.get("nickName");
         return userInfoService.getUserInfo(nickName);
+    }
+
+
+    /**
+     * 获取用户头像
+     * @param response
+     */
+    @GetMapping("/getAvatar")
+    public void getAvatar(HttpServletResponse response) {
+        // 从ThreadLocal中获取用户id
+        Map<String,Object> claims = ThreadLocalUtil.get();
+        String userId = (String) claims.get("userId");
+        String avatarFolderName = Constants.FILE_FOLDER_AVATAR_NAME;
+        // 判断存储头像的文件夹是否存在，不存在则创建
+        File avatarFolder = new File(appConfig.getProjectFolder() + Constants.FILE_FOLDER_AVATAR_NAME);
+        if (!avatarFolder.exists()) {
+            avatarFolder.mkdirs();
+        }
+        // 判断用户头像是否存在，如果不存在就使用默认头像
+        String avatarPath = appConfig.getProjectFolder() + avatarFolderName + userId + Constants.AVATAR_SUFFIX;
+        while (!new File(avatarPath).exists()) {
+            throw new BusinessException("头像不存在");
+        }
+        response.setContentType("image/jpeg");
+        readFile(response, avatarPath);
+    }
+
+
+    /**
+     * 上传用户头像
+     * @param avatar
+     * @return
+     */
+    @PostMapping("/updateAvatar")
+    public R<String> updateUserAvatar(@RequestParam("avatar") MultipartFile avatar){
+        // 从ThreadLocal中获取用户id
+        Map<String,Object> claims = ThreadLocalUtil.get();
+        String userId = (String) claims.get("userId");
+        // baseFolder是到项目的file层级目录的路径
+        File avatarsFolder = new File(appConfig.getProjectFolder() + Constants.FILE_FOLDER_AVATAR_NAME);
+        // 判断头像文件夹是否存在，不存在则创建
+        if(!avatarsFolder.exists()){
+            avatarsFolder.mkdirs();
+        }
+        File targetFile = new File(avatarsFolder.getPath() + userId + Constants.AVATAR_SUFFIX);
+        try {
+            avatar.transferTo(targetFile);
+        } catch (IOException e) {
+            logger.error("头像上传失败", e);
+        }
+        return R.success(null);
+    }
+
+    /**
+     * 更新密码，用于用户登录之后的修改密码操作
+     * @param passwordQuery
+     * @return
+     */
+    @PostMapping("/updatePwd")
+    public R<String> updatePwd(@RequestBody @Validated PasswordQuery passwordQuery){
+        String oldPwd = passwordQuery.getOldPwd();
+        String newPwd = passwordQuery.getNewPwd();
+        String rePwd = passwordQuery.getRePwd();
+        userInfoService.updatePwd(oldPwd, newPwd, rePwd);
+        return R.success(null);
+    }
+
+    /**
+     * 重置密码，用于登陆界面中忘记密码的操作
+     * @param session
+     * @param userQuery
+     * @return
+     */
+    @PostMapping("/resetPwd")
+    public R<String> resetPwd(HttpSession session,@RequestBody @Validated UserQuery userQuery){
+        String email = userQuery.getEmail();
+        String emailCode = userQuery.getEmailCode();
+        String password = userQuery.getPassword();
+        // TODO: 进行密码重置
+        userInfoService.resetPwd(email, password, emailCode);
+        return R.success(null);
     }
 
 }

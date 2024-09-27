@@ -19,4 +19,10 @@ public interface UserInfoService extends IService<UserInfo> {
 
     //根据昵称获取用户信息
     R<UserInfo> getUserInfo(String nickName);
+
+    //修改密码
+    void updatePwd(String oldPwd, String newPwd, String rePwd);
+
+    //忘记密码时的重置密码
+    void resetPwd(String email, String password, String emailCode);
 }

@@ -1,5 +1,6 @@
 package com.it.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.it.common.R;
 import com.it.config.AppConfig;
@@ -12,6 +13,7 @@ import com.it.service.UserInfoService;
 import com.it.mapper.UserInfoMapper;
 import com.it.utils.JwtUtil;
 import com.it.utils.StringTools;
+import com.it.utils.ThreadLocalUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,6 +104,53 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
     public R<UserInfo> getUserInfo(String nickName) {
         UserInfo userInfo = this.baseMapper.selectByNickName(nickName);
         return R.success(userInfo);
+    }
+
+    /**
+     * 更新用户密码
+     * @param oldPwd
+     * @param newPwd
+     * @param rePwd
+     * @return
+     */
+    @Override
+    public void updatePwd(String oldPwd, String newPwd, String rePwd) {
+        // TODO: 校验原密码是否正确
+        // 从ThreadLocal中获取用户nickName
+        Map<String,Object> claims = ThreadLocalUtil.get();
+        String nickName = (String) claims.get("nickName");
+        UserInfo loginUser = this.baseMapper.selectByNickName(nickName);
+        if (!StringTools.checkPassword(oldPwd, loginUser.getPassword())) {
+            throw new BusinessException("原密码错误");
+        }
+        //校验新密码和确认密码是否一致
+        if(!newPwd.equals(rePwd)) {
+            throw new BusinessException("两次密码不一致");
+        }
+        // TODO: 校验成功，更新密码
+        //用ThreadLocal获取userId
+        String userId = (String) claims.get("userId");
+        this.baseMapper.updatePwd(StringTools.encodeByMD5(newPwd), userId);
+    }
+
+    /**
+     * 忘记密码时的重置密码
+     * @param email
+     * @param password
+     * @param emailCode
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void resetPwd(String email, String password, String emailCode) {
+        // TODO: 校验邮箱是否存在
+        UserInfo userInfo = this.baseMapper.selectByEmail(email);
+        if(userInfo == null){
+            throw new BusinessException("邮箱账号不存在");
+        }
+        // TODO: 校验邮箱验证码
+        emailCodeService.checkEmailCode(email, emailCode);
+        // TODO: 更新密码
+        this.baseMapper.updatePwdByEmail(StringTools.encodeByMD5(password), email);
     }
 
 }

@@ -16,8 +16,15 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 public class StringTools {
 
+    // MD5加密
     public static String encodeByMD5(String originString) {
         return StringTools.isEmpty(originString) ? null : DigestUtils.md5Hex(originString);
+    }
+
+    // 判断字符串的md5校验码是否与一个已知的md5码相匹配
+    public static boolean checkPassword(String password, String md5PwdStr) {
+        String s = encodeByMD5(password);
+        return s.equals(md5PwdStr);
     }
 
     public static boolean isEmpty(String str) {

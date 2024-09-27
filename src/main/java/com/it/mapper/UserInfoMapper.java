@@ -42,6 +42,22 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
      */
     @Update("UPDATE user_info SET last_login_time = #{date} WHERE user_id = #{userId}")
     void updateLastLoginTimeById(String userId, Date date);
+
+    /**
+     * 更新用户密码
+     * @param encodeByMD5 加密后的密码
+     * @param userId
+     */
+    @Update("UPDATE user_info SET password = #{encodeByMD5} WHERE user_id = #{userId}")
+    void updatePwd(String encodeByMD5, String userId);
+
+    /**
+     * 根据email重置用户密码
+     * @param encodeByMD5
+     * @param email
+     */
+    @Update("UPDATE user_info SET password = #{encodeByMD5} WHERE email = #{email}")
+    void updatePwdByEmail(String encodeByMD5, String email);
 }
 
 
