@@ -1,6 +1,5 @@
 package com.it.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.it.common.R;
 import com.it.config.AppConfig;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -151,6 +151,25 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         emailCodeService.checkEmailCode(email, emailCode);
         // TODO: 更新密码
         this.baseMapper.updatePwdByEmail(StringTools.encodeByMD5(password), email);
+    }
+
+    /**
+     * 获取所有用户信息
+     * @return
+     */
+    @Override
+    public List<UserInfo> getAllUserInfo() {
+        return this.baseMapper.selectAllUserInfo();
+    }
+
+    @Override
+    public void disableUser(String userId) {
+        // 检查用户是否存在以及是否尚未被禁用
+        UserInfo userInfo = this.baseMapper.selectById(userId);
+        if (userInfo == null || userInfo.getStatus() == UserStatusEnum.DISABLE.getStatus()) {
+            throw new BusinessException("用户不存在或已被禁用");
+        }
+        this.baseMapper.disableUser(userId);
     }
 
 }

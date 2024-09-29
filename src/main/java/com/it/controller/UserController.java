@@ -179,7 +179,6 @@ public class UserController extends CommonController{
         return userInfoService.getUserInfo(nickName);
     }
 
-
     /**
      * 获取用户头像
      * @param response
@@ -203,7 +202,6 @@ public class UserController extends CommonController{
         response.setContentType("image/jpeg");
         readFile(response, avatarPath);
     }
-
 
     /**
      * 上传用户头像

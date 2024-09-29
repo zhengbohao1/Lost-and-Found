@@ -1,5 +1,6 @@
 package com.it.mapper;
 
+import com.it.common.R;
 import com.it.entity.UserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -7,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.Date;
+import java.util.List;
 
 /**
 * @author Yu
@@ -58,6 +60,20 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
      */
     @Update("UPDATE user_info SET password = #{encodeByMD5} WHERE email = #{email}")
     void updatePwdByEmail(String encodeByMD5, String email);
+
+    /**
+     * 查询所有用户信息
+     * @return
+     */
+    @Select("SELECT * FROM user_info")
+    List<UserInfo> selectAllUserInfo();
+
+    /**
+     * 根据用户id禁用用户
+     * @param userId
+     */
+    @Update("UPDATE user_info SET status = 0 WHERE user_id = #{userId}")
+    void disableUser(String userId);
 }
 
 

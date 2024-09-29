@@ -27,7 +27,6 @@ public class UserQuery {
     @Password
     private String password;
 
-    @NotEmpty
     private String checkCode;
 
     private String emailCode;

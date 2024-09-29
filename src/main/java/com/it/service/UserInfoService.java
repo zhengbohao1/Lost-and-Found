@@ -4,6 +4,8 @@ import com.it.common.R;
 import com.it.entity.UserInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
 * @author Yu
 * @description 针对表【user_info】的数据库操作Service
@@ -25,4 +27,10 @@ public interface UserInfoService extends IService<UserInfo> {
 
     //忘记密码时的重置密码
     void resetPwd(String email, String password, String emailCode);
+
+    //获取所有用户信息
+    List<UserInfo> getAllUserInfo();
+
+    //禁用用户的账号
+    void disableUser(String userId);
 }
