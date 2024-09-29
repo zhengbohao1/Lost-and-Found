@@ -32,10 +32,11 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
     public List<LostFoundDto> legalList() {
         List<LostFound> lostFounds = this.list().stream().filter(lostFound -> lostFound.getReviewProcess() == 1).toList();
         List<LostFoundDto> lostFoundsDto = new ArrayList<>();
-        QueryWrapper<Image> queryWrapper = new QueryWrapper<>();
+
 
         for (LostFound lostFound : lostFounds) {
             String path = lostFound.getImgUrl();
+            QueryWrapper<Image> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("path", path);
             Image image = imageService.getOne(queryWrapper);
 
