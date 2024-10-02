@@ -18,12 +18,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Map;
 
 /**
@@ -197,10 +199,33 @@ public class UserController extends CommonController{
         // 判断用户头像是否存在，如果不存在就使用默认头像
         String avatarPath = appConfig.getProjectFolder() + avatarFolderName + userId + Constants.AVATAR_SUFFIX;
         while (!new File(avatarPath).exists()) {
-            throw new BusinessException("头像不存在");
+            if (!new File(appConfig.getProjectFolder() + Constants.FILE_FOLDER_AVATAR_NAME + Constants.AVATAR_DEFUALT).exists()) {
+                printNoDefaultAvatar(response);
+                return;
+            }
+            avatarPath = appConfig.getProjectFolder() + Constants.FILE_FOLDER_AVATAR_NAME + Constants.AVATAR_DEFUALT;
         }
         response.setContentType("image/jpeg");
         readFile(response, avatarPath);
+    }
+
+    /**
+     * 打印没有默认头像的信息
+     * @param response
+     */
+    private void printNoDefaultAvatar(HttpServletResponse response) {
+        response.setHeader(CONTENT_TYPE,CONTENT_TYPE_VALUE);
+        response.setStatus(HttpStatus.OK.value());
+        PrintWriter writer = null;
+        try {
+            writer = response.getWriter();
+            writer.print("请在头像目录下放置默认头像default_avatar.jpg");
+            writer.close();
+        } catch (IOException e) {
+            logger.error("输出无默认图失败", e);
+        }finally {
+            writer.close();
+        }
     }
 
     /**
