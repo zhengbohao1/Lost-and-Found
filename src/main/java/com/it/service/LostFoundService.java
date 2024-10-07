@@ -12,4 +12,5 @@ public interface LostFoundService extends IService<LostFound> {
     List<LostFoundDto> selectByCondition(String content);
     List<LostFoundDto> get_list();
     void my_save(LostFound lostFound);
+    String confirmClaim(int id, int user_id);
 }

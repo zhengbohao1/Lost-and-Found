@@ -128,4 +128,14 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
             throw new BusinessException(e.getMessage());
         }
     }
+
+    @Override
+    public String confirmClaim(int id, int user_id) {
+        try {
+            this.baseMapper.confirmLost(id, user_id);
+            return "认领信息已确认";
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
 }
