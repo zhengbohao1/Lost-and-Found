@@ -1,6 +1,7 @@
 package com.it.controller;
 
 import com.it.common.R;
+import com.it.dto.MissingNoticesDto;
 import com.it.entity.LostFound;
 import com.it.entity.MissingNotices;
 import com.it.exception.BusinessException;
@@ -22,9 +23,9 @@ public class MissingNoticesController {
      * @return
      */
     @GetMapping("/list")
-    public R<List<MissingNotices>> list(){
+    public R<List<MissingNoticesDto>> list(){
         try {
-            List<MissingNotices> missingNotices = missingNoticesService.list();
+            List<MissingNoticesDto> missingNotices = missingNoticesService.get_list();
             return R.success(missingNotices);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
@@ -36,9 +37,9 @@ public class MissingNoticesController {
      * @return
      */
     @GetMapping("/legal_list")
-    public R<List<MissingNotices>> legalList() {
+    public R<List<MissingNoticesDto>> legalList() {
         try {
-            List<MissingNotices> missingNotices = missingNoticesService.legalList();
+            List<MissingNoticesDto> missingNotices = missingNoticesService.legalList();
             return R.success(missingNotices);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
@@ -47,7 +48,7 @@ public class MissingNoticesController {
     @PostMapping
     public R<MissingNotices> save(@RequestBody MissingNotices missingNotices) {
         try {
-            missingNoticesService.save(missingNotices);
+            missingNoticesService.my_save(missingNotices);
             return R.success(missingNotices);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
@@ -97,13 +98,13 @@ public class MissingNoticesController {
         return R.success("拒绝成功~");
     }
     @GetMapping("/query")
-    public R<List<MissingNotices>> query(String content){
-        List<MissingNotices> advises = null;
+    public R<List<MissingNoticesDto>> query(String content){
+        List<MissingNoticesDto> missingNotices = null;
         try {
-            advises = missingNoticesService.selectByCondition(content);
+            missingNotices = missingNoticesService.selectByCondition(content);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }
-        return R.success(advises);
+        return R.success(missingNotices);
     }
 }

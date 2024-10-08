@@ -3,14 +3,13 @@ package com.it.controller;
 import com.it.common.R;
 import com.it.config.AppConfig;
 import com.it.constants.Constants;
+import com.it.entity.ClaimRequest;
 import com.it.entity.UserInfo;
 import com.it.exception.BusinessException;
 import com.it.query.EmailQuery;
 import com.it.query.PasswordQuery;
 import com.it.query.UserQuery;
-import com.it.service.AdminInfoService;
-import com.it.service.EmailCodeService;
-import com.it.service.UserInfoService;
+import com.it.service.*;
 import com.it.utils.CreateImageCode;
 import com.it.utils.ThreadLocalUtil;
 import jakarta.annotation.Resource;
@@ -26,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,9 +53,13 @@ public class UserController extends CommonController{
 
     @Resource
     private UserInfoService userInfoService;
+    @Resource
+    private LostFoundService lostFoundService;
 
     @Resource
     private AdminInfoService adminInfoService;
+    @Resource
+    private ClaimRequestService claimRequestService;
 
     @Resource
     private AppConfig appConfig;
@@ -308,5 +312,37 @@ public class UserController extends CommonController{
         userInfoService.resetPwd(email, password, emailCode);
         return R.success(null);
     }
-
+    /**
+     * 发送认领请求
+     * @param claimRequest
+     */
+    @PostMapping("/sendClaimInfo")
+    public R<String> sendEmailCode(@RequestBody ClaimRequest claimRequest){
+        try {
+            claimRequestService.save(claimRequest);
+            return R.success("认领信息发送成功~");
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+    }
+    /**
+     * 获取收到的认领消息
+     * @return
+     */
+    @GetMapping("/getClaimMessage")
+    public R<List<ClaimRequest>> getClaimMessage(){
+        List<ClaimRequest> claimMessage = claimRequestService.getClaimMessage();
+        return R.success(claimMessage);
+    }
+    /**
+     * 拾主确认认领结案
+     */
+    @PutMapping("/confirmClaim")
+    public R<String> confirmClaim(@RequestParam(value ="user_id")int user_id,@RequestParam(value ="post_id")int post_id){
+       String msg=lostFoundService.confirmClaim(post_id,user_id);
+       if(msg.equals("认领信息已确认")){
+           return R.success(msg);
+       }
+        return R.error("信息有误，请再核对");
+    }
 }
