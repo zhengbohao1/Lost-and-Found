@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.it.common.R;
 import com.it.config.AppConfig;
 import com.it.constants.Constants;
+import com.it.entity.GoldCoin;
 import com.it.entity.UserInfo;
 import com.it.enums.UserStatusEnum;
 import com.it.exception.BusinessException;
 import com.it.service.EmailCodeService;
+import com.it.service.GoldCoinService;
 import com.it.service.UserInfoService;
 import com.it.mapper.UserInfoMapper;
 import com.it.utils.JwtUtil;
@@ -33,6 +35,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
 
     @Resource
     private EmailCodeService emailCodeService;
+    @Resource
+    private GoldCoinService goldcoinService;
 
     @Resource
     private AppConfig appConfig;
@@ -61,13 +65,24 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         // TODO：注册用户
         UserInfo userInfo = new UserInfo();
         String userId = StringTools.getRandomNumber(Constants.LENGTH_10);
+        //TODO：生成用户ID并检查唯一性
         userInfo.setUserId(userId);
+        UserInfo idUser = getById(userId);
+        while (idUser != null) {
+            userId = StringTools.getRandomNumber(Constants.LENGTH_10);
+            idUser = getById(userId);
+        }
         userInfo.setEmail(email);
         userInfo.setNickName(nickName);
         userInfo.setPassword(StringTools.encodeByMD5(password));
         userInfo.setJoinTime(new Date());
         userInfo.setStatus(UserStatusEnum.ENABLE.getStatus());
         this.baseMapper.insert(userInfo);
+        GoldCoin goldCoin = new GoldCoin();
+        goldCoin.setUserId(userId);
+        goldCoin.setAmount(0);
+        goldCoin.setEmail(email);
+        goldcoinService.save(goldCoin);
     }
 
     /**

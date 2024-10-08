@@ -348,6 +348,12 @@ public class UserController extends CommonController{
        }
         return R.error("信息有误，请再核对");
     }
+
+    /**
+     * 发送父评论
+     * @param comments
+     * @return
+     */
     @PostMapping("/sendParentComments")
     public R<String> sendComments(@RequestBody Comments comments){
         try {
@@ -357,6 +363,12 @@ public class UserController extends CommonController{
         }
         return R.success("评论成功");
     }
+
+    /**
+     * 发送子评论
+     * @param comments
+     * @return
+     */
     @PostMapping("/sendChildComments")
     public R<String> sendChildComments(@RequestBody Comments comments){
         try {
@@ -366,6 +378,11 @@ public class UserController extends CommonController{
         }
         return R.success("评论成功");
     }
+
+    /**
+     * 获得父评论
+     * @return
+     */
     @GetMapping("/getParentComments")
     public R<List<Comments>> getParentComments(){
         List<Comments> parentComments = null;
@@ -376,6 +393,12 @@ public class UserController extends CommonController{
         }
         return R.success(parentComments);
     }
+
+    /**
+     * 获得子评论
+     * @param parentId
+     * @return
+     */
     @GetMapping("/getChildComments")
     public R<List<Comments>> getChildComments(@RequestParam("parentId")int parentId){
         List<Comments> childComments = null;
