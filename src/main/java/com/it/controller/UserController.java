@@ -217,6 +217,32 @@ public class UserController extends CommonController{
     }
 
     /**
+     * 根据用户id获取用户头像
+     * @param response
+     * @param userId
+     */
+    @GetMapping("/getAvatarById")
+    public void getAvatarByUserId(HttpServletResponse response, @RequestParam String userId){
+        String avatarFolderName = Constants.FILE_FOLDER_AVATAR_NAME;
+        // 判断存储头像的文件夹是否存在，不存在则创建
+        File avatarFolder = new File(appConfig.getProjectFolder() + Constants.FILE_FOLDER_AVATAR_NAME);
+        if (!avatarFolder.exists()) {
+            avatarFolder.mkdirs();
+        }
+        // 判断用户头像是否存在，如果不存在就使用默认头像
+        String avatarPath = appConfig.getProjectFolder() + avatarFolderName + userId + Constants.AVATAR_SUFFIX;
+        while (!new File(avatarPath).exists()) {
+            if (!new File(appConfig.getProjectFolder() + Constants.FILE_FOLDER_AVATAR_NAME + Constants.AVATAR_DEFUALT).exists()) {
+                printNoDefaultAvatar(response);
+                return;
+            }
+            avatarPath = appConfig.getProjectFolder() + Constants.FILE_FOLDER_AVATAR_NAME + Constants.AVATAR_DEFUALT;
+        }
+        response.setContentType("image/jpeg");
+        readFile(response, avatarPath);
+    }
+
+    /**
      * 打印没有默认头像的信息
      * @param response
      */
