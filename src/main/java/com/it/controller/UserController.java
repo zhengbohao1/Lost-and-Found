@@ -4,6 +4,7 @@ import com.it.common.R;
 import com.it.config.AppConfig;
 import com.it.constants.Constants;
 import com.it.entity.ClaimRequest;
+import com.it.entity.Comments;
 import com.it.entity.UserInfo;
 import com.it.exception.BusinessException;
 import com.it.query.EmailQuery;
@@ -60,6 +61,8 @@ public class UserController extends CommonController{
     private AdminInfoService adminInfoService;
     @Resource
     private ClaimRequestService claimRequestService;
+    @Resource
+    private CommentsService commentsService;
 
     @Resource
     private AppConfig appConfig;
@@ -318,5 +321,43 @@ public class UserController extends CommonController{
            return R.success(msg);
        }
         return R.error("信息有误，请再核对");
+    }
+    @PostMapping("/sendParentComments")
+    public R<String> sendComments(@RequestBody Comments comments){
+        try {
+            commentsService.sendParentComments(comments);
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return R.success("评论成功");
+    }
+    @PostMapping("/sendChildComments")
+    public R<String> sendChildComments(@RequestBody Comments comments){
+        try {
+            commentsService.sendChildComments(comments);
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return R.success("评论成功");
+    }
+    @GetMapping("/getParentComments")
+    public R<List<Comments>> getParentComments(){
+        List<Comments> parentComments = null;
+        try {
+            parentComments = commentsService.getParentComments();
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return R.success(parentComments);
+    }
+    @GetMapping("/getChildComments")
+    public R<List<Comments>> getChildComments(@RequestParam("parentId")int parentId){
+        List<Comments> childComments = null;
+        try {
+            childComments = commentsService.getChildComments(parentId);
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return R.success(childComments);
     }
 }
