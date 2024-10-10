@@ -1,12 +1,15 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
-import {login, queryUserFocus, Register, sendCode, queryUserInfo} from "@/apis/main";
+import {login, Register, sendCode, queryUserInfo } from "@/apis/main";
+import { adminLogin } from "@/apis/admin";
+import { resetPsw } from "@/apis/user";
 
 //之后补写错误处理的逻辑
 
 export const useUserStore = defineStore('user', () => {
     const isAdmin = ref(false);
-    const userToken = ref('');
+    const isUser = ref(true);
+    const userToken = ref(null);
     const userInfo = ref({});
     const userFocus = ref([]);
     const userCollect = ref([]);
@@ -18,19 +21,84 @@ export const useUserStore = defineStore('user', () => {
     }
 
     const userRegister = async ({email, nickName, password, emailCode, checkCode}) => {
-        await Register({email, nickName, password, emailCode, checkCode});
+        try{
+            const res = await Register({email, nickName, password, emailCode, checkCode});
+            if (res.code === 1) {
+                ElMessage({type: 'success', message: '注册成功'})
+                return 1;
+            }else{
+                ElMessage({type: 'error', message: `${res.data}`})
+                return 0;
+            }
+        }catch (error) {
+            ElMessage({
+              type: 'error',
+              message: `网络请求失败。${error.message}`
+            });
+          }
     };
 
     const userLogin = async ({email, password, checkCode}) => {
-        await login({email, password, checkCode}).then(res => {
-            userToken.value = res.data;
-            console.log(userToken.value);
+            try {
+                const res = await login({ email, password, checkCode });
+                if (res.code === 1) {
+                  userToken.value = res.data;
+                  isUser.value = true;
+                  return 1;
+                } else {
+                  ElMessage({
+                    type: 'error',
+                    message: `${res.data}`
+                  });
+                  return 0; 
+                }
+              } catch (error) {
+                ElMessage({
+                  type: 'error',
+                  message: `网络请求失败。${error.message}`
+                });
+              }
+        };
+
+    const adminLog = async ({email, password, checkCode}) => {
+        try {
+            const res = await adminLogin({ email, password, checkCode });
+            if (res.code === 1) {
+              userToken.value = res.data;
+              isAdmin.value = true;
+              return 1;
+            } else {
+              ElMessage({
+                type: 'error',
+                message: `${res.data}`
+              });
+              return 0; 
+            }
+          } catch (error) {
+            ElMessage({
+              type: 'error',
+              message: `网络请求失败。${error.message}`
+            });
+          }
+    }
+
+    const userReset = async ({email, password, emailCode}) => {
+      const res = await resetPsw({email, password, emailCode});
+      if (res.code === 1) {
+        ElMessage({
+          type: 'success',
+          message: `密码重置成功。`
         })
+      }else{
+        ElMessage({
+          type: 'error',
+          message: `${res.data}`
+        })
+      }
     }
 
     const getUserInfo = async () => {
         userInfo.value = await queryUserInfo();
-        console.log(userInfo.value);
     };
 
     const extendUserInfo = (type, id) => {
@@ -64,7 +132,10 @@ export const useUserStore = defineStore('user', () => {
 
     const userLogout = async () => {
         userInfo.value = {};
-        return {info: "成功退出登录"};
+        userToken.value = null;
+        isAdmin.value = false;
+        isUser.value = false;
+        ElMessage({ type: "success", message: "退出登录成功" });
     };
 
     const changeInfo = ({username, signature, avatar}) => {
@@ -75,10 +146,14 @@ export const useUserStore = defineStore('user', () => {
 
     return {
         isAdmin,
+        isUser,
         userToken,
         userInfo,
-        getUserInfo,
         userLogin,
+        adminLog,
+        userReset,
+        getUserInfo,
+
         userLogout,
         userSendCode,
         userRegister,

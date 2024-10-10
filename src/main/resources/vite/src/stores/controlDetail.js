@@ -1,6 +1,6 @@
 import {ref} from "vue";
 import {useUserStore} from "@/stores/user";
-import {postDetail} from "@/apis/main";
+import {postDetail} from "@/apis/comment";
 
 export const controlDetail = () => {
     const detail = ref({})
@@ -17,6 +17,9 @@ export const controlDetail = () => {
         const res = await postDetail({id});
         detail.value = res.info
         document.title = detail.value.title;
+    }
+
+    const getComments = (id) => {
     }
 
     const SetComment = (comment) => {

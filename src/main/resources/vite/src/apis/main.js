@@ -1,6 +1,5 @@
 import http from "@/utils/http";
 import { useUserStore } from "@/stores/user";
-import { postRequest } from "./api"
 
 // 登录
 export const login = ({email, password, checkCode}) => {
@@ -60,8 +59,7 @@ export const queryUserInfo = () => {
         headers: {
             'Authorization': userStore.userToken,
         },
-        data: {
-        }
+        data: {}
     })
 }
 
@@ -96,14 +94,25 @@ export const postDetail = ({id}) => {
     })
 }
 
-// 主页帖子
-export const queryPost = ({offset, query}) => {
+// 全部帖子(领)
+export const queryPost = () => {
     return http({
-        url: '/post/',
-        method: 'POST',
-        data: {offset, query}
+        url: '/lost_found/legal_list',
+        method: 'GET',
+        data: {}
     })
 }
+
+// 全部帖子(领)
+export const queryAllPost = () => {
+    return http({
+        url: '/lost_found/list',
+        method: 'GET',
+        data: {}
+    })
+}
+
+
 
 // 评论帖子
 export const doComment = ({data}) => {

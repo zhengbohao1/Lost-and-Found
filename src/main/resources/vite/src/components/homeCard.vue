@@ -24,7 +24,7 @@ const handleLoad = (card) => {
   <div class="col">
     <div v-for="col in card_columns" :key="col.id">
       <section v-for="card in col" :key="card.id">
-        <div v-show="card.load" style=" padding: 0" class="card">
+        <div v-show="card.load" class="card">
           <a :href="`/explore/${card.id}`" @click.prevent="details(card.id)">
             <img
                 :src="card.img"

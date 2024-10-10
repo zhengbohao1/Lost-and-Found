@@ -30,11 +30,16 @@
 
 <script setup>
 import { ref,defineEmits } from 'vue';
+import { useRouter } from 'vue-router';
 import {Search, UserFilled, DArrowRight, DArrowLeft} from '@element-plus/icons-vue';
+import { useUserStore } from '@/stores/user';
 
 const isCollapsed = ref(false);
 
 const visible = ref(false);
+
+const userStore = useUserStore();
+const router = useRouter();
 
 const emit = defineEmits(['update-collapse']);
 
@@ -48,7 +53,8 @@ const handlePrimaryButtonClick = () => {
 }
 
 const handleInfoButtonClick = () => {
-  visible.value = false; // 关闭弹出框
+  userStore.userLogout();
+  router.push('/login');
 }
 </script>
 

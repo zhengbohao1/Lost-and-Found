@@ -1,4 +1,5 @@
 <template>
+  <div class="app">
     <div class="login">
       <div class="box">
         <div class="leftArea">
@@ -6,7 +7,7 @@
           <img src="@/assets/logo.png" class="image" alt=""/>
         </div>        
         <!--用户登录表单-->
-        <div class="rightArea" v-if="showWhich && isAdmin">
+        <div class="rightArea" v-if="showWhich && isAdmin && needReset">
           <div class="title" style="text-align: center">登录</div>
           <div class="form">
             <el-form ref="formLoginRef" :model="formLogin" :rules="rulesLogin" label-position="right" label-width="0"
@@ -36,11 +37,11 @@
               <el-button size="large" type="primary" round class="subBtn" @click="doLogin">点击登录</el-button>
             </el-form>
           </div>
-          <el-divider content-position="center">或</el-divider>
-          <el-button size="large" type="primary" plain round class="subBtn" @click="toggleForm()">新用户注册</el-button>
+          <el-divider content-position="center"></el-divider>
+          <el-button size="large" type="primary" plain round class="subBtn" @click="newUserRes()">新用户注册</el-button>
           <el-row style="margin-top: 20px;">
             <el-col :span="8" style="text-align: center;">
-              <el-link @click="toggleAdmin()">忘记密码</el-link>
+              <el-link @click="toggleReset()">忘记密码</el-link>
             </el-col>
             <el-col :span="8"></el-col>
             <el-col :span="8" style="text-align: center;">
@@ -65,77 +66,165 @@
                   <el-input v-model="formLogin.checkCode" placeholder="请输入验证码" :prefix-icon="ChatLineSquare"/>
                 </el-col>
                 <el-col :span="4"></el-col>
-                <el-col :span="10"><el-image/></el-col>
+                <el-col :span="10">
+                  <div class="demo-image__preview">
+                    <el-image :src="imageSrcWithQuery" title="点击切换图片" @click="reloadImage()"/>
+                  </div>
+                </el-col>
               </el-form-item>
               <el-form-item prop="agree" label-width="22px" class="inputArea">
                 <el-checkbox size="large" v-model="formLogin.agree">
                   我已同意隐私条款和服务条款
                 </el-checkbox>
               </el-form-item>
-              <el-button size="large" type="primary" round class="subBtn" @click="doLogin">点击登录</el-button>
+              <el-button size="large" type="primary" round class="subBtn" @click="doAdminLogin">点击登录</el-button>
             </el-form>
           </div>
-          <el-divider content-position="center">或</el-divider>
-          <el-link @click="exitAdmin()" class="subBtn"><-返回</el-link>
+          <el-divider content-position="center"></el-divider>
+          <el-row style="margin-top: 115px;">
+            <el-col :span="8" style="text-align: center;">
+              <el-link @click="exitAdmin()">返回</el-link>
+            </el-col>
+            <el-col :span="16"></el-col>
+          </el-row>
         </div>
         <!--用户注册表单-->
         <div class="rightArea" v-if="!showWhich && isAdmin">
           <div class="title" style="text-align: center">注册</div>
-          <div class="form">
-            <el-form ref="formRegisterRef" :model="formRegister" :rules="rulesRegister" label-position="right"
-                     label-width="0"
-                     status-icon>
-              <el-form-item prop="nickName" class="inputArea">
-                <el-input v-model="formRegister.nickName" placeholder="请输入用户名" :prefix-icon="User" maxlength="6" show-word-limit/>
-              </el-form-item>
-              <el-form-item prop="password" class="inputArea">
-                <el-input v-model="formRegister.password" placeholder="请输入密码" :prefix-icon="Lock" show-password/>
-              </el-form-item>
-              <el-form-item prop="retryPwd" class="inputArea">
-                <el-input v-model="formRegister.retryPwd" placeholder="请确认输入密码" :prefix-icon="Lock" show-password/>
-              </el-form-item>
-              <el-form-item prop="email" class="inputArea">
-                <el-input  v-model="formRegister.email" placeholder="请输入注册邮箱" 
-                  :prefix-icon="Message" @click="toggleCode()"
-                  @input="validateEmail"
-                />
-              </el-form-item>
-              <el-form-item prop="emailCode" class="inputArea" v-if="showCode">
-                <el-input  v-model="formRegister.emailCode" placeholder="输入验证码" :prefix-icon="ChatLineSquare">
-                  <template #append>
-                    <el-button type="primary" plain
-                    :disabled="isValidEmail"  
-                      @click="sendCodeZero"
-                      v-text="buttonText"
-                    ></el-button>
-                  </template>
-                </el-input>
-              </el-form-item>
-              <el-form-item prop="checkCode" class="inputArea" v-if="showCode">
-                <el-col :span="10">
-                  <el-input v-model="formRegister.checkCode" placeholder="请输入验证码" :prefix-icon="ChatLineSquare"/>
-                </el-col>
-                <el-col :span="4"></el-col>
-                <el-col :span="10"><el-image :src="imageSrcWithQuery" title="点击切换图片" @click="reloadImage"/></el-col>
-              </el-form-item>
-              <el-form-item prop="agree" label-width="22px" class="inputArea">
-                <el-checkbox size="large" v-model="formRegister.agree">
-                  我已同意隐私条款和服务条款
-                </el-checkbox>
-              </el-form-item>
-              <el-button size="large" type="primary" round class="subBtn" @click="doRegister">点击注册</el-button>
-            </el-form>
+            <div class="form">
+              <el-form ref="formRegisterRef" :model="formRegister" :rules="rulesRegister" label-position="right"
+                      label-width="0"
+                      status-icon>
+                <el-form-item prop="nickName" class="inputArea">
+                  <el-input v-model="formRegister.nickName" placeholder="请输入用户名" :prefix-icon="User" maxlength="6" show-word-limit/>
+                </el-form-item>
+                <el-form-item prop="password" class="inputArea">
+                  <el-input v-model="formRegister.password" placeholder="请输入密码" :prefix-icon="Lock" show-password/>
+                </el-form-item>
+                <el-form-item prop="retryPwd" class="inputArea">
+                  <el-input v-model="formRegister.retryPwd" placeholder="请确认输入密码" :prefix-icon="Lock" show-password/>
+                </el-form-item>
+                <el-form-item prop="email" class="inputArea">
+                  <el-input  v-model="formRegister.email" placeholder="请输入注册邮箱" 
+                    :prefix-icon="Message" @click="toggleCode()"
+                  />
+                </el-form-item>
+                <el-form-item prop="emailCode" class="inputArea" v-if="showCode">
+                  <el-input  v-model="formRegister.emailCode" placeholder="输入验证码" :prefix-icon="ChatLineSquare">
+                    <template #append>
+                      <el-button type="primary" plain
+                      :disabled="isValidEmail(formRegister.email)"  
+                        @click="sendCodeZero"
+                        v-text="buttonText"
+                      ></el-button>
+                    </template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item prop="checkCode" class="inputArea" v-if="showCode">
+                  <el-col :span="10">
+                    <el-input v-model="formRegister.checkCode" placeholder="请输入验证码" :prefix-icon="ChatLineSquare"/>
+                  </el-col>
+                  <el-col :span="4"></el-col>
+                  <el-col :span="10"><el-image :src="imageSrcWithQuery" title="点击切换图片" @click="reloadImage"/></el-col>
+                </el-form-item>
+                <el-form-item prop="agree" label-width="22px" class="inputArea">
+                  <el-checkbox size="large" v-model="formRegister.agree">
+                    我已同意隐私条款和服务条款
+                  </el-checkbox>
+                </el-form-item>
+                <el-button size="large" type="primary" round class="subBtn" @click="doRegister">点击注册</el-button>
+              </el-form>
+            </div>
+            <div v-if="!showCode">
+              <el-divider content-position="center"></el-divider>
+              <el-button size="large" type="primary" plain round class="subBtn" style="margin-top: 0;" @click="toggleForm()">立即登录</el-button>
+            </div>
           </div>
-          <div v-if="!showCode">
-            <el-divider content-position="center">或</el-divider>
-            <el-button size="large" type="primary" plain round class="subBtn" style="margin-top: 0;" @click="toggleForm()">立即登录</el-button>
+
+        <!--重置密码表单-->
+        <div class="rightArea" v-if="!needReset">
+          <div class="title" style="text-align: center">注册</div>
+            <div class="form">
+              <el-form ref="formResetRef" :model="formReset" :rules="rulesReset" label-position="right"
+                      label-width="0"
+                      status-icon>
+              <el-form-item prop="email" class="inputArea">
+                  <el-input  v-model="formReset.email" placeholder="请输入注册邮箱" 
+                    :prefix-icon="Message"
+              />
+              </el-form-item>
+                <el-form-item prop="password" class="inputArea">
+                  <el-input v-model="formReset.password" placeholder="请输入密码" :prefix-icon="Lock" show-password/>
+                </el-form-item>
+                <el-form-item prop="retryPwd" class="inputArea">
+                  <el-input v-model="formReset.retryPwd" placeholder="请确认输入密码" :prefix-icon="Lock" show-password/>
+                </el-form-item>
+                <el-form-item prop="emailCode" class="inputArea">
+                  <el-input  v-model="formReset.emailCode" placeholder="输入验证码" :prefix-icon="ChatLineSquare">
+                    <template #append>
+                      <el-button type="primary" plain
+                      :disabled="!isValidEmail(formReset.email)"  
+                        @click="sendCodeOne"
+                        v-text="buttonText2"
+                      ></el-button>
+                    </template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item prop="agree" label-width="22px" class="inputArea">
+                  <el-checkbox size="large" v-model="formReset.agree">
+                    我已同意隐私条款和服务条款
+                  </el-checkbox>
+                </el-form-item>
+                <el-button size="large" type="primary" round class="subBtn" @click="doRest">重置密码</el-button>
+              </el-form>
+            </div>
+            <div v-if="!showCode">
+              <el-divider content-position="center"></el-divider>
+              <el-button size="large" type="primary" plain round class="subBtn" style="margin-top: 0;" @click="toggleForm()">立即登录</el-button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </template>
+
+      <!--额外的css动画-->
+      <css-doodle>
+          :doodle {
+              @grid: 1x20 / 100vmin;
+          }
+          @place-cell: center;
+          width: @rand(10vmin, 100vmin);
+          height: @rand(10vmin, 100vmin);
+          transform: translate(@rand(-120%, 120%), @rand(-80%, 80%)) scale(@rand(.8, 2.8)) skew(@rand(45deg));
+          clip-path: polygon(
+            @r(0, 30%) @r(0, 50%), 
+            @r(30%, 60%) @r(0%, 30%), 
+            @r(60%, 100%) @r(0%, 50%), 
+            @r(60%, 100%) @r(50%, 100%), 
+            @r(30%, 60%) @r(60%, 100%),
+            @r(0, 30%) @r(60%, 100%)
+          );
+          background: @pick(#f44336, #e91e63, #9c27b0, #673ab7, #3f51b5, #60569e, #e6437d, #ebbf4d, #00bcd4, #03a9f4, #2196f3, #009688, #5ee463, #f8e645, #ffc107, #ff5722, #43f8bf, #e136eb, #f57c23, #32ed39);
+          opacity: @rand(.5, .9);
+          position: relative;
+          top: @rand(-80%, 80%);
+          left: @rand(-80%, 80%);
+          animation: colorChange @rand(6.1s, 26.1s) infinite @rand(-.5s, -2.5s) linear alternate;
+        @keyframes colorChange {
+          100% {
+            left: 0;
+            top: 0;
+            filter: hue-rotate(360deg);
+          }
+        }
+    </css-doodle>
+  </div>
+</template>
   
   <script setup>
+  const script = document.createElement("script");
+  script.src = "https://cdnjs.cloudflare.com/ajax/libs/css-doodle/0.3.0/css-doodle.min.js";
+  document.body.appendChild(script);
+
   import {ref} from "vue";
   import 'element-plus/theme-chalk/el-message.css'
   import {User, Lock, ChatLineSquare, Message} from "@element-plus/icons-vue";
@@ -162,6 +251,13 @@
     retryPwd: '',
     emailCode : '',
     checkCode : '',
+    agree: false
+  })
+  const formReset = ref({
+    email: '',
+    password: '',
+    retryPwd: '',
+    emailCode : '',
     agree: false
   })
   
@@ -276,10 +372,72 @@
       }
     ]
   }
+
+  // 重置密码表单
+  const rulesReset = {
+    email: [
+      {required: true, message: '邮箱不能为空', trigger: 'blur'},
+      {
+        validator: (rule, value, callback) => {
+          var emailRegExp = /^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
+          var emailRegExp1 = /^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
+          if ((!emailRegExp.test(value) && value !== '') || (!emailRegExp1.test(value) && value !== '')) {
+            callback(new Error('请输入有效邮箱格式！'));
+          } else {
+            callback();
+          }
+        }
+      }
+    ],
+    password: [
+      {required: true, message: '密码不能为空', trigger: 'blur'},
+      {min: 6, max: 18, message: '密码应为6-18位', trigger: 'blur'},
+      {
+        validator: (rule, value, callback) => { //验证邮箱的有效格式
+          var pswRegExp = /^(?=.*\d)(?=.*[a-zA-Z]).*$/;
+          if (!pswRegExp.test(value) && value !== '') {
+            callback(new Error('密码需要含有字母和数字！'));
+          } else {
+            callback();
+          }
+        }
+      }
+    ],
+    retryPwd: [
+      {required: true, message: '密码不能为空', trigger: 'blur'},
+      {min: 6, max: 14, message: '密码不符合要求', trigger: 'blur'},
+      {
+        validator: (rule, value, callback) => {
+          if (value !== formReset.value.password) {
+            callback(new Error('两次密码不一致！'));
+          } else {
+            callback();
+          }
+        }
+      }
+    ],
+    emailCode: [
+      {required: true, message: '请输入验证码', trigger: 'blur'},
+    ],
+    agree: [
+      {
+        validator: (rule, value, callback) => {
+          // 自定义校验逻辑
+          if (value) {
+            callback()
+          } else {
+            callback(new Error('请勾选协议'))
+          }
+        }
+      }
+    ]
+  }
+
   
   // 获取form实例校验
   const formLoginRef = ref(null)
   const formRegisterRef = ref(null)
+  const formResetRef = ref(null)
 
   const imageSrc = 'http://localhost:8090/user/checkCode';  // 验证码图片地址
   const imageSrcWithQuery = ref(`${imageSrc}?version=0`);  
@@ -292,8 +450,14 @@
   }  
   
   const showWhich = ref(true) //控制登录注册页面的条件性渲染
-  const toggleForm = () => {
+  const newUserRes = () =>{
     showWhich.value = !showWhich.value
+  }
+
+  const toggleForm = () => {
+    showWhich.value = true
+    needReset.value = true
+    reloadImage()
   }
   
   const showCode = ref(false) //控制验证码的显示
@@ -304,16 +468,22 @@
   const isAdmin = ref(true) //控制管理员登录的显示
   const toggleAdmin = () => {
     isAdmin.value = !isAdmin.value
+    reloadImage()
   }
   const exitAdmin = () => {
     isAdmin.value = !isAdmin.value
+    reloadImage()
   }
 
-  const isValidEmail = ref(true) //控制邮箱验证
-  const validateEmail = () => {
-    const emailRegex = /^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/; //邮箱正则表达式
-    isValidEmail.value = emailRegex.test(formRegister.email);
-  };
+  const needReset = ref(true) //控制重置密码的显示
+  const toggleReset = () => {
+      needReset.value = !needReset.value
+  }
+
+  function isValidEmail(email) {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+}
 
   const isDisabled = ref(false);  //控发送验证码按钮的禁用
   const buttonText = ref('发送验证码');
@@ -336,6 +506,27 @@
     }
   }
 
+  
+  const isDisabled2 = ref(false);  //控发送验证码按钮的禁用
+  const buttonText2 = ref('发送验证码');
+  let countdown2 = null;
+  const startCountdown2 = () => {
+    if (!isDisabled2.value) {
+      isDisabled2.value = true;
+      let secondsLeft = 60;
+      buttonText2.value = `${secondsLeft} 秒后重试`;
+      countdown2 = setInterval(() => {
+        if (--secondsLeft > 0) {
+          buttonText.value = `${secondsLeft} 秒后重试`;
+        } else {
+          clearInterval(countdown2);
+          buttonText2.value = '发送验证码';
+          isDisabled2.value = false;
+        }
+      }, 1000);
+    }
+  }
+
   // 准备用户
   const userStore = useUserStore();
 
@@ -343,10 +534,31 @@
     const {email, password, checkCode} = formLogin.value
     formLoginRef.value.validate(async (valid) => {
       if (valid) {
-        await userStore.userLogin({email, password, checkCode})
-        await userStore.getUserInfo()
-        ElMessage({type: 'success', message: '登录成功'})
-        router.push({path: '/user'})
+        if(await userStore.userLogin({email, password, checkCode}) === 1)
+        {
+          await userStore.getUserInfo()
+          ElMessage({type: 'success', message: '登录成功'})
+          router.push({path: '/user'})
+        }else{
+          reloadImage() //改变验证码
+        }
+      }
+    })
+  }
+
+  const doAdminLogin = () => {
+    const {email, password, checkCode} = formLogin.value
+    formLoginRef.value.validate(async (valid) => {
+      if (valid) {
+        if(await userStore.adminLog({email, password, checkCode}) === 1)
+        {
+          await userStore.getUserInfo()
+          ElMessage({type: 'success', message: '登录成功'})
+          console.log(userStore.isAdmin)
+          router.push({path: '/control'})
+        }else{
+          reloadImage() //改变验证码
+        }
       }
     })
   }
@@ -355,9 +567,24 @@
     const {email, nickName, password, emailCode, checkCode} = formRegister.value
     formRegisterRef.value.validate(async (valid) => {
       if (valid) {
-        await userStore.userRegister({email, nickName, password, emailCode, checkCode})
-        ElMessage({type: 'success', message: '注册成功'})
-        toggleForm()
+        if(await userStore.userRegister({email, nickName, password, emailCode, checkCode})){
+          needReset.value = true
+        }else{
+            reloadImage() //改变验证码
+        }
+      }
+    })
+  }
+
+  const doRest = () => {
+    const {email, password, emailCode} = formReset.value
+    formResetRef.value.validate(async (valid) => {
+      if (valid) {
+        if(await userStore.userReset({email, password, emailCode})){
+          toggleForm()
+        }else{
+            reloadImage() //改变验证码
+        }
       }
     })
   }
@@ -367,9 +594,39 @@
     startCountdown();
     userStore.userSendCode(email, 0);
   };
+
+  const sendCodeOne = () => {
+    const email = formReset.value.email;
+    startCountdown2();
+    userStore.userSendCode(email, 1);
+  }
   </script>
   
   <style scoped>
+
+  .app {
+    position: relative;
+    margin: 0;
+    width: 100%;
+    height: 98vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #fff;
+  }
+
+  .app::after {
+    content: "";
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    right: -100%;
+    bottom: -100%;
+    backdrop-filter: blur(100px);
+    z-index: 1;
+  }
+
   .image {
     position: absolute;
     width: 300px;
@@ -387,15 +644,16 @@
   }
   
   .login {
-    background-color: white;
-    border-radius: 4rem;
-    position: absolute;
-    left: 350px;
-    top: 100px;
-  }
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4rem;
+  position: absolute;
+  left: 250px;
+  top: 100px;
+  z-index: 2;
+}
   
   .box {
-    box-shadow: 32px 18px 21px -3px rgba(0, 0, 0, 0.1);
+    box-shadow: 32px 18px 21px -3px rgba(0, 0, 0, 0.2);
     width: 50rem;
     height: 35rem;
     border-radius: 4rem;

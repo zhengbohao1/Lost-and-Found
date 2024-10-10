@@ -1,46 +1,49 @@
-<template>
-  <!-- 侧边栏 -->
-  <el-menu
-    :router="true"
-    :default-active="activeIndex"
-    class="sidebar-menu"
-  >
-    <el-menu-item index="/control/adminhome">
-      <el-icon><HomeFilled /></el-icon>
-      首页
-    </el-menu-item>
-    <el-sub-menu :index="'2'" :class="{ 'is-active': isActiveSubMenu('2') }">
-      <template #title>
-        <el-icon><Menu /></el-icon>
-        <span>功能模块</span>
-      </template>
-      <el-menu-item index="/control/managepost">发帖审核</el-menu-item>
-      <el-menu-item index="/control/manageusers">用户管理</el-menu-item>
-    </el-sub-menu>
-    <el-menu-item index="/control/settings">设置</el-menu-item>
-  </el-menu>
-</template>
+<template>  
+  <!-- 侧边栏 -->  
+  <el-menu  
+    :router="true"  
+    class="sidebar-menu"  
+    height="100%"  
+  >  
+    <el-menu-item index="/adminhome">  
+      <el-icon><HomeFilled /></el-icon>  
+      首页  
+    </el-menu-item>  
+    <el-sub-menu :index="'/control/function'">  
+      <template #title>  
+        <el-icon><Menu /></el-icon>  
+        <span>功能模块</span>  
+      </template>  
+      <el-sub-menu :index="'/control/function/found'">  
+        <template #title>  
+          <el-icon><Menu /></el-icon>  
+          <span>失物招领</span>  
+        </template>  
+        <el-menu-item index="/control/function/found/passpost">发帖审核</el-menu-item>  
+        <el-menu-item index="/control/function/found/deletepost">帖子管理</el-menu-item>  
+      </el-sub-menu>  
+      <el-sub-menu :index="'/control/function/lost'">  
+        <template #title>  
+          <el-icon><Menu /></el-icon>  
+          <span>寻物启事</span>  
+        </template>  
+        <el-menu-item index="/control/function/lost/passpost">发帖审核</el-menu-item>  
+        <el-menu-item index="/control/function/lost/deletepost">帖子管理</el-menu-item>  
+      </el-sub-menu>  
+      <el-menu-item index="/manageusers">用户管理</el-menu-item>  
+      <el-menu-item index="/manageadvises">用户建议</el-menu-item>  
+    </el-sub-menu>   
+    <el-menu-item index="/user">设置</el-menu-item>  
+  </el-menu>  
+</template>  
+  
+<script setup>  
+import { HomeFilled, Menu } from "@element-plus/icons-vue";  
+import { useRoute } from 'vue-router';  
+  
+</script>  
 
-<script setup>
-import { HomeFilled, Menu } from "@element-plus/icons-vue";
-import { ref, watch, toRefs } from 'vue';
-import { useRoute } from 'vue-router';
-
-const route = useRoute();
-const activeIndex = ref('');
-
-// 监听路由变化来更新 activeIndex
-watch(() => route.path, (newPath) => {
-  activeIndex.value = newPath;
-});
-
-// 计算属性来判断子菜单是否激活
-const isActiveSubMenu = (index) => {
-  return route.path.startsWith(`/${index.split('/').pop()}`);
-};
-</script>
-
-<style>
+<style >
 .sidebar-menu .el-menu-item,
 .sidebar-menu .el-sub-menu__title {
   border-radius: 10px;
@@ -53,9 +56,6 @@ const isActiveSubMenu = (index) => {
   color: #947fff !important;
 }
 
-.sidebar-menu .el-sub-menu.is-active .el-sub-menu__title {
-  color: #947fff !important;
-}
 
 .sidebar-menu .el-menu-item:hover,
 .sidebar-menu .el-sub-menu__title:hover {

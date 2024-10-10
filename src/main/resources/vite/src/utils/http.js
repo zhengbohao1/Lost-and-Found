@@ -1,48 +1,61 @@
-// axios基础配置
 import axios from "axios";
 import {useUserStore} from "@/stores/user";
-import router from '@/router'
-import { ElMessage } from 'element-plus'
-
+import { showErrorState } from "@/stores/showErrorState";
+import router from '@/router';
+import { ElMessage } from 'element-plus';
 
 const http = axios.create({
     baseURL: 'api',
     timeout: 5000,
-})
+    retry: 6, //设置全局重试请求次数（最多重试几次请求）
+    retryDelay: 1500, //设置全局请求间隔
+});
 
 // axios请求拦截器
 http.interceptors.request.use(config => {
+    const shoeError = showErrorState()
+    shoeError.showError.value = false
     const userStore = useUserStore();
-    if (userStore.userInfo.token) {
-        config.headers.Authorization = `Bearer ${userStore.userInfo.token}`
+    if (userStore.userToken) {
+        config.headers.Authorization = `${userStore.userToken}`
     }
     return config
 }, e => Promise.reject(e))
 
 
 // axios响应式拦截器
-http.interceptors.response.use(res => res.data, e => {
-    if (e.response.status === 401) {
-        ElMessage({
-            type: 'warning',
-            message: e.response.data.error
-        })
-        const userStore = useUserStore();
-        userStore.userLogout()
-        router.replace('/')
+http.interceptors.response.use(
+    (res) => {
+      return Promise.resolve(res.data);
+    },
+    (error) => {
+      var config = error.config;
+  
+      if (!config || !config.retry) return Promise.reject(error);
+  
+      config.__retryCount = config.__retryCount || 0;
+  
+      if (config.__retryCount >= config.retry) {
+        // 显示错误信息
+        const shoeError = showErrorState()
+        shoeError.showError.value = true
+        console.log( shoeError.showError.value);
+        ElMessage.error('请求失败，请稍后再试！');
+        return Promise.reject(error);
+      }
+  
+      config.__retryCount += 1;
+  
+      var backoff = new Promise((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, config.retryDelay || 1000); // 假设默认延迟为1秒
+      });
+  
+      return backoff.then(() => {
+        return http(config);
+      });
     }
-    if(e.response.status === 404){
-        router.replace('/NotFound')
-    }
-    if(e.response.status === 403){
-        ElMessage({
-            type: 'warning',
-            message: e.response.data.error
-        })
-        router.replace('/login')
-    }
-    return Promise.reject(e)
-})
+  );
 
-
-export default http
+export default http;
