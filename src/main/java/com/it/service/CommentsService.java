@@ -11,8 +11,8 @@ public interface CommentsService extends IService<Comments> {
     void sendMissingParentComments(Comments comments);
     void sendLostChildComments(Comments comments);
     void sendMissingChildComments(Comments comments);
-    List<Comments>getLostParentCommentsByid(int id,int category);
-    List<Comments>getMissingParentCommentsByid(int Id,int category);
+    List<Comments>getLostParentCommentsByid(int id);
+    List<Comments>getMissingParentCommentsByid(int Id);
     List<Comments>getLostChildComments(int parentId);
     List<Comments>getMissingChildComments(int parentId);
 }

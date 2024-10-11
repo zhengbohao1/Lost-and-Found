@@ -394,10 +394,10 @@ public class UserController extends CommonController{
      * @return
      */
     @GetMapping("/getLostParentComments")
-    public R<List<Comments>> getParentComments(int postId,int category){
+    public R<List<Comments>> getParentComments(int postId){
         List<Comments> parentComments = null;
         try {
-            parentComments = commentsService.getLostParentCommentsByid(postId,category);
+            parentComments = commentsService.getLostParentCommentsByid(postId);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }
@@ -407,10 +407,10 @@ public class UserController extends CommonController{
      * 获得missing的父评论
      */
     @GetMapping("/getMissingParentComments")
-    public R<List<Comments>> getMissingParentComments(int postId,int category){
+    public R<List<Comments>> getMissingParentComments(int postId){
         List<Comments> parentComments = null;
         try {
-            parentComments = commentsService.getMissingParentCommentsByid(postId,category);
+            parentComments = commentsService.getMissingParentCommentsByid(postId);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }

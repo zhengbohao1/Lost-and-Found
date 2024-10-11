@@ -33,14 +33,14 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         save(comments);
     }
     @Override
-    public List<Comments> getLostParentCommentsByid(int id,int category) {
-        List<Comments> commentsList = this.list().stream().filter(Comments -> Comments.getIsParent() == 1&& Comments.getPostId() == id&& Comments.getCategory() == category).toList();
+    public List<Comments> getLostParentCommentsByid(int id) {
+        List<Comments> commentsList = this.list().stream().filter(Comments -> Comments.getIsParent() == 1&& Comments.getPostId() == id&& Comments.getCategory() == 0).toList();
         return commentsList;
     }
 
     @Override
-    public List<Comments> getMissingParentCommentsByid(int id,int category) {
-        List<Comments> commentsList = this.list().stream().filter(Comments -> Comments.getIsParent() == 1&& Comments.getPostId() == id&& Comments.getCategory() == category).toList();
+    public List<Comments> getMissingParentCommentsByid(int id) {
+        List<Comments> commentsList = this.list().stream().filter(Comments -> Comments.getIsParent() == 1&& Comments.getPostId() == id&& Comments.getCategory() == 1).toList();
         return commentsList;
     }
 
