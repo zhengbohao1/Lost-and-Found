@@ -328,15 +328,7 @@ public class UserController extends CommonController{
             throw new BusinessException(e.getMessage());
         }
     }
-    /**
-     * 获取收到的认领消息
-     * @return
-     */
-    @GetMapping("/getClaimMessage")
-    public R<List<ClaimRequest>> getClaimMessage(){
-        List<ClaimRequest> claimMessage = claimRequestService.getClaimMessage();
-        return R.success(claimMessage);
-    }
+
     /**
      * 拾主确认认领结案
      */
@@ -354,10 +346,19 @@ public class UserController extends CommonController{
      * @param comments
      * @return
      */
-    @PostMapping("/sendParentComments")
-    public R<String> sendComments(@RequestBody Comments comments){
+    @PostMapping("/sendLostParentComments")
+    public R<String> sendLostComments(@RequestBody Comments comments){
         try {
-            commentsService.sendParentComments(comments);
+            commentsService.sendLostParentComments(comments);
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return R.success("评论成功");
+    }
+    @PostMapping("/sendMissingParentComments")
+    public R<String> sendMissingComments(@RequestBody Comments comments){
+        try {
+            commentsService.sendMissingParentComments(comments);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }
@@ -369,10 +370,19 @@ public class UserController extends CommonController{
      * @param comments
      * @return
      */
-    @PostMapping("/sendChildComments")
-    public R<String> sendChildComments(@RequestBody Comments comments){
+    @PostMapping("/sendLostChildComments")
+    public R<String> sendLostChildComments(@RequestBody Comments comments){
         try {
-            commentsService.sendChildComments(comments);
+            commentsService.sendLostChildComments(comments);
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return R.success("评论成功");
+    }
+    @PostMapping("/sendMissingChildComments")
+    public R<String> sendMissingChildComments(@RequestBody Comments comments){
+        try {
+            commentsService.sendMissingChildComments(comments);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }
@@ -380,30 +390,55 @@ public class UserController extends CommonController{
     }
 
     /**
-     * 获得父评论
+     * 获得lost的父评论
      * @return
      */
-    @GetMapping("/getParentComments")
-    public R<List<Comments>> getParentComments(){
+    @GetMapping("/getLostParentComments")
+    public R<List<Comments>> getParentComments(int postId,int category){
         List<Comments> parentComments = null;
         try {
-            parentComments = commentsService.getParentComments();
+            parentComments = commentsService.getLostParentCommentsByid(postId,category);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }
         return R.success(parentComments);
     }
-
     /**
-     * 获得子评论
+     * 获得missing的父评论
+     */
+    @GetMapping("/getMissingParentComments")
+    public R<List<Comments>> getMissingParentComments(int postId,int category){
+        List<Comments> parentComments = null;
+        try {
+            parentComments = commentsService.getMissingParentCommentsByid(postId,category);
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return R.success(parentComments);
+    }
+    /**
+     * 获得lost的子评论
      * @param parentId
      * @return
      */
-    @GetMapping("/getChildComments")
-    public R<List<Comments>> getChildComments(@RequestParam("parentId")int parentId){
+    @GetMapping("/getLostChildComments")
+    public R<List<Comments>> getLostChildComments(@RequestParam("parentId")int parentId){
         List<Comments> childComments = null;
         try {
-            childComments = commentsService.getChildComments(parentId);
+            childComments = commentsService.getLostChildComments(parentId);
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return R.success(childComments);
+    }
+    /**
+     * 获得missing的子评论
+     */
+    @GetMapping("/getMissingChildComments")
+    public R<List<Comments>> getMissingChildComments(@RequestParam("parentId")int parentId){
+        List<Comments> childComments = null;
+        try {
+            childComments = commentsService.getMissingChildComments(parentId);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }

@@ -138,4 +138,101 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
             return e.getMessage();
         }
     }
+
+    @Override
+    public LostFoundDto getBypostId(int id) {
+        QueryWrapper<LostFound> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        LostFound lostFound = this.getOne(queryWrapper);
+        String path = lostFound.getImgUrl();
+        QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper2.eq("path", path);
+        Image image = imageService.getOne(queryWrapper2);
+        LostFoundDto dto = new LostFoundDto(); // 创建一个新的 LostFoundDto 对象
+        BeanUtils.copyProperties(lostFound, dto); // 将 lostFound 的属性复制到 dto
+        if (image != null) {
+            dto.setWidth(image.getWidth());  // 设置图片宽度
+            dto.setHeight(image.getHeight()); // 设置图片高度
+        }
+        return dto;
+    }
+
+    @Override
+    public List<LostFoundDto> getByUserId(int userId) {
+        QueryWrapper<LostFound> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("finder_id", userId);
+        List<LostFound> lostFounds =this.baseMapper.selectList(queryWrapper).stream().filter(lostFound -> lostFound.getReviewProcess() == 1).toList();
+        List<LostFoundDto> lostFoundsDto = new ArrayList<>();
+        QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
+
+        for (LostFound lostFound : lostFounds) {
+            String path = lostFound.getImgUrl();
+            queryWrapper2.eq("path", path);
+            Image image = imageService.getOne(queryWrapper2);
+
+            LostFoundDto dto = new LostFoundDto(); // 创建一个新的 LostFoundDto 对象
+            BeanUtils.copyProperties(lostFound, dto); // 将 lostFound 的属性复制到 dto
+            if (image != null) {
+                dto.setWidth(image.getWidth());  // 设置图片宽度
+                dto.setHeight(image.getHeight()); // 设置图片高度
+            }
+
+            lostFoundsDto.add(dto); // 将 dto 添加到列表中
+        }
+
+        return lostFoundsDto;
+    }
+
+    @Override
+    public List<LostFoundDto> getIllegalByUserId(int userId) {
+        QueryWrapper<LostFound> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("finder_id", userId);
+        List<LostFound> lostFounds =this.baseMapper.selectList(queryWrapper).stream().filter(lostFound -> lostFound.getReviewProcess() == 2).toList();
+        List<LostFoundDto> lostFoundsDto = new ArrayList<>();
+        QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
+
+        for (LostFound lostFound : lostFounds) {
+            String path = lostFound.getImgUrl();
+            queryWrapper2.eq("path", path);
+            Image image = imageService.getOne(queryWrapper2);
+
+            LostFoundDto dto = new LostFoundDto(); // 创建一个新的 LostFoundDto 对象
+            BeanUtils.copyProperties(lostFound, dto); // 将 lostFound 的属性复制到 dto
+            if (image != null) {
+                dto.setWidth(image.getWidth());  // 设置图片宽度
+                dto.setHeight(image.getHeight()); // 设置图片高度
+            }
+
+            lostFoundsDto.add(dto); // 将 dto 添加到列表中
+        }
+
+        return lostFoundsDto;
+    }
+
+    @Override
+    public List<LostFoundDto> getWaitByUserId(int userId) {
+        QueryWrapper<LostFound> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("finder_id", userId);
+        List<LostFound> lostFounds =this.baseMapper.selectList(queryWrapper).stream().filter(lostFound -> lostFound.getReviewProcess() == 0).toList();
+        List<LostFoundDto> lostFoundsDto = new ArrayList<>();
+        QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
+
+        for (LostFound lostFound : lostFounds) {
+            String path = lostFound.getImgUrl();
+            queryWrapper2.eq("path", path);
+            Image image = imageService.getOne(queryWrapper2);
+
+            LostFoundDto dto = new LostFoundDto(); // 创建一个新的 LostFoundDto 对象
+            BeanUtils.copyProperties(lostFound, dto); // 将 lostFound 的属性复制到 dto
+            if (image != null) {
+                dto.setWidth(image.getWidth());  // 设置图片宽度
+                dto.setHeight(image.getHeight()); // 设置图片高度
+            }
+
+            lostFoundsDto.add(dto); // 将 dto 添加到列表中
+        }
+
+        return lostFoundsDto;
+    }
+
 }

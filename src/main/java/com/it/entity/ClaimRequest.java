@@ -46,4 +46,7 @@ public class ClaimRequest {
     @Setter
     @Getter
     private String finderId;
+    @Getter
+    @Setter
+    private int  readStatus;
 }

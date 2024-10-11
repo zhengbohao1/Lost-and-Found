@@ -15,25 +15,44 @@ import java.util.List;
 @Service
 public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> implements CommentsService {
     @Override
-    public void sendParentComments(Comments comments) {
+    public void sendLostParentComments(Comments comments) {
         comments.setIsParent(1);
         save(comments);
     }
-
     @Override
-    public void sendChildComments(Comments comments) {
+    public void sendMissingParentComments(Comments comments) {
+        comments.setIsParent(1);
         save(comments);
     }
-
     @Override
-    public List<Comments> getParentComments() {
-        List<Comments> commentsList = this.list().stream().filter(Comments -> Comments.getIsParent() == 1).toList();
+    public void sendMissingChildComments(Comments comments) {
+        save(comments);
+    }
+    @Override
+    public void sendLostChildComments(Comments comments) {
+        save(comments);
+    }
+    @Override
+    public List<Comments> getLostParentCommentsByid(int id,int category) {
+        List<Comments> commentsList = this.list().stream().filter(Comments -> Comments.getIsParent() == 1&& Comments.getPostId() == id&& Comments.getCategory() == category).toList();
         return commentsList;
     }
 
     @Override
-    public List<Comments> getChildComments(int parentId) {
-        List<Comments> commentsList = this.list().stream().filter(Comments -> Comments.getIsParent() == 0).toList();
+    public List<Comments> getMissingParentCommentsByid(int id,int category) {
+        List<Comments> commentsList = this.list().stream().filter(Comments -> Comments.getIsParent() == 1&& Comments.getPostId() == id&& Comments.getCategory() == category).toList();
+        return commentsList;
+    }
+
+    @Override
+    public List<Comments> getLostChildComments(int parentId) {
+        List<Comments> commentsList = this.list().stream().filter(Comments -> Comments.getParentId() == parentId).toList();
+        return commentsList;
+    }
+
+    @Override
+    public List<Comments> getMissingChildComments(int parentId) {
+        List<Comments> commentsList = this.list().stream().filter(Comments -> Comments.getParentId() == parentId).toList();
         return commentsList;
     }
 }

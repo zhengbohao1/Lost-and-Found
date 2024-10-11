@@ -1,6 +1,7 @@
 package com.it.controller;
 
 import com.it.common.R;
+import com.it.dto.LostFoundDto;
 import com.it.dto.MissingNoticesDto;
 import com.it.entity.LostFound;
 import com.it.entity.MissingNotices;
@@ -106,5 +107,25 @@ public class MissingNoticesController {
             throw new BusinessException(e.getMessage());
         }
         return R.success(missingNotices);
+    }
+    @GetMapping("/getbyid")
+    public R<MissingNoticesDto> getById(@RequestParam Integer id){
+        MissingNoticesDto missingNotices = missingNoticesService.getBypostId(id);
+        return R.success(missingNotices);
+    }
+    @GetMapping("/getLegalPostByUserId")
+    public R<List<MissingNoticesDto>> getByUserId(@RequestParam Integer userId){
+        List<MissingNoticesDto> byUserId = missingNoticesService.getByUserId(userId);
+        return R.success(byUserId);
+    }
+    @GetMapping("/getIllegalByUserId")
+    public R<List<MissingNoticesDto>> getIllegalByUserId(@RequestParam Integer userId){
+        List<MissingNoticesDto> illegalByUserId = missingNoticesService.getIllegalByUserId(userId);
+        return R.success(illegalByUserId);
+    }
+    @GetMapping("/getWaitByUserId")
+    public R<List<MissingNoticesDto>> getWaitByUserId(@RequestParam Integer userId){
+        List<MissingNoticesDto> waitByUserId = missingNoticesService.getWaitByUserId(userId);
+        return R.success(waitByUserId);
     }
 }

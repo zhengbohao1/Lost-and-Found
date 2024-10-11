@@ -7,8 +7,12 @@ import com.it.entity.Image;
 import java.util.List;
 
 public interface CommentsService extends IService<Comments> {
-    void sendParentComments(Comments comments);
-    void sendChildComments(Comments comments);
-    List<Comments>getParentComments();
-    List<Comments>getChildComments(int parentId);
+    void sendLostParentComments(Comments comments);
+    void sendMissingParentComments(Comments comments);
+    void sendLostChildComments(Comments comments);
+    void sendMissingChildComments(Comments comments);
+    List<Comments>getLostParentCommentsByid(int id,int category);
+    List<Comments>getMissingParentCommentsByid(int Id,int category);
+    List<Comments>getLostChildComments(int parentId);
+    List<Comments>getMissingChildComments(int parentId);
 }

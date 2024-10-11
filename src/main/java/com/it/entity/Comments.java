@@ -36,4 +36,10 @@ public class Comments {
     @Getter
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
+    @Getter
+    @Setter
+    private int postId;
+    @Getter
+    @Setter
+    private int category;
 }

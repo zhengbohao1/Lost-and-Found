@@ -129,6 +129,26 @@ public class LostFoundController{
         }
         return R.success(advises);
     }
+    @GetMapping("/getbyid")
+    public R<LostFoundDto> getById(@RequestParam Integer id){
+        LostFoundDto lostFound = lostFoundService.getBypostId(id);
+        return R.success(lostFound);
+    }
+    @GetMapping("/getLegalPostByUserId")
+    public R<List<LostFoundDto>> getByUserId(@RequestParam Integer userId){
+        List<LostFoundDto> byUserId = lostFoundService.getByUserId(userId);
+        return R.success(byUserId);
+    }
+    @GetMapping("/getIllegalByUserId")
+    public R<List<LostFoundDto>> getIllegalByUserId(@RequestParam Integer userId){
+        List<LostFoundDto> illegalByUserId = lostFoundService.getIllegalByUserId(userId);
+        return R.success(illegalByUserId);
+    }
+    @GetMapping("/getWaitByUserId")
+    public R<List<LostFoundDto>> getWaitByUserId(@RequestParam Integer userId){
+        List<LostFoundDto> waitByUserId = lostFoundService.getWaitByUserId(userId);
+        return R.success(waitByUserId);
+    }
     /**
      * 用户查询审核状态
      */

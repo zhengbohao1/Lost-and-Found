@@ -9,8 +9,10 @@ import com.it.utils.ThreadLocalUtil;
 import org.springframework.stereotype.Service;
 
 import javax.management.Query;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ClaimRequestServiceImpl extends ServiceImpl<ClaimRequestMapper, ClaimRequest> implements ClaimRequestService {
@@ -20,9 +22,26 @@ public class ClaimRequestServiceImpl extends ServiceImpl<ClaimRequestMapper, Cla
     public List<ClaimRequest> getClaimMessage() {
 //        Map<String,Object> claims = ThreadLocalUtil.get();
 //        String userId = (String) claims.get("userId");
-        String userId = "1";
+        String userId = "39";
         QueryWrapper<ClaimRequest> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("finder_id",userId);
-        return this.list(queryWrapper);
+        List<ClaimRequest> claimRequestList = this.list(queryWrapper);
+        List<ClaimRequest> sortedCommentsList = claimRequestList.stream()
+                .sorted(Comparator.comparingInt(ClaimRequest::getReadStatus)) // 根据 readStatus 从高到低排序
+                .collect(Collectors.toList());
+        return sortedCommentsList;
+    }
+
+    @Override
+    public void MarkAsRead(int id) {
+        QueryWrapper<ClaimRequest> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",id);
+        ClaimRequest claimRequest = this.getOne(queryWrapper);
+        claimRequest.setReadStatus(1);
+        this.updateById(claimRequest);
+    }
+    @Override
+    public int getUnreadCount(int userId) {
+        return this.baseMapper.getUnreadCount(userId);
     }
 }

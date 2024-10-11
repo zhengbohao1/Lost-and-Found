@@ -123,4 +123,99 @@ public class MissingNotciesServiceImpl extends ServiceImpl<MissingNoticesMapper,
             throw new BusinessException(e.getMessage());
         }
     }
+
+    @Override
+    public MissingNoticesDto getBypostId(int id) {
+        QueryWrapper<MissingNotices> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        MissingNotices missingNotice = this.getOne(queryWrapper);
+        String path = missingNotice.getImgUrl();
+        QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper2.eq("path", path);
+        Image image = imageService.getOne(queryWrapper2);
+        MissingNoticesDto dto = new MissingNoticesDto(); // 创建一个新的 LostFoundDto 对象
+       BeanUtils.copyProperties(missingNotice, dto); //
+        if (image != null) {
+            dto.setWidth(image.getWidth());  // 设置图片宽度
+            dto.setHeight(image.getHeight()); // 设置图片高度
+        }
+        return dto;
+    }
+
+    @Override
+    public List<MissingNoticesDto> getWaitByUserId(int userId) {
+        QueryWrapper<MissingNotices> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("owner_id", userId);
+        List<MissingNotices> missingNotices =this.baseMapper.selectList(queryWrapper).stream().filter(MissingNotices -> MissingNotices.getReviewProcess() == 0).toList();
+        List<MissingNoticesDto> missingNoticesDtos = new ArrayList<>();
+        //
+        for (MissingNotices missingnotice : missingNotices) {
+            String path = missingnotice.getImgUrl();
+            QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
+            queryWrapper2.eq("path", path);
+            Image image = imageService.getOne(queryWrapper2);
+
+            MissingNoticesDto dto = new MissingNoticesDto(); // 创建一个新的 LostFoundDto 对象
+            BeanUtils.copyProperties(missingnotice, dto); // 将 lostFound 的属性复制到 dto
+            if (image != null) {
+                dto.setWidth(image.getWidth());  // 设置图片宽度
+                dto.setHeight(image.getHeight()); // 设置图片高度
+            }
+
+            missingNoticesDtos.add(dto); // 将 dto 添加到列表中
+        }
+        return missingNoticesDtos;
+    }
+
+    @Override
+    public List<MissingNoticesDto> getByUserId(int userId) {
+        QueryWrapper<MissingNotices> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("owner_id", userId);
+        List<MissingNotices> missingNotices =this.baseMapper.selectList(queryWrapper).stream().filter(MissingNotices -> MissingNotices.getReviewProcess() == 1).toList();
+        List<MissingNoticesDto> missingNoticesDtos = new ArrayList<>();
+        //
+        for (MissingNotices missingnotice : missingNotices) {
+            String path = missingnotice.getImgUrl();
+            QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
+            queryWrapper2.eq("path", path);
+            Image image = imageService.getOne(queryWrapper2);
+
+            MissingNoticesDto dto = new MissingNoticesDto(); // 创建一个新的 LostFoundDto 对象
+            BeanUtils.copyProperties(missingnotice, dto); // 将 lostFound 的属性复制到 dto
+            if (image != null) {
+                dto.setWidth(image.getWidth());  // 设置图片宽度
+                dto.setHeight(image.getHeight()); // 设置图片高度
+            }
+
+            missingNoticesDtos.add(dto); // 将 dto 添加到列表中
+        }
+        return missingNoticesDtos;
+    }
+
+    @Override
+    public List<MissingNoticesDto> getIllegalByUserId(int userId) {
+        QueryWrapper<MissingNotices> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("owner_id", userId);
+        List<MissingNotices> missingNotices =this.baseMapper.selectList(queryWrapper).stream().filter(MissingNotices -> MissingNotices.getReviewProcess() == 2).toList();
+        List<MissingNoticesDto> missingNoticesDtos = new ArrayList<>();
+        //
+        for (MissingNotices missingnotice : missingNotices) {
+            String path = missingnotice.getImgUrl();
+            QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
+            queryWrapper2.eq("path", path);
+            Image image = imageService.getOne(queryWrapper2);
+
+            MissingNoticesDto dto = new MissingNoticesDto(); // 创建一个新的 LostFoundDto 对象
+            BeanUtils.copyProperties(missingnotice, dto); // 将 lostFound 的属性复制到 dto
+            if (image != null) {
+                dto.setWidth(image.getWidth());  // 设置图片宽度
+                dto.setHeight(image.getHeight()); // 设置图片高度
+            }
+
+            missingNoticesDtos.add(dto); // 将 dto 添加到列表中
+        }
+        return missingNoticesDtos;
+    }
+
+
 }
