@@ -187,6 +187,12 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
         this.baseMapper.disableUser(userId);
     }
 
+    @Override
+    public String getUserNameById(String userId) {
+        UserInfo userInfo = getById(userId);
+        return userInfo.getNickName();
+    }
+
 }
 
 

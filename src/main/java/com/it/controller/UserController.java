@@ -444,4 +444,9 @@ public class UserController extends CommonController{
         }
         return R.success(childComments);
     }
+    @GetMapping("/getNickNameByid")
+    public R<String> getNickNameById(String userId){
+        String nickName = userInfoService.getUserNameById(userId);
+        return R.success(nickName);
+    }
 }
