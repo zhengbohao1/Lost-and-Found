@@ -1,5 +1,5 @@
 <template>
-  <div class="app">
+    <canvas id="canvas"></canvas>
     <div class="login">
       <div class="box">
         <div class="leftArea">
@@ -8,7 +8,7 @@
         </div>        
         <!--用户登录表单-->
         <div class="rightArea" v-if="showWhich && isAdmin && needReset">
-          <div class="title" style="text-align: center">登录</div>
+          <div class="title-right" style="text-align: center">登录</div>
           <div class="form">
             <el-form ref="formLoginRef" :model="formLogin" :rules="rulesLogin" label-position="right" label-width="0"
                      status-icon>
@@ -51,7 +51,7 @@
         </div>
         <!--管理员登录表单-->
         <div class="rightArea" v-if="!isAdmin">
-          <div class="title" style="text-align: center">管理员登录</div>
+          <div class="title-right" style="text-align: center">管理员登录</div>
           <div class="form">
             <el-form ref="formLoginRef" :model="formLogin" :rules="rulesLogin" label-position="right" label-width="0"
                      status-icon>
@@ -90,7 +90,7 @@
         </div>
         <!--用户注册表单-->
         <div class="rightArea" v-if="!showWhich && isAdmin">
-          <div class="title" style="text-align: center">注册</div>
+          <div class="title-right" style="text-align: center">注册</div>
             <div class="form">
               <el-form ref="formRegisterRef" :model="formRegister" :rules="rulesRegister" label-position="right"
                       label-width="0"
@@ -113,7 +113,7 @@
                   <el-input  v-model="formRegister.emailCode" placeholder="输入验证码" :prefix-icon="ChatLineSquare">
                     <template #append>
                       <el-button type="primary" plain
-                      :disabled="isValidEmail(formRegister.email)"  
+                      :disabled="!isValidEmail(formRegister.email)"  
                         @click="sendCodeZero"
                         v-text="buttonText"
                       ></el-button>
@@ -143,7 +143,7 @@
 
         <!--重置密码表单-->
         <div class="rightArea" v-if="!needReset">
-          <div class="title" style="text-align: center">注册</div>
+          <div class="title-right" style="text-align: center">重置密码</div>
             <div class="form">
               <el-form ref="formResetRef" :model="formReset" :rules="rulesReset" label-position="right"
                       label-width="0"
@@ -186,51 +186,23 @@
         </div>
       </div>
 
-      <!--额外的css动画-->
-      <css-doodle>
-          :doodle {
-              @grid: 1x20 / 100vmin;
-          }
-          @place-cell: center;
-          width: @rand(10vmin, 100vmin);
-          height: @rand(10vmin, 100vmin);
-          transform: translate(@rand(-120%, 120%), @rand(-80%, 80%)) scale(@rand(.8, 2.8)) skew(@rand(45deg));
-          clip-path: polygon(
-            @r(0, 30%) @r(0, 50%), 
-            @r(30%, 60%) @r(0%, 30%), 
-            @r(60%, 100%) @r(0%, 50%), 
-            @r(60%, 100%) @r(50%, 100%), 
-            @r(30%, 60%) @r(60%, 100%),
-            @r(0, 30%) @r(60%, 100%)
-          );
-          background: @pick(#f44336, #e91e63, #9c27b0, #673ab7, #3f51b5, #60569e, #e6437d, #ebbf4d, #00bcd4, #03a9f4, #2196f3, #009688, #5ee463, #f8e645, #ffc107, #ff5722, #43f8bf, #e136eb, #f57c23, #32ed39);
-          opacity: @rand(.5, .9);
-          position: relative;
-          top: @rand(-80%, 80%);
-          left: @rand(-80%, 80%);
-          animation: colorChange @rand(6.1s, 26.1s) infinite @rand(-.5s, -2.5s) linear alternate;
-        @keyframes colorChange {
-          100% {
-            left: 0;
-            top: 0;
-            filter: hue-rotate(360deg);
-          }
-        }
-    </css-doodle>
-  </div>
 </template>
   
   <script setup>
-  const script = document.createElement("script");
-  script.src = "https://cdnjs.cloudflare.com/ajax/libs/css-doodle/0.3.0/css-doodle.min.js";
-  document.body.appendChild(script);
-
   import {ref} from "vue";
   import 'element-plus/theme-chalk/el-message.css'
   import {User, Lock, ChatLineSquare, Message} from "@element-plus/icons-vue";
   import {ElMessage} from "element-plus";
   import {useUserStore} from "@/stores/user";
   import {useRouter} from "vue-router";
+
+  const script = document.createElement("script");
+script.src="../../index.js/pop.js";
+document.body.appendChild(script);
+
+const script2 = document.createElement("script");
+script2.src="../../../index.js/TweenMax.min.js";
+document.body.appendChild(script2);
   
   // 定义路由
   const emit = defineEmits(['changeShow']);
@@ -568,7 +540,7 @@
     formRegisterRef.value.validate(async (valid) => {
       if (valid) {
         if(await userStore.userRegister({email, nickName, password, emailCode, checkCode})){
-          needReset.value = true
+          toggleForm()
         }else{
             reloadImage() //改变验证码
         }
@@ -603,30 +575,6 @@
   </script>
   
   <style scoped>
-
-  .app {
-    position: relative;
-    margin: 0;
-    width: 100%;
-    height: 98vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    background-color: #fff;
-  }
-
-  .app::after {
-    content: "";
-    position: absolute;
-    top: -100%;
-    left: -100%;
-    right: -100%;
-    bottom: -100%;
-    backdrop-filter: blur(100px);
-    z-index: 1;
-  }
-
   .image {
     position: absolute;
     width: 300px;
@@ -637,19 +585,56 @@
   
   .title {
     margin-top: 50px;
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 120%;
+    background: -webkit-linear-gradient(135deg,
+                    #0eaf6d,
+                    #ff6ac6 25%,
+                    #147b96 50%,
+                    #e6d205 55%,
+                    #2cc4e0 60%,
+                    #8b2ce0 80%,
+                    #ff6384 95%,
+                    #08dfb4);
+            /* 文字颜色填充设置为透明 */
+            -webkit-text-fill-color: transparent;
+            /* 背景裁剪，即让文字使用背景色 */
+            -webkit-background-clip: text;
+            /* 背景图放大一下，看着柔和一些 */
+            -webkit-background-size: 200% 100%;
+            /* 应用动画flowCss 12秒速度 无限循环 线性匀速动画*/
+            -webkit-animation: flowCss 12s infinite linear;
+        }
+        @-webkit-keyframes flowCss {
+            0% {
+                /* 移动背景位置 */
+                background-position: 0 0;
+            }
+            100% {
+                background-position: -400% 0;
+            }
+  }
+
+  .title:hover {
+      -webkit-animation: flowCss 4s infinite linear;
+  }
+
+  
+  .title-right{
+    margin-top: 50px;
     font-size: 18px;
-    color: rgba(51, 51, 51, 0.8);
     font-weight: 600;
     line-height: 120%;
   }
-  
+
   .login {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(240, 240, 240, 0.8);
   border-radius: 4rem;
   position: absolute;
-  left: 250px;
-  top: 100px;
-  z-index: 2;
+  left: 290px;
+  top: 130px;
+  z-index: 10;
 }
   
   .box {
@@ -711,4 +696,11 @@
     background-color: #d5d0d0;
     height: 100%;
   }
+
+  #canvas {
+margin-top: 70px;
+display: block;
+width: 100%;
+z-index: -1;
+}
   </style>

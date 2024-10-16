@@ -10,12 +10,9 @@
           <el-col :span="8">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px ;">
               <!-- 添加搜索框 -->
-              <div class="input_box">
-                <el-input placeholder="请输入内容" :prefix-icon="Search" size="large">
-                  <template #append>
-                      <el-button :icon="Search"> </el-button>
-                    </template>
-                </el-input>
+              <div class="btn-box mb20">
+                <span><el-icon><Search/></el-icon></span>
+                <input type="text" placeholder=" " />
               </div>
             </div>
           </el-col>
@@ -36,15 +33,15 @@
             </el-tooltip>
 
             <!-- 登录状态相关的元素 -->
-            <el-menu-item :index="userStore.userToken ? '/user/space' : '/user'"
+            <el-menu-item :index="userStore.userToken ? '/user/space' : ''"
                           :class="{'top-menu-item': true, 'collapsed': !isSidebarOpen}">
               <template v-if="!userStore.userToken">
                 <el-icon><User /></el-icon>
                 <span style="margin-left: 30px" @click="handleLoginClick">立即登录</span>
               </template>
               <template v-else>
-                <el-avatar :src="'http://localhost:8090/user/getAvatarById?userId='+userStore.userInfo.data.userId" fit="cover"></el-avatar>
-                <span style=" margin-left: 30px;" class="username">{{ userStore.userInfo.data.nickName }}</span>
+                <el-avatar :src="'http://localhost:8090/user/getAvatarById?userId='+userStore.userInfo.userId" fit="cover"></el-avatar>
+                <span style=" margin-left: 30px;" class="username">{{ userStore.userInfo.nickName }}</span>
               </template>
             </el-menu-item>
 
@@ -82,7 +79,7 @@
           </el-menu>
         </el-aside>
         <el-main id="content">
-          <transition>
+          <transition class="child">
             <div class="overlay" v-if="showLogin">
               <el-button class="close" @click="changeShow" plain round>
                 <el-icon size="x-large">
@@ -92,7 +89,7 @@
               <login @changeShow="changeShow"/>
             </div>
           </transition>
-          <router-view></router-view>
+          <router-view :search="search"></router-view>
         </el-main>
       </el-container>
       <el-footer>Footer</el-footer>
@@ -116,6 +113,8 @@ const isSidebarOpen = ref(true);
 const activeIndex = ref('1');
 const post = ref(null); // 用于存储请求结果
 const show = ref(false);
+
+const search = ref(''); //搜索传参
 
 const loginOut = () => {
   userStore.userLogout();
@@ -164,6 +163,9 @@ function handleUpload() {
     });
   }
 }
+
+console.log("userToken", userStore.userToken);
+console.log("userInfo", userStore.userInfo);
 
   const showLogin = computed(() => show.value && !userStore.userToken);
 
@@ -252,29 +254,85 @@ function handleUpload() {
   font-weight: bold;
 }
 
-.input_box {
-    width: 400px;
-    margin-right: 15px;
-    border-radius: 95px;
-    background: rgba(227, 227, 227, 0.48);
-}
 /*搜索input框 */
-:deep(.el-input__wrapper) {
-    background-color: transparent;/*覆盖原背景颜色，设置成透明 */
-    border-radius: 95px;
-    border: 0;
-    box-shadow: 0 0 0 0px;
-}
-/*搜索button按钮 */
-:deep(.el-input-group__append) {
-    background: rgba(219, 219, 219, 0.48);
-    border-radius: 95px;
-    border: 0;
-    box-shadow: 0 0 0 0px;
+.btn-box {
+	color: #fff;
+	width: auto;
+	border-radius: 25px;
+	min-width: 50px;
+	height: 50px;
+	line-height: 50px;
+	display: inline-block;
+	position: relative;
+	overflow: hidden;
+	background-image: linear-gradient(315deg, #a0a0a0 0, #5f5f5f 100%);
+	background-size: 104% 104%;
+	cursor: pointer;
 }
 
-:deep(.el-input-group__append :hover) {
-    color: blue;
-    font-size: 15px;
+.btn-box span {
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 50px;
+	height: 50px;
+	text-align: center;
+	font-size: 18px;
+	cursor: pointer;
+}
+
+.btn-box:hover span {
+  color: rgb(183, 233, 255);
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 50px;
+	height: 50px;
+	text-align: center;
+	font-size: 18px;
+	cursor: pointer;
+}
+
+.btn-box input {
+	display: inline-block;
+	background: 0 0;
+	border: none;
+	color: #fff;
+	padding-left: 20px;
+	line-height: 50px !important;
+	height: 50px;
+	box-sizing: border-box;
+	vertical-align: 4px;
+	font-size: 16px;
+	width: 50px;
+	transition: all .3s ease-in-out;
+	font-style: italic;
+	text-transform: uppercase;
+	letter-spacing: 5px;
+}
+
+.btn-box:hover input {
+	display: inline-block;
+	width: 210px;
+	padding-right: 50px
+}
+
+.btn-box input:not(:placeholder-shown) {
+	display: inline-block;
+	width: 300px;
+	padding-right: 50px;
+}
+
+.btn-box input:focus {
+  outline: none;
+  border: 0;
+  box-shadow: none;
+}
+
+/* 在特定类下的 el-input 应用样式，并穿透子组件 */
+.custom-class :deep(.el-input) {
+  /* 你的样式 */
+  color: red;
+  background-color: yellow;
 }
 </style>

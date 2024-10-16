@@ -20,7 +20,6 @@ export const queryAllPost = () => {
 }
 
 export const queryPost = () => {
-    console.log("queryAdvises")
     return http({
         url: 'http://localhost:8090/lost_found/legal_list',
         method: 'GET',
@@ -58,6 +57,13 @@ export const backPost = (id) => {
     })
 }
 
+export const getPostById = (id) => {
+    return http({
+        url: 'http://localhost:8090/lost_found/getbyid?id='+id,
+        method: 'GET',
+    })
+}
+
 export const deletePosts = (ids) => {
     return http({
         url: 'http://localhost:8090/lost_found/deleteIds?ids='+ids,
@@ -65,5 +71,43 @@ export const deletePosts = (ids) => {
         headers: {
             'Content-Type': 'application/json'
         },
+    })
+}
+
+//获取评论
+export const getComment = (id) => {
+    return http({
+        url: 'http://localhost:8090/user/getLostParentComments?postId='+id,
+        method: 'GET',
+    })  
+}
+
+export const getChildComment = (id) => {
+    return http({
+        url: 'http://localhost:8090/user/getLostChildComments?parentId='+id,
+        method: 'GET',
+    })
+}
+
+//发评论
+export const postComment = (data) => {
+    return http({
+        url: 'http://localhost:8090/user/sendLostParentComments',
+        method: 'POST',
+        data: data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+export const postChildComment = (data) => {
+    return http({
+        url: 'http://localhost:8090/user/sendLostChildComments',
+        method: 'POST',
+        data: data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
 }

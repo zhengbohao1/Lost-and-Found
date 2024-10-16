@@ -112,7 +112,7 @@
                     <el-input  v-model="formRegister.emailCode" placeholder="输入验证码" :prefix-icon="ChatLineSquare">
                       <template #append>
                         <el-button type="primary" plain
-                        :disabled="isValidEmail(formRegister.email)"  
+                        :disabled="!isValidEmail(formRegister.email)"  
                           @click="sendCodeZero"
                           v-text="buttonText"
                         ></el-button>
@@ -531,7 +531,7 @@ const doRegister = () => {
   formRegisterRef.value.validate(async (valid) => {
     if (valid) {
       if(await userStore.userRegister({email, nickName, password, emailCode, checkCode})){
-        needReset.value = true
+        toggleForm()
       }else{
           reloadImage() //改变验证码
       }

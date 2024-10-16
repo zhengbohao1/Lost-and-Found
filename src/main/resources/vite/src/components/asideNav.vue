@@ -2,7 +2,7 @@
 import {ref} from "vue";
 import {Promotion, Expand, Close, Tools, HelpFilled} from "@element-plus/icons-vue";
 import {useUserStore} from "@/stores/user";
-import Login from '@/views/Login/index.vue'
+import Login from '@/components/user/Detail.vue'
 import {ElMessage} from "element-plus";
 import {genFileId} from 'element-plus'
 import {updateUserInfo} from "@/apis/main";

@@ -30,15 +30,15 @@ public class MyMetaObjecthandler implements MetaObjectHandler {
 
         if (metaObject.hasSetter("userId")) {
             // 从ThreadLocal中获取用户id
-//            Map<String,Object> claims = ThreadLocalUtil.get();
-//            String userId = (String) claims.get("userId");
-            String userId = "123（记得改）";
+           Map<String,Object> claims = ThreadLocalUtil.get();
+           String userId = (String) claims.get("userId");
+            //String userId = "123（记得改）";
             metaObject.setValue("userId",userId);
         }
         if(metaObject.hasSetter("userName")){
-//            Map<String,Object> map = ThreadLocalUtil.get();
-//            String nickName = (String) map.get("nickName");
-            String nickName = "test(记得改)";
+           Map<String,Object> map = ThreadLocalUtil.get();
+           String nickName = (String) map.get("nickName");
+            //String nickName = "test(记得改)";
             metaObject.setValue("userName",nickName);
         }
     }

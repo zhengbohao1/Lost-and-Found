@@ -98,7 +98,8 @@ export const useUserStore = defineStore('user', () => {
     }
 
     const getUserInfo = async () => {
-        userInfo.value = await queryUserInfo();
+        const temp = await queryUserInfo();
+        userInfo.value = temp.data;
     };
 
     const extendUserInfo = (type, id) => {

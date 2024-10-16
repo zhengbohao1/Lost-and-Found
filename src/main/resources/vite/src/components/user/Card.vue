@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, toRef, computed, watch, onMounted } from 'vue';
+import { ref, toRef, computed, onMounted } from 'vue';
 import { ElRow, ElAvatar } from 'element-plus';
 import { RouterLink } from 'vue-router';
 
@@ -48,17 +48,14 @@ const props = defineProps({
 
 const card_columns = toRef(props, 'card_columns');
 
-const processedCardColumns = computed(() => {
-  // 处理 card_columns 的逻辑
-  return card_columns.value[0];
-});
-
+const emit = defineEmits(['show-detail'])
 const details = (id) => {
-  const target = event.currentTarget;
-  const left = target.offsetLeft;
-  const top = target.offsetTop;
-  console.log('Details clicked:', id, left, top);
-};
+  const target = event.target;
+  const left = target.x;
+  const top = target.y;
+  emit('show-detail', id, left, top)
+    //left, top确定详情页的显示位置
+}
 
 const handleLoad = (card) => {
   card.load = true;

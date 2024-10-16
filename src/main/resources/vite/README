@@ -1,0 +1,7 @@
+本质上，框架使html的一种延伸
+为什么网上关于前端效果多用html5的代码？以为vue.js和它们用到的js一样，都是对原生css、html、js的补充
+同时也可以看到为什么很多的html5动画效果在element里有所实现，以为element使基于vue.js的另一个js库，仍然是html的延伸
+看到根目录下的index.html，这是渲染vue页面的根，这说明vue.js的最终目的是将vue代码转化为html，这在浏览器检查的页面内也有体现
+
+所以基于此，可以认为在最终的呈现上，vue是以html的形式出现的
+也就是说，在<sript>下向document注入js代码（html下的）是可行的
