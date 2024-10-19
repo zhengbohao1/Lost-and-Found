@@ -7,7 +7,9 @@ import com.it.entity.LostFound;
 import com.it.entity.MissingNotices;
 import com.it.exception.BusinessException;
 import com.it.service.LostFoundService;
+import com.it.service.MessageNotificationService;
 import com.it.service.MissingNoticesService;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,8 @@ import java.util.List;
 public class MissingNoticesController {
     @Autowired
     private MissingNoticesService missingNoticesService;
+    @Resource
+    private MessageNotificationService messageNotificationService;
 
     /**
      * 用于获取所有失物招领信息
@@ -82,6 +86,7 @@ public class MissingNoticesController {
         }
         missingNotices.setReviewProcess(1);
         missingNoticesService.updateById(missingNotices);
+        messageNotificationService.sendApprovedMessage(String.valueOf(missingNotices.getOwnerId()),missingNotices.getId(),1);
         return R.success("审核成功~");
     }
     @PutMapping("/reject_by_id")
@@ -96,6 +101,7 @@ public class MissingNoticesController {
         }
         missingNotices.setReviewProcess(2);
         missingNoticesService.updateById(missingNotices);
+        messageNotificationService.sendRejectedMessage(String.valueOf(missingNotices.getOwnerId()),missingNotices.getId(),1);
         return R.success("拒绝成功~");
     }
     @GetMapping("/query")
@@ -109,22 +115,22 @@ public class MissingNoticesController {
         return R.success(missingNotices);
     }
     @GetMapping("/getbyid")
-    public R<MissingNoticesDto> getById(@RequestParam Integer id){
+    public R<MissingNoticesDto> getById(@RequestParam int id){
         MissingNoticesDto missingNotices = missingNoticesService.getBypostId(id);
         return R.success(missingNotices);
     }
     @GetMapping("/getLegalPostByUserId")
-    public R<List<MissingNoticesDto>> getByUserId(@RequestParam Integer userId){
+    public R<List<MissingNoticesDto>> getByUserId(@RequestParam String userId){
         List<MissingNoticesDto> byUserId = missingNoticesService.getByUserId(userId);
         return R.success(byUserId);
     }
     @GetMapping("/getIllegalByUserId")
-    public R<List<MissingNoticesDto>> getIllegalByUserId(@RequestParam Integer userId){
+    public R<List<MissingNoticesDto>> getIllegalByUserId(@RequestParam String userId){
         List<MissingNoticesDto> illegalByUserId = missingNoticesService.getIllegalByUserId(userId);
         return R.success(illegalByUserId);
     }
     @GetMapping("/getWaitByUserId")
-    public R<List<MissingNoticesDto>> getWaitByUserId(@RequestParam Integer userId){
+    public R<List<MissingNoticesDto>> getWaitByUserId(@RequestParam String userId){
         List<MissingNoticesDto> waitByUserId = missingNoticesService.getWaitByUserId(userId);
         return R.success(waitByUserId);
     }

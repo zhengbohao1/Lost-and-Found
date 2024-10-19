@@ -3,9 +3,7 @@ package com.it.controller;
 import com.it.common.R;
 import com.it.config.AppConfig;
 import com.it.constants.Constants;
-import com.it.entity.ClaimRequest;
-import com.it.entity.Comments;
-import com.it.entity.UserInfo;
+import com.it.entity.*;
 import com.it.exception.BusinessException;
 import com.it.query.EmailQuery;
 import com.it.query.PasswordQuery;
@@ -58,11 +56,15 @@ public class UserController extends CommonController{
     private LostFoundService lostFoundService;
 
     @Resource
+    private MissingNoticesService missingNoticesService;
+    @Resource
     private AdminInfoService adminInfoService;
     @Resource
     private ClaimRequestService claimRequestService;
     @Resource
     private CommentsService commentsService;
+    @Resource
+    private MessageNotificationService messageNotificationService;
 
     @Resource
     private AppConfig appConfig;
@@ -333,7 +335,7 @@ public class UserController extends CommonController{
      * 拾主确认认领结案
      */
     @PutMapping("/confirmClaim")
-    public R<String> confirmClaim(@RequestParam(value ="user_id")int user_id,@RequestParam(value ="post_id")int post_id){
+    public R<String> confirmClaim(@RequestParam(value ="user_id")String user_id,@RequestParam(value ="post_id")int post_id){
        String msg=lostFoundService.confirmClaim(post_id,user_id);
        if(msg.equals("认领信息已确认")){
            return R.success(msg);
@@ -350,6 +352,12 @@ public class UserController extends CommonController{
     public R<String> sendLostComments(@RequestBody Comments comments){
         try {
             commentsService.sendLostParentComments(comments);
+            //先获取lost帖子的用户id，作为评论通知的接收者，然后再调用哪个函数
+            //然后把missing的写了。
+            int postId = comments.getPostId();
+            LostFound lostFound = lostFoundService.getById(postId);
+            //void sendLostParentReplyMessage(String senderId, int relatedPostId, String postWriterId,String content);
+            messageNotificationService.sendLostParentReplyMessage(comments.getUserId(),postId,lostFound.getFinderId(),comments.getComment());
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }
@@ -359,6 +367,9 @@ public class UserController extends CommonController{
     public R<String> sendMissingComments(@RequestBody Comments comments){
         try {
             commentsService.sendMissingParentComments(comments);
+            int postId = comments.getPostId();
+            MissingNotices missingNotices = missingNoticesService.getById(postId);
+            messageNotificationService.sendMissingParentReplyMessage(comments.getUserId(),postId,missingNotices.getOwnerId(),comments.getComment());
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }
@@ -374,6 +385,7 @@ public class UserController extends CommonController{
     public R<String> sendLostChildComments(@RequestBody Comments comments){
         try {
             commentsService.sendLostChildComments(comments);
+            messageNotificationService.sendLostChildReplyMessage(comments.getUserId(), comments.getParentId(), comments.getPostId(), comments.getComment());
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }
@@ -383,6 +395,7 @@ public class UserController extends CommonController{
     public R<String> sendMissingChildComments(@RequestBody Comments comments){
         try {
             commentsService.sendMissingChildComments(comments);
+            messageNotificationService.sendMissingChildReplyMessage(comments.getUserId(), comments.getParentId(), comments.getPostId(), comments.getComment());
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }

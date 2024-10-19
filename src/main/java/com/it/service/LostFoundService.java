@@ -12,9 +12,10 @@ public interface LostFoundService extends IService<LostFound> {
     List<LostFoundDto> selectByCondition(String content);
     List<LostFoundDto> get_list();
     void my_save(LostFound lostFound);
-    String confirmClaim(int id, int user_id);
+    String confirmClaim(int id, String user_id);
     LostFoundDto getBypostId(int id);
-    List<LostFoundDto> getByUserId(int userId);
-    List<LostFoundDto> getIllegalByUserId(int userId);
-    List<LostFoundDto> getWaitByUserId(int userId);
+    List<LostFoundDto> getByUserId(String userId);
+    List<LostFoundDto> getIllegalByUserId(String userId);
+    List<LostFoundDto> getWaitByUserId(String userId);
+    void UpdateLostfound(LostFound lostFound);
 }

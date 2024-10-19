@@ -36,7 +36,7 @@ public class MissingNotices implements Serializable {
     private String lostLocation;
     @Getter
     @Setter
-    private int ownerId;
+    private String ownerId;
     @Getter
     @Setter
     @TableField(fill = FieldFill.INSERT)
@@ -51,4 +51,7 @@ public class MissingNotices implements Serializable {
     @Getter
     @Setter
     private int reviewProcess;
+    @Getter
+    @Setter
+    private String finderId;
 }

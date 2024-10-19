@@ -143,7 +143,7 @@ public class MissingNotciesServiceImpl extends ServiceImpl<MissingNoticesMapper,
     }
 
     @Override
-    public List<MissingNoticesDto> getWaitByUserId(int userId) {
+    public List<MissingNoticesDto> getWaitByUserId(String userId) {
         QueryWrapper<MissingNotices> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("owner_id", userId);
         List<MissingNotices> missingNotices =this.baseMapper.selectList(queryWrapper).stream().filter(MissingNotices -> MissingNotices.getReviewProcess() == 0).toList();
@@ -168,7 +168,7 @@ public class MissingNotciesServiceImpl extends ServiceImpl<MissingNoticesMapper,
     }
 
     @Override
-    public List<MissingNoticesDto> getByUserId(int userId) {
+    public List<MissingNoticesDto> getByUserId(String userId) {
         QueryWrapper<MissingNotices> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("owner_id", userId);
         List<MissingNotices> missingNotices =this.baseMapper.selectList(queryWrapper).stream().filter(MissingNotices -> MissingNotices.getReviewProcess() == 1).toList();
@@ -193,7 +193,7 @@ public class MissingNotciesServiceImpl extends ServiceImpl<MissingNoticesMapper,
     }
 
     @Override
-    public List<MissingNoticesDto> getIllegalByUserId(int userId) {
+    public List<MissingNoticesDto> getIllegalByUserId(String userId) {
         QueryWrapper<MissingNotices> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("owner_id", userId);
         List<MissingNotices> missingNotices =this.baseMapper.selectList(queryWrapper).stream().filter(MissingNotices -> MissingNotices.getReviewProcess() == 2).toList();

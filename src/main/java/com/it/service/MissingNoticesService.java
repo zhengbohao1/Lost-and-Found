@@ -14,7 +14,7 @@ public interface MissingNoticesService extends IService<MissingNotices> {
     List<MissingNoticesDto> get_list();
     void my_save(MissingNotices missingNotices);
     MissingNoticesDto getBypostId(int id);
-    List<MissingNoticesDto> getWaitByUserId(int userId);
-    List<MissingNoticesDto> getByUserId(int userId);
-    List<MissingNoticesDto> getIllegalByUserId(int userId);
+    List<MissingNoticesDto> getWaitByUserId(String userId);
+    List<MissingNoticesDto> getByUserId(String userId);
+    List<MissingNoticesDto> getIllegalByUserId(String userId);
 }

@@ -22,7 +22,7 @@ public class Advises {
     private Integer id;
     @Setter
     @Getter
-    private int userId;
+    private String userId;
     @Setter
     @Getter
     private String category;

@@ -8,5 +8,5 @@ import org.apache.ibatis.annotations.Update;
 @Mapper
 public interface LostFoundMapper extends BaseMapper<LostFound> {
     @Update("update lost_found set status = 1,claimant_id=#{user_id} where id = #{id}")
-    void confirmLost(int id, int user_id);
+    void confirmLost(int id, String user_id);
 }

@@ -6,6 +6,8 @@ import com.it.entity.Advises;
 import com.it.entity.LostFound;
 import com.it.exception.BusinessException;
 import com.it.service.LostFoundService;
+import com.it.service.MessageNotificationService;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +18,8 @@ import java.util.List;
 public class LostFoundController{
     @Autowired
     private LostFoundService lostFoundService;
-
+    @Resource
+    MessageNotificationService messageNotificationService;
     /**
      * 管理员端的获取所有失物招领
      * @return
@@ -91,6 +94,7 @@ public class LostFoundController{
         }
         lostFound.setReviewProcess(1);
         lostFoundService.updateById(lostFound);
+        messageNotificationService.sendApprovedMessage(String.valueOf(lostFound.getFinderId()),lostFound.getId(),0);
         return R.success("审核成功~");
     }
 
@@ -111,6 +115,7 @@ public class LostFoundController{
         }
         lostFound.setReviewProcess(2);
         lostFoundService.updateById(lostFound);
+        messageNotificationService.sendRejectedMessage(String.valueOf(lostFound.getFinderId()),lostFound.getId(),0);
         return R.success("拒绝成功~");
     }
 
@@ -135,20 +140,31 @@ public class LostFoundController{
         return R.success(lostFound);
     }
     @GetMapping("/getLegalPostByUserId")
-    public R<List<LostFoundDto>> getByUserId(@RequestParam Integer userId){
+    public R<List<LostFoundDto>> getByUserId(@RequestParam String userId){
         List<LostFoundDto> byUserId = lostFoundService.getByUserId(userId);
         return R.success(byUserId);
     }
     @GetMapping("/getIllegalByUserId")
-    public R<List<LostFoundDto>> getIllegalByUserId(@RequestParam Integer userId){
+    public R<List<LostFoundDto>> getIllegalByUserId(@RequestParam String userId){
         List<LostFoundDto> illegalByUserId = lostFoundService.getIllegalByUserId(userId);
         return R.success(illegalByUserId);
     }
     @GetMapping("/getWaitByUserId")
-    public R<List<LostFoundDto>> getWaitByUserId(@RequestParam Integer userId){
+    public R<List<LostFoundDto>> getWaitByUserId(@RequestParam String userId){
         List<LostFoundDto> waitByUserId = lostFoundService.getWaitByUserId(userId);
         return R.success(waitByUserId);
     }
+
+    /**
+     * 编辑更改lostfound属性
+     * @return
+     */
+    @PutMapping("/updateLostFound")
+    public R<String> updateLostFound(@RequestBody LostFound lostFound){
+        lostFoundService.UpdateLostfound(lostFound);
+        return R.success("修改成功");
+    }
+
     /**
      * 用户查询审核状态
      */

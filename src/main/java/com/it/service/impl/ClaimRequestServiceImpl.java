@@ -33,7 +33,7 @@ public class ClaimRequestServiceImpl extends ServiceImpl<ClaimRequestMapper, Cla
     }
 
     @Override
-    public void MarkAsRead(int id) {
+    public void MarkClaimAsRead(int id) {
         QueryWrapper<ClaimRequest> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",id);
         ClaimRequest claimRequest = this.getOne(queryWrapper);

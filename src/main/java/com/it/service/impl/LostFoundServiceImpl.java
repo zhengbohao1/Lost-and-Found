@@ -10,6 +10,8 @@ import com.it.mapper.LostFoundMapper;
 import com.it.entity.LostFound;
 import com.it.service.ImageService;
 import com.it.service.LostFoundService;
+import com.it.service.MessageNotificationService;
+import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,8 @@ import java.util.List;
 public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound> implements LostFoundService {
     @Autowired
     ImageService imageService;
+
+
     @Value("${project.folder}")//读取配置文件里的值,写的是"${reggie.path}",它自动变成赋予的值了
     private String basepath;
     @Override
@@ -38,7 +42,7 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
             String path = lostFound.getImgUrl();
             QueryWrapper<Image> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("path", path);
-            Image image = imageService.getOne(queryWrapper);
+            Image image = imageService.getOne(queryWrapper, false);
 
             LostFoundDto dto = new LostFoundDto(); // 创建一个新的 LostFoundDto 对象
             BeanUtils.copyProperties(lostFound, dto); // 将 lostFound 的属性复制到 dto
@@ -130,7 +134,7 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
     }
 
     @Override
-    public String confirmClaim(int id, int user_id) {
+    public String confirmClaim(int id, String user_id) {
         try {
             this.baseMapper.confirmLost(id, user_id);
             return "认领信息已确认";
@@ -158,7 +162,7 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
     }
 
     @Override
-    public List<LostFoundDto> getByUserId(int userId) {
+    public List<LostFoundDto> getByUserId(String userId) {
         QueryWrapper<LostFound> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("finder_id", userId);
         List<LostFound> lostFounds =this.baseMapper.selectList(queryWrapper).stream().filter(lostFound -> lostFound.getReviewProcess() == 1).toList();
@@ -184,7 +188,7 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
     }
 
     @Override
-    public List<LostFoundDto> getIllegalByUserId(int userId) {
+    public List<LostFoundDto> getIllegalByUserId(String userId) {
         QueryWrapper<LostFound> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("finder_id", userId);
         List<LostFound> lostFounds =this.baseMapper.selectList(queryWrapper).stream().filter(lostFound -> lostFound.getReviewProcess() == 2).toList();
@@ -210,7 +214,7 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
     }
 
     @Override
-    public List<LostFoundDto> getWaitByUserId(int userId) {
+    public List<LostFoundDto> getWaitByUserId(String userId) {
         QueryWrapper<LostFound> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("finder_id", userId);
         List<LostFound> lostFounds =this.baseMapper.selectList(queryWrapper).stream().filter(lostFound -> lostFound.getReviewProcess() == 0).toList();
@@ -235,4 +239,8 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
         return lostFoundsDto;
     }
 
+    @Override
+    public void UpdateLostfound(LostFound lostFound) {
+        this.baseMapper.updateById(lostFound);
+    }
 }
