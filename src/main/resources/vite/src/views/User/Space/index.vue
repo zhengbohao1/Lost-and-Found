@@ -6,13 +6,13 @@
             <div class="scrollable-content">  
                 <el-row>
                     <el-col :span="4">
-                        <el-avatar size="large" :src="'http://localhost:8090/user/getAvatarById?userId='+userStore.userInfo.data.userId"></el-avatar>
+                        <el-avatar size="large" :src="'http://localhost:8090/user/getAvatarById?userId='+userStore.userInfo.userId"></el-avatar>
                     </el-col>
                     <el-col :span="3"></el-col>
                     <el-col :span="17">
-                        <span class="username">{{ userStore.userInfo.data.nickName }}</span>
+                        <span class="username">{{ userStore.userInfo.nickName }}</span>
                         <br>
-                        <span style="font-size: 12px; color: #989">用户编号：{{ userStore.userInfo.data.userId }}</span>
+                        <span style="font-size: 12px; color: #989">用户编号：{{ userStore.userInfo.userId }}</span>
                     </el-col>
                 </el-row>
             </div>  
@@ -30,6 +30,7 @@
       <div style="margin-top: 15px;">
         <el-button>我的动态</el-button>
         <el-button>未知</el-button>
+        <el-button>奖励详情</el-button>
       </div>
 
     <el-scrollbar class="main-card">

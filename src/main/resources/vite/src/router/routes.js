@@ -15,8 +15,10 @@ const FoundWaterFall = () => import('@/views/User/WaterFall/found/index.vue');
 const LostWaterFall = () => import('@/views/User/WaterFall/lost/index.vue');
 const UserUpLoad = () => import('@/views/User/UpLoad/index.vue');
 const FeedBack = () => import('@/views/User/FeedBack/index.vue');
+const Detail = () => import('@//components/user/Detail.vue');
 const NotFound = () => import('@/views/NotFound/index.vue');
 const Test = () => import('@/components/Test2.vue');
+const Test2 = () => import('@/components/user/Detail.vue');
 
 
     export const routes= [
@@ -103,6 +105,15 @@ const Test = () => import('@/components/Test2.vue');
                     meta: {
                         title: '失物招领',
                     },
+                    children:[
+                        {
+                            path: 'explore/:id',
+                            component: Detail,
+                            meta: {
+                                title: '详情',
+                            },
+                        },
+                    ]
                 },
                 {
                     path: 'lost',
@@ -163,6 +174,13 @@ const Test = () => import('@/components/Test2.vue');
         {
             path: '/test',
             component: Test,
+            meta: {
+                title: '测试',
+            }
+        },
+        { 
+            path: '/test2',
+            component: FoundWaterFall,
             meta: {
                 title: '测试',
             }

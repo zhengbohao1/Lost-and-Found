@@ -39,7 +39,6 @@ http.interceptors.response.use(
         // 显示错误信息
         const shoeError = showErrorState()
         shoeError.showError.value = true
-        console.log( shoeError.showError.value);
         ElMessage.error('请求失败，请稍后再试！');
         return Promise.reject(error);
       }

@@ -40,8 +40,17 @@
               <!-- 卡片内容结束 -->
               <hr/>
                 <div class="comments" v-if="comments" v-infinite-scroll="load" :infinite-scroll-disabled="disabled">
+                  <el-empty description="现在还没有评论" v-if="comments.length === 0"/> 
               </div>
             </div>
+            <el-divider/>
+          </div>
+          <div class="bottomArea">
+            <el-input
+                v-model="content" class="comment-input my" type="text" :placeholder="content.length === 0 ? inputArea : ''" ref="commentInput"
+                :prefix-icon="Edit" @keyup.enter="sendComment()" clearable style="margin-top: 5px"
+                :disabled="review"
+            />
           </div>
         </el-col>
       </el-row>  
@@ -51,10 +60,17 @@
   
 <script setup>  
 import { ref, defineEmits } from 'vue'
+import { Edit } from "@element-plus/icons-vue";
+import { useUserStore } from '@/stores/user'
 
 const comments = ref([])
+const content = ref('')
+
+const userStore = useUserStore()
 
 const emit = defineEmits('afterDoComment'); //发送评论时通知父组件更新评论
+
+const inputArea = ref('说点什么...')
 
 const adjustImageSize = (event) => {
   const img = event.target;
@@ -68,6 +84,12 @@ const adjustImageSize = (event) => {
     img.style.height = '100%';
     img.style.width = 'auto';
   }
+}
+
+const sendComment = () => {
+  //发评论独立于卡片
+  emit('afterDoComment')
+  //提醒消息已发送，更新评论
 }
 </script>  
   
@@ -132,4 +154,9 @@ const adjustImageSize = (event) => {
   max-width: 100%;  
   max-height: 100%; /* 可选，根据实际需要调整 */  
 }  
+
+.bottomArea {
+  position: absolute;
+}
+
 </style>

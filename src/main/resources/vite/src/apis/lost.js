@@ -70,3 +70,18 @@ export const deletePosts = (ids) => {
         },
     })
 }
+
+//获取评论
+export const getComment = (id) => {
+    return http({
+        url: 'http://localhost:8090/user/getMissingParentComments?postId='+id,
+        method: 'GET',
+    })  
+}
+
+export const getChildComment = (id) => {
+    return http({
+        url: 'http://localhost:8090/user/getMissingChildComments?parentId='+id,
+        method: 'GET',
+    })
+}

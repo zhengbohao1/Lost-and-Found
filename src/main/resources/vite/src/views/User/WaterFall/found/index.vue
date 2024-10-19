@@ -1,12 +1,13 @@
-<template v-if="cards.length>0">
+<template v-if="cards.length>0">  
     <div class="Empty" v-if="cards.length === 0">
     <el-empty description="没有帖子..."/>
   </div>
   <el-scrollbar v-else>
     <div v-infinite-scroll="loadMore" :infinite-scroll-disabled="disabled" :infinite-scroll-distance="200">
-      <ViewCard :card_columns="card_columns"></ViewCard>
+      <ViewCard :card_columns="card_columns" @show-detail="showMessage" ></ViewCard>
     </div>
-    <transition
+  </el-scrollbar>
+  <transition
         name="fade"
         @before-enter="onBeforeEnter"
         @after-enter="onAfterEnter"
@@ -14,23 +15,22 @@
         @after-leave="onAfterLeave"
     >
       <div class="overlay" v-if="show">
-        <button style="display:none;" class="backPage" @click="close">
-          <el-icon>
-            <Back/>
-          </el-icon>
-        </button>
-        <card-detail :detail="detail" @afterDoComment="afterDoComment" ref="overlay"/>
+        <el-button class="backPage" @click="close" :icon="Close"></el-button>
+        <CardDetail :postid="postid" @afterDoComment="afterDoComment" ref="overlay"></CardDetail>
+        <!--路由中携带了id，可以选择不用父子传递信息，而使用path传值或者pinia的方式-->
       </div>
     </transition>
-  </el-scrollbar>
 </template>
 
 <script setup>
 import { onMounted, onUnmounted, ref, nextTick, watch } from 'vue';
 import ViewCard from '@/components/user/Card.vue';
+import CardDetail from '@/components/user/Detail.vue';
 import { queryPost } from '@/apis/found';
 import { useRoute } from 'vue-router';
 import { waterFallInit, waterFallMore, resizeWaterFall } from '@/utils/waterFall';
+import { Close } from '@element-plus/icons-vue';
+
 
 const cards = ref([]);  //包含了所有帖子的所有内容
 
@@ -46,7 +46,6 @@ const arrHeight = ref([]);
 const queryPosts = async () => {
   const res = await queryPost()
   cards.value = res.data
-  console.log('test', cards.value)
   nextTick(() => {
     waterFallInit(columns, card_columns, arrHeight, cards)
   })
@@ -76,17 +75,24 @@ const show = ref(false);
 const overlayX = ref(0); // 覆盖层的水平位置
 const overlayY = ref(0); // 覆盖层的垂直位置
 const overlay = ref(null)
+const postid = ref(null)
 
-const getDetails = async (id) => Details.getDetail(id)
-
+//显示卡片详情
 const showMessage = async (id, left, top) => {
-  window.history.pushState({}, "", `/explore/${id}`);
+  window.history.pushState({}, "", `/user/found/explore/${id}`);
   overlayX.value = left;
   overlayY.value = top;
-  await getDetails(id);
+  postid.value = id;
   show.value = true;
+  //改变详情页的显示状态
 };
 
+const close = () => {
+  show.value = false;
+  window.history.pushState({}, "", `/user/found`);
+}
+
+const needToLog = ref(false);
 
 watch(route, () => {
     queryPosts();
@@ -104,26 +110,26 @@ onMounted(() => {
 </script>
 
 <style scoped>
-  .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999;
-  }
-
-  .backPage {
-    position: fixed;
-    top: 5%;
-    left: 3%;
-    justify-content: center;
-    align-items: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 40px;
-    border: 1px solid var(--color-border);
-    cursor: pointer;
-    transition: all .3s;
-  }
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 灰色背景，透明度为0.5 */
+  z-index: 9999;
+}
+.backPage {
+  position: fixed;
+  top: 5%;
+  left: 3%;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all .3s;
+}
 </style>
