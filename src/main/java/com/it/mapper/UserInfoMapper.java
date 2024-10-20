@@ -73,7 +73,7 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
      * @param userId
      */
     @Update("UPDATE user_info SET status = 0 WHERE user_id = #{userId}")
-    void disableUser(String userId);
+    void disableUser(String  userId);
 }
 
 
