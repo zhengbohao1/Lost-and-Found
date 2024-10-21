@@ -17,4 +17,5 @@ public interface MissingNoticesService extends IService<MissingNotices> {
     List<MissingNoticesDto> getWaitByUserId(String userId);
     List<MissingNoticesDto> getByUserId(String userId);
     List<MissingNoticesDto> getIllegalByUserId(String userId);
+    String confirmFindTips(int post_id,String user_id);
 }

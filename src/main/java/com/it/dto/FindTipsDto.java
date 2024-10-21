@@ -1,4 +1,4 @@
-package com.it.entity;
+package com.it.dto;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -10,21 +10,21 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serial;
+import java.time.LocalDateTime;
 
 @Data
-@TableName("claim_request")
-public class ClaimRequest {
+
+public class FindTipsDto {
     @Serial
     private static final long serialVersionUID = 1L;
+
     @TableId(type = IdType.AUTO)
     private Integer id;
     @Setter
     @Getter
-    @TableField(fill = FieldFill.INSERT)
     private String userId;
     @Setter
     @Getter
-    @TableField(fill = FieldFill.INSERT)
     private String userName;
     @Setter
     @Getter
@@ -34,20 +34,26 @@ public class ClaimRequest {
     private String contactDetails;
     @Setter
     @Getter
-    private String studentId;
-    @Setter
-    @Getter
-    private String evidence;
-    @Setter
-    @Getter
-    private String notes;
-    @Setter
-    @Getter
-    private String postId;
-    @Setter
-    @Getter
-    private String finderId;
+    private String content;
     @Getter
     @Setter
-    private int  readStatus;
+    private LocalDateTime createdAt;
+    @Getter
+    @Setter
+    private int postId;
+    @Getter
+    @Setter
+    private String ownerId;
+    @Getter
+    @Setter
+    private String isRead;
+    @Getter
+    @Setter
+    private String imgUrl;
+    @Getter
+    @Setter
+    private String height;
+    @Getter
+    @Setter
+    private String weight;
 }

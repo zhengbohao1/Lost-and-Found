@@ -217,5 +217,13 @@ public class MissingNotciesServiceImpl extends ServiceImpl<MissingNoticesMapper,
         return missingNoticesDtos;
     }
 
-
+    @Override
+    public String confirmFindTips(int post_id, String user_id) {
+        try {
+            this.baseMapper.confirmMissingNotices(post_id, user_id);
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return "寻物信息已确认";
+    }
 }

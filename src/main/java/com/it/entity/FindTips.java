@@ -10,12 +10,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serial;
+import java.time.LocalDateTime;
 
 @Data
-@TableName("claim_request")
-public class ClaimRequest {
+@TableName("find_tips")
+public class FindTips {
     @Serial
     private static final long serialVersionUID = 1L;
+
     @TableId(type = IdType.AUTO)
     private Integer id;
     @Setter
@@ -34,20 +36,21 @@ public class ClaimRequest {
     private String contactDetails;
     @Setter
     @Getter
-    private String studentId;
-    @Setter
-    @Getter
-    private String evidence;
-    @Setter
-    @Getter
-    private String notes;
-    @Setter
-    @Getter
-    private String postId;
-    @Setter
-    @Getter
-    private String finderId;
+    private String content;
     @Getter
     @Setter
-    private int  readStatus;
+    @TableField(fill = FieldFill.INSERT)
+    private LocalDateTime createdAt;
+    @Getter
+    @Setter
+    private int postId;
+    @Getter
+    @Setter
+    private String ownerId;
+    @Getter
+    @Setter
+    private String isRead;
+    @Getter
+    @Setter
+    private String imgUrl;
 }

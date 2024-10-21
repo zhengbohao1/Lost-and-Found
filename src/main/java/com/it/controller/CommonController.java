@@ -44,7 +44,18 @@ public class CommonController {
         return R.success(filename);//先传一个文件过来，然后我后台开始下载，就是把它放到我自己的本地文件夹中，然后再把文件名传回去
         //让前端再发出一个请求，使用这个文件名，实现图片的回显，这步再下面的download中完成。
     }
-
+    @PostMapping("/upload2")
+    public R<String> upload2(MultipartFile file){
+        //file是一个临时文件，需要转存到指定位置，否则会自动删除
+        String filename = file.getOriginalFilename();
+        try {
+            file.transferTo(new File(basepath+"find_tip_img/"+filename));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return R.success(filename);//先传一个文件过来，然后我后台开始下载，就是把它放到我自己的本地文件夹中，然后再把文件名传回去
+        //让前端再发出一个请求，使用这个文件名，实现图片的回显，这步再下面的download中完成。
+    }
     @GetMapping("/download")
     public void download(String name, HttpServletResponse response){
         System.out.println(basepath+"lost_found_img/"+name);
@@ -71,7 +82,34 @@ public class CommonController {
             throw new RuntimeException(e);
         }
         //输出流，通过输出流将文件写回浏览器
-
+    }
+    //用于“我找到了你的东西”相关的图片上传验证。
+    @GetMapping("/download2")
+    public void download2(String name, HttpServletResponse response){
+        System.out.println(basepath+"find_tip_img/"+name);
+        //输入流，通过输入流读取文件内容
+        try {
+            FileInputStream fileInputStream = new FileInputStream(new File(basepath+"find_tip_img/"+name));
+            System.out.println(basepath);
+            System.out.println(basepath+name);
+            ServletOutputStream outputStream = response.getOutputStream();
+            //设置响应回去的到底是什么文件
+            response.setContentType("image/jpeg");
+            int len = 0;
+            byte[] bytes = new byte[1024];
+            while ((len = fileInputStream.read(bytes)) != -1){
+                outputStream.write(bytes,0,len);
+                outputStream.flush();
+            }
+            //关闭资源
+            outputStream.close();
+            fileInputStream.close();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        //输出流，通过输出流将文件写回浏览器
     }
 
     /**

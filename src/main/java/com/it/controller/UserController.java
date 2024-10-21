@@ -65,6 +65,8 @@ public class UserController extends CommonController{
     private CommentsService commentsService;
     @Resource
     private MessageNotificationService messageNotificationService;
+    @Resource
+    private FindTipsService findTipsService;
 
     @Resource
     private AppConfig appConfig;
@@ -343,6 +345,29 @@ public class UserController extends CommonController{
         return R.error("信息有误，请再核对");
     }
 
+    /**
+     * 发送找到信息
+     */
+    @PostMapping("/sendFindTips")
+    public R<String> sendFindTips(@RequestBody FindTips findTips){
+        try {
+            findTipsService.my_save(findTips);
+        } catch (Exception e) {
+            throw new BusinessException(e.getMessage());
+        }
+        return R.success("发送成功");
+    }
+    /**
+     * 确认寻物信息
+     */
+    @PutMapping("/confirmFindTips")
+    public R<String> confirmFindTips(@RequestParam(value ="user_id")String user_id,@RequestParam(value ="post_id")int post_id){
+        String msg=missingNoticesService.confirmFindTips(post_id,user_id);
+        if(msg.equals("寻物信息已确认")){
+            return R.success(msg);
+        }
+        return R.error("信息有误，请再核对");
+    }
     /**
      * 发送父评论
      * @param comments
