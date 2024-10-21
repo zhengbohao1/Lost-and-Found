@@ -3,9 +3,9 @@ spring:
     active: test
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/lost_and_found
+    url: jdbc:mysql://8.149.136.157:3306/lost_and_found
     username: root
-    password: abc123
+    password: abc123@ZBH
     type: com.alibaba.druid.pool.DruidDataSource
   transaction:
     default-timeout: 30

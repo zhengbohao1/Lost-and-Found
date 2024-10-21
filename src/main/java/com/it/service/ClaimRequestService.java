@@ -8,5 +8,5 @@ import java.util.List;
 public interface ClaimRequestService extends IService<ClaimRequest> {
     List<ClaimRequest> getClaimMessage();
     void MarkClaimAsRead(int id);
-    int getUnreadCount(int userId);
+    int getUnreadCount(String userId);
 }

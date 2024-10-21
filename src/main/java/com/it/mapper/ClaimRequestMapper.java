@@ -9,5 +9,5 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface ClaimRequestMapper extends BaseMapper<ClaimRequest> {
     @Select("select count(*) from claim_request where read_status=0 and finder_id=#{userId}")
-    int getUnreadCount(int userId);
+    int getUnreadCount(String userId);
 }

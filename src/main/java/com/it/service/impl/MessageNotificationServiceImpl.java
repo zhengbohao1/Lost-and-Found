@@ -15,7 +15,9 @@ import com.it.service.MessageNotificationService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageNotificationServiceImpl extends ServiceImpl<MessageMapper, MessageNotification> implements MessageNotificationService {
@@ -39,7 +41,9 @@ public class MessageNotificationServiceImpl extends ServiceImpl<MessageMapper, M
         QueryWrapper<MessageNotification> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("recipient_id", userId)
                 .eq("message_type", MessageType.POST_REJECTED);
-        return list(queryWrapper);
+        return list(queryWrapper).stream()
+                .sorted(Comparator.comparingInt(MessageNotification::getIsRead)) // 根据 readStatus 从低到高排序
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -59,7 +63,8 @@ public class MessageNotificationServiceImpl extends ServiceImpl<MessageMapper, M
         QueryWrapper<MessageNotification> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("recipient_id", userId)
                 .eq("message_type", MessageType.POST_APPROVED);
-        return list(queryWrapper);
+        return list(queryWrapper).stream().sorted(Comparator.comparingInt(MessageNotification::getIsRead)) // 根据 readStatus 从低到高排序
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -123,7 +128,8 @@ public class MessageNotificationServiceImpl extends ServiceImpl<MessageMapper, M
         QueryWrapper<MessageNotification> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("recipient_id", userId)
                 .eq("message_type", MessageType.COMMENT_REPLY);
-        return list(queryWrapper);
+        return list(queryWrapper).stream().sorted(Comparator.comparingInt(MessageNotification::getIsRead)) // 根据 readStatus 从低到高排序
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -131,5 +137,10 @@ public class MessageNotificationServiceImpl extends ServiceImpl<MessageMapper, M
         MessageNotification notification = getById(id);
         notification.setIsRead(1);
         this.updateById(notification);
+    }
+
+    @Override
+    public int getUnreadCount(String userId) {
+        return this.baseMapper.getUnreadCount(userId);
     }
 }

@@ -19,4 +19,5 @@ public interface MessageNotificationService extends IService<MessageNotification
     List<MessageNotification> getAllReplyMessages(String userId);
     //标记已读
     void markMessageAsRead(int id);
+    int getUnreadCount(String userId);
 }

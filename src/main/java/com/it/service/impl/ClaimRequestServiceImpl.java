@@ -27,7 +27,7 @@ public class ClaimRequestServiceImpl extends ServiceImpl<ClaimRequestMapper, Cla
         queryWrapper.eq("finder_id",userId);
         List<ClaimRequest> claimRequestList = this.list(queryWrapper);
         List<ClaimRequest> sortedCommentsList = claimRequestList.stream()
-                .sorted(Comparator.comparingInt(ClaimRequest::getReadStatus)) // 根据 readStatus 从高到低排序
+                .sorted(Comparator.comparingInt(ClaimRequest::getReadStatus)) // 根据 readStatus 从低到高排序
                 .collect(Collectors.toList());
         return sortedCommentsList;
     }
@@ -41,7 +41,7 @@ public class ClaimRequestServiceImpl extends ServiceImpl<ClaimRequestMapper, Cla
         this.updateById(claimRequest);
     }
     @Override
-    public int getUnreadCount(int userId) {
+    public int getUnreadCount(String userId) {
         return this.baseMapper.getUnreadCount(userId);
     }
 }
