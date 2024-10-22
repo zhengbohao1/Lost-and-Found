@@ -54,16 +54,16 @@
               <el-icon><House /></el-icon>
               <span style="margin-left: 30px">寻物广场</span>
             </el-menu-item>
-            <el-menu-item index="">
+            <el-menu-item index="" @click="handleUpload">
               <el-icon><Promotion /></el-icon>
-              <span style="margin-left: 40px" @click="handleUpload">发布</span>
+              <span style="margin-left: 40px">发布</span>
             </el-menu-item>
-            <el-menu-item index="/user/message">
-              <el-icon><Comment /></el-icon>
+            <el-menu-item index="" @click="handleMessage">
+              <el-icon><BellFilled /></el-icon>
               <el-badge v-if="value > 0 " :value="3" :hidden="value <= 0" :max="99" class="item-badge"></el-badge>
               <span :style="value > 0 ? { 'margin-left': '20px' } : { 'margin-left': '40px' }">通知</span>
             </el-menu-item>
-            <el-menu-item index="/user/feedback">
+            <el-menu-item index="" @click="handleFeedback">
               <el-icon><WarnTriangleFilled /></el-icon>
               <span style="margin-left: 30px">意见反馈</span>
             </el-menu-item>
@@ -99,7 +99,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { Fold, Expand, House, SwitchButton, Promotion, WarnTriangleFilled, User, Comment, Search, Close } from '@element-plus/icons-vue';
+import { Fold, Expand, House, SwitchButton, Promotion, WarnTriangleFilled, User, Comment, Search, Close, BellFilled } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { getUserAvatar } from '@/apis/user';
@@ -116,18 +116,10 @@ const show = ref(false);
 
 const search = ref(''); //搜索传参
 
+console.log(userStore.userToken);
+
 const loginOut = () => {
   userStore.userLogout();
-  console.log("userToken");
-  console.log(userStore.userToken);
-  console.log("userInfo");
-  console.log(userStore.userInfo);
-  if(userStore.userToken === null) {
-      ElMessage({
-      message: '登出成功',
-      type: 'success',
-    });
-  }
   router.push('/user');
 };
 
@@ -154,7 +146,7 @@ function handleLoginClick() {
 
 function handleUpload() {
   if(userStore.userToken) {
-    router.push('/upload');
+    router.push('/user/upload');
   } else {
     show.value = true;
     ElMessage({
@@ -164,13 +156,36 @@ function handleUpload() {
   }
 }
 
-console.log("userToken", userStore.userToken);
-console.log("userInfo", userStore.userInfo);
+const handleMessage = () =>
+{
+  if(userStore.userToken) {
+    router.push('/user/message');
+  } else {
+    show.value = true;
+    ElMessage({
+      message: '请先登录',
+      type: 'warning',
+    });
+  }
+}
+
+const handleFeedback = () =>
+{
+  if(userStore.userToken) {
+    router.push('/user/feedback');
+  } else {
+    show.value = true;
+    ElMessage({
+      message: '请先登录',
+      type: 'warning',
+    });
+  }
+}
 
   const showLogin = computed(() => show.value && !userStore.userToken);
 
-  watch(() => userStore.userToken, (newToken) => {
-  if (newToken) {
+  watch(() => userStore.userInfo, (newInfo) => {
+  if (newInfo) {
     show.value = false;
     ElMessage({
       message: '登录成功',
@@ -181,6 +196,8 @@ console.log("userInfo", userStore.userInfo);
     canlogout.value = false;
   }
 });
+
+console.log('111',userStore.userInfo);
 </script>
 
 <style scoped>

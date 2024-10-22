@@ -7,7 +7,7 @@
             <img src="@/assets/logo.png" class="image" alt=""/>
           </div>        
           <!--用户登录表单-->
-          <div class="rightArea" v-if="showWhich && isAdmin && needReset">
+          <div class="rightArea" v-if="showWhich && needReset">
             <div class="title" style="text-align: center">登录</div>
             <div class="form">
               <el-form ref="formLoginRef" :model="formLogin" :rules="rulesLogin" label-position="right" label-width="0"
@@ -48,45 +48,7 @@
               </el-col>
             </el-row>
           </div>
-          <!--管理员登录表单-->
-          <div class="rightArea" v-if="!isAdmin">
-            <div class="title" style="text-align: center">管理员登录</div>
-            <div class="form">
-              <el-form ref="formLoginRef" :model="formLogin" :rules="rulesLogin" label-position="right" label-width="0"
-                       status-icon>
-                <el-form-item prop="email" class="inputArea">
-                  <el-input  v-model="formLogin.email" placeholder="请输入邮箱号" :prefix-icon="User"/>
-                </el-form-item>
-                <el-form-item prop="password" class="inputArea">
-                  <el-input v-model="formLogin.password" placeholder="请输入密码" :prefix-icon="Lock" show-password/>
-                </el-form-item>
-                <el-form-item prop="checkCode" class="inputArea">
-                  <el-col :span="10">
-                    <el-input v-model="formLogin.checkCode" placeholder="请输入验证码" :prefix-icon="ChatLineSquare"/>
-                  </el-col>
-                  <el-col :span="4"></el-col>
-                  <el-col :span="10">
-                    <div class="demo-image__preview">
-                      <el-image :src="imageSrcWithQuery" title="点击切换图片" @click="reloadImage()"/>
-                    </div>
-                  </el-col>
-                </el-form-item>
-                <el-form-item prop="agree" label-width="22px" class="inputArea">
-                  <el-checkbox size="large" v-model="formLogin.agree">
-                    我已同意隐私条款和服务条款
-                  </el-checkbox>
-                </el-form-item>
-                <el-button size="large" type="primary" round class="subBtn" @click="doAdminLogin">点击登录</el-button>
-              </el-form>
-            </div>
-            <el-divider content-position="center"></el-divider>
-            <el-row style="margin-top: 115px;">
-              <el-col :span="8" style="text-align: center;">
-                <el-link @click="exitAdmin()">返回</el-link>
-              </el-col>
-              <el-col :span="16"></el-col>
-            </el-row>
-          </div>
+
           <!--用户注册表单-->
           <div class="rightArea" v-if="!showWhich && isAdmin">
             <div class="title" style="text-align: center">注册</div>
@@ -112,7 +74,7 @@
                     <el-input  v-model="formRegister.emailCode" placeholder="输入验证码" :prefix-icon="ChatLineSquare">
                       <template #append>
                         <el-button type="primary" plain
-                        :disabled="!isValidEmail(formRegister.email)"  
+                        :disabled="!isValidEmail(formRegister.email) || isDisabled"  
                           @click="sendCodeZero"
                           v-text="buttonText"
                         ></el-button>
@@ -162,7 +124,7 @@
                     <el-input  v-model="formReset.emailCode" placeholder="输入验证码" :prefix-icon="ChatLineSquare">
                       <template #append>
                         <el-button type="primary" plain
-                        :disabled="!isValidEmail(formReset.email)"  
+                        :disabled="!isValidEmail(formReset.email) || isDisabled2"  
                           @click="sendCodeOne"
                           v-text="buttonText2"
                         ></el-button>
@@ -428,16 +390,6 @@ const toggleCode = () => {
   showCode.value = !showCode.value
 }
 
-const isAdmin = ref(true) //控制管理员登录的显示
-const toggleAdmin = () => {
-  isAdmin.value = !isAdmin.value
-  reloadImage()
-}
-const exitAdmin = () => {
-  isAdmin.value = !isAdmin.value
-  reloadImage()
-}
-
 const needReset = ref(true) //控制重置密码的显示
 const toggleReset = () => {
     needReset.value = !needReset.value
@@ -480,7 +432,7 @@ const startCountdown2 = () => {
     buttonText2.value = `${secondsLeft} 秒后重试`;
     countdown2 = setInterval(() => {
       if (--secondsLeft > 0) {
-        buttonText.value = `${secondsLeft} 秒后重试`;
+        buttonText2.value = `${secondsLeft} 秒后重试`;
       } else {
         clearInterval(countdown2);
         buttonText2.value = '发送验证码';
@@ -501,24 +453,7 @@ const doLogin = () => {
       {
         await userStore.getUserInfo()
         ElMessage({type: 'success', message: '登录成功'})
-        router.push({path: '/user'})
-      }else{
-        reloadImage() //改变验证码
-      }
-    }
-  })
-}
-
-const doAdminLogin = () => {
-  const {email, password, checkCode} = formLogin.value
-  formLoginRef.value.validate(async (valid) => {
-    if (valid) {
-      if(await userStore.adminLog({email, password, checkCode}) === 1)
-      {
-        await userStore.getUserInfo()
-        ElMessage({type: 'success', message: '登录成功'})
-        console.log(userStore.isAdmin)
-        router.push({path: '/control'})
+        window.location.reload();
       }else{
         reloadImage() //改变验证码
       }

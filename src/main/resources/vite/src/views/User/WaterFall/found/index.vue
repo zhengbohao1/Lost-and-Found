@@ -25,8 +25,9 @@
 <script setup>
 import { onMounted, onUnmounted, ref, nextTick, watch } from 'vue';
 import ViewCard from '@/components/user/Card.vue';
-import CardDetail from '@/components/user/Detail.vue';
+import CardDetail from '@/components/user/FoundDetail.vue';
 import { queryPost } from '@/apis/found';
+import { getUserName } from '@/apis/user';
 import { useRoute } from 'vue-router';
 import { waterFallInit, waterFallMore, resizeWaterFall } from '@/utils/waterFall';
 import { Close } from '@element-plus/icons-vue';
@@ -43,9 +44,26 @@ const columns = ref(0);
 const card_columns = ref({});
 const arrHeight = ref([]);
 
+const addSenderName = async () => {
+  cards.value = cards.value.map((card) => ({
+    ...card,
+    nickName: '',
+  }));
+  for(let card of cards.value){
+    getUserName(card.finderId).then(response => {
+      card.nickName  = response.data;
+    });
+  }
+};
+
 const queryPosts = async () => {
   const res = await queryPost()
+  if(res.msg == 'error'){
+    ElMessage.error('获取帖子失败')
+    return;
+  }
   cards.value = res.data
+  addSenderName()
   nextTick(() => {
     waterFallInit(columns, card_columns, arrHeight, cards)
   })
@@ -117,7 +135,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5); /* 灰色背景，透明度为0.5 */
-  z-index: 9999;
+  z-index: 99;
 }
 .backPage {
   position: fixed;

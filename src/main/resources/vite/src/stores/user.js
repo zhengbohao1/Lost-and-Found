@@ -53,10 +53,7 @@ export const useUserStore = defineStore('user', () => {
                   return 0; 
                 }
               } catch (error) {
-                ElMessage({
-                  type: 'error',
-                  message: `网络请求失败。${error.message}`
-                });
+                console.log(error);
               }
         };
 
@@ -75,10 +72,7 @@ export const useUserStore = defineStore('user', () => {
               return 0; 
             }
           } catch (error) {
-            ElMessage({
-              type: 'error',
-              message: `网络请求失败。${error.message}`
-            });
+            console.log(error);
           }
     }
 
@@ -98,8 +92,10 @@ export const useUserStore = defineStore('user', () => {
     }
 
     const getUserInfo = async () => {
-        const temp = await queryUserInfo();
-        userInfo.value = temp.data;
+        await queryUserInfo().then(res => {
+          userInfo.value = res.data;
+        }
+        )
     };
 
     const extendUserInfo = (type, id) => {

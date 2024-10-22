@@ -17,11 +17,6 @@ const router = createRouter({
     const userStore = useUserStore();
     const userInfo = userStore.userInfo;
   
-    // 动态设置网页标题
-    if (userInfo.username && meta.title) {
-      document.title = `${userInfo.username} - ${meta.title}`;
-    }
-  
     // 路由守卫
     if (meta.requireAuth) { // 判断该路由是否需要登录权限
       if (userStore.userToken) { // 用户已登录

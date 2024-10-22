@@ -111,3 +111,15 @@ export const postChildComment = (data) => {
         }
     })
 }
+
+//认领
+export const claim = (data) => {
+    return http({
+        url: 'http://localhost:8090/user/sendClaimInfo',
+        method: 'POST',
+        data: data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}

@@ -31,6 +31,14 @@ export const getUserAvatar = () => {
     })
 }
 
+//获得用户名
+export const getUserName = (id) => {
+    return http({
+        url: 'http://localhost:8090/user/getNickNameByid?userId='+id,
+        method: 'GET',
+    })
+}
+
 //重置密码
 export const resetPsw = ({email, password, emailCode}) => {
     return http({
@@ -41,5 +49,17 @@ export const resetPsw = ({email, password, emailCode}) => {
             password,
             emailCode
         }
+    })
+}
+
+//消息
+export const commentToMe = () => {
+    
+}
+
+export const claimToMe = () => {
+    return http({
+        url: 'http://localhost:8090/notice/getClaimMessage',
+        method: 'GET',
     })
 }

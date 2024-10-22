@@ -22,7 +22,7 @@
                   :src="'http://localhost:8090/user/getAvatarById?userId='+card.userId" size="small"
                   />
                 </router-link>
-                <div class="username">{{ card.finderId }}</div>
+                <div class="username">{{ card.nickName }}</div>
               </el-row>
             </div>
           </div>
@@ -61,9 +61,10 @@ const handleLoad = (card) => {
   card.load = true;
 };
 
+
 onMounted(async () => {
   try {
-    card_columns.value = props.card_columns
+    card_columns.value = props.card_columns;
   } catch (error) {
     console.error('Error loading data:', error);
     loading.value = false;

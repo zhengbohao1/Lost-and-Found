@@ -61,6 +61,13 @@ export const backPost = (id) => {
     })
 }
 
+export const getPostById = (id) => {
+    return http({
+        url: 'http://localhost:8090/missing_notices/getbyid?id='+id,
+        method: 'GET',
+    })
+}
+
 export const deletePosts = (ids) => {
     return http({
         url: 'http://localhost:8090/lost_found/deleteIds?ids='+ids,
@@ -68,6 +75,29 @@ export const deletePosts = (ids) => {
         headers: {
             'Content-Type': 'application/json'
         },
+    })
+}
+
+//发评论
+export const postComment = (data) => {
+    return http({
+        url: 'http://localhost:8090/user/sendMissingParentComments',
+        method: 'POST',
+        data: data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+export const postChildComment = (data) => {
+    return http({
+        url: 'http://localhost:8090/user/sendMissingChildComments',
+        method: 'POST',
+        data: data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
 }
 

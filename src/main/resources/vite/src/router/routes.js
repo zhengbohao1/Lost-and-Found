@@ -15,10 +15,11 @@ const FoundWaterFall = () => import('@/views/User/WaterFall/found/index.vue');
 const LostWaterFall = () => import('@/views/User/WaterFall/lost/index.vue');
 const UserUpLoad = () => import('@/views/User/UpLoad/index.vue');
 const FeedBack = () => import('@/views/User/FeedBack/index.vue');
-const Detail = () => import('@//components/user/Detail.vue');
+const FoundDetail = () => import('@/components/user/FoundDetail.vue');
+const LostDetail = () => import('@/components/user/LostDetail.vue');
 const NotFound = () => import('@/views/NotFound/index.vue');
 const Test = () => import('@/components/Test2.vue');
-const Test2 = () => import('@/components/user/Detail.vue');
+const Test2 = () => import('@/components/user/FoundDetail.vue');
 
 
     export const routes= [
@@ -108,7 +109,7 @@ const Test2 = () => import('@/components/user/Detail.vue');
                     children:[
                         {
                             path: 'explore/:id',
-                            component: Detail,
+                            component: FoundDetail,
                             meta: {
                                 title: '详情',
                             },
@@ -120,7 +121,16 @@ const Test2 = () => import('@/components/user/Detail.vue');
                     component: LostWaterFall,
                     meta: {
                         title: '寻物启事',
-                    }
+                    },
+                    children:[
+                        {
+                            path: 'explore/:id',
+                            component: LostDetail,
+                            meta: {
+                                title: '详情',
+                            },
+                        },
+                    ]
                 },
                 {
                     path: 'space',
