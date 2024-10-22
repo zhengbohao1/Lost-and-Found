@@ -52,8 +52,8 @@ public class FindTipsDto {
     private String imgUrl;
     @Getter
     @Setter
-    private String height;
+    private int height;
     @Getter
     @Setter
-    private String weight;
+    private int width;
 }

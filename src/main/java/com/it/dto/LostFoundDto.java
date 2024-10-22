@@ -37,10 +37,10 @@ public class LostFoundDto {
     private int status;
     @Getter
     @Setter
-    private int finderId;
+    private String finderId;
     @Getter
     @Setter
-    private int claimantId;
+    private String claimantId;
     @Getter
     @Setter
     @TableField(fill = FieldFill.INSERT)
