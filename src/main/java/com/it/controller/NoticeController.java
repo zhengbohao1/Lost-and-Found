@@ -74,4 +74,9 @@ public class NoticeController {
         messageNotificationService.markMessageAsRead(id);
         return R.success("已标记为已读");
     }
+    @PutMapping("/markFindTipsAsRead")
+    public R<String> markFindTipsAsRead(int id){
+        findTipsService.markFindTipsAsRead(id);
+        return R.success("已标记为已读");
+    }
 }

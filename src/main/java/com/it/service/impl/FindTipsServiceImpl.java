@@ -78,4 +78,11 @@ public class FindTipsServiceImpl extends ServiceImpl<FindTipsMapper, FindTips> i
         }
         return findTipsDtos;
     }
+
+    @Override
+    public void markFindTipsAsRead(int id) {
+        FindTips tip = getById(id);
+        tip.setIsRead(1);
+        updateById(tip);
+    }
 }

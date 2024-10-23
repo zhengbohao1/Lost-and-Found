@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.it.dto.LostFoundDto;
 import com.it.entity.Advises;
 import com.it.entity.Image;
+import com.it.entity.TradingVolume;
 import com.it.exception.BusinessException;
 import com.it.mapper.LostFoundMapper;
 import com.it.entity.LostFound;
 import com.it.service.ImageService;
 import com.it.service.LostFoundService;
 import com.it.service.MessageNotificationService;
+import com.it.service.TradingVolumeService;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +32,8 @@ import java.util.List;
 public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound> implements LostFoundService {
     @Autowired
     ImageService imageService;
-
+    @Autowired
+    TradingVolumeService tradingVolumeService;
 
     @Value("${project.folder}")//读取配置文件里的值,写的是"${reggie.path}",它自动变成赋予的值了
     private String basepath;
@@ -137,6 +142,25 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
     public String confirmClaim(int id, String user_id) {
         try {
             this.baseMapper.confirmLost(id, user_id);
+            Date currentDate = Date.valueOf(LocalDate.now());
+            //先判断有没有今天的已经生成了的记录
+            QueryWrapper<TradingVolume> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("date", currentDate)
+                    .eq("category", "失物招领");
+            if (tradingVolumeService.getOne(queryWrapper) != null) {
+                //如果有，那么就直接加1
+                TradingVolume one = tradingVolumeService.getOne(queryWrapper);
+                one.setNum(one.getNum() + 1);
+                tradingVolumeService.updateById(one);
+            }
+            else{
+                //如果没有，那么就新建一个，并且设置数量为1
+                TradingVolume tradingVolume = new TradingVolume();
+                tradingVolume.setDate(currentDate);
+                tradingVolume.setNum(1);
+                tradingVolume.setCategory("失物招领");
+                tradingVolumeService.save(tradingVolume);
+            }
             return "认领信息已确认";
         } catch (Exception e) {
             return e.getMessage();
@@ -242,5 +266,17 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
     @Override
     public void UpdateLostfound(LostFound lostFound) {
         this.baseMapper.updateById(lostFound);
+    }
+
+    @Override
+    public Long get_count() {
+        return this.baseMapper.selectCount(null);
+    }
+
+    @Override
+    public Long get_found_count() {
+        QueryWrapper<LostFound> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("status", 1);
+        return this.baseMapper.selectCount(queryWrapper);
     }
 }

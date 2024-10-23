@@ -6,10 +6,12 @@ import com.it.dto.LostFoundDto;
 import com.it.dto.MissingNoticesDto;
 import com.it.entity.Image;
 import com.it.entity.LostFound;
+import com.it.entity.TradingVolume;
 import com.it.exception.BusinessException;
 import com.it.mapper.MissingNoticesMapper;
 import com.it.entity.MissingNotices;
 import com.it.service.MissingNoticesService;
+import com.it.service.TradingVolumeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +21,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +32,8 @@ public class MissingNotciesServiceImpl extends ServiceImpl<MissingNoticesMapper,
     private ImageServiceImpl imageService;
     @Value("${project.folder}")//读取配置文件里的值,写的是"${reggie.path}",它自动变成赋予的值了
     private String basepath;
+    @Autowired
+    private TradingVolumeService tradingVolumeService;
     @Override
     public List<MissingNoticesDto> legalList() {
         List<MissingNotices> missingNotices = list().stream().filter(MissingNotices -> MissingNotices.getReviewProcess() == 1).toList();
@@ -221,9 +227,39 @@ public class MissingNotciesServiceImpl extends ServiceImpl<MissingNoticesMapper,
     public String confirmFindTips(int post_id, String user_id) {
         try {
             this.baseMapper.confirmMissingNotices(post_id, user_id);
+            Date currentDate = Date.valueOf(LocalDate.now());
+            //先判断有没有今天的已经生成了的记录
+            QueryWrapper<TradingVolume> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("date", currentDate)
+                    .eq("category", "寻物启事");
+            if (tradingVolumeService.getOne(queryWrapper) != null) {
+                //如果有，那么就直接加1
+                TradingVolume one = tradingVolumeService.getOne(queryWrapper);
+                one.setNum(one.getNum() + 1);
+                tradingVolumeService.updateById(one);
+            }
+            else{
+                //如果没有，那么就新建一个，并且设置数量为1
+                TradingVolume tradingVolume = new TradingVolume();
+                tradingVolume.setDate(currentDate);
+                tradingVolume.setNum(1);
+                tradingVolume.setCategory("寻物启事");
+                tradingVolumeService.save(tradingVolume);
+            }
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }
         return "寻物信息已确认";
+    }
+
+    @Override
+    public Long get_count() {
+        return this.baseMapper.selectCount(null);
+    }
+    @Override
+    public Long get_found_count() {
+        QueryWrapper<MissingNotices> queryWrapper = new QueryWrapper<>();
+        queryWrapper.isNotNull("finder_id");
+        return this.baseMapper.selectCount(queryWrapper);
     }
 }

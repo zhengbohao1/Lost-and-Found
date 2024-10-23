@@ -134,4 +134,12 @@ public class MissingNoticesController {
         List<MissingNoticesDto> waitByUserId = missingNoticesService.getWaitByUserId(userId);
         return R.success(waitByUserId);
     }
+    @GetMapping("/getallcount")
+    public R<Long> getCount(){
+        return R.success(missingNoticesService.get_count());
+    }
+    @GetMapping("/getfoundcount")
+    public R<Long> getFoundCount(){
+        return R.success(missingNoticesService.get_found_count());
+    }
 }

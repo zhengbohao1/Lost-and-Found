@@ -164,8 +164,12 @@ public class LostFoundController{
         lostFoundService.UpdateLostfound(lostFound);
         return R.success("修改成功");
     }
-
-    /**
-     * 用户查询审核状态
-     */
+    @GetMapping("/getallcount")
+    public R<Long> getCount(){
+        return R.success(lostFoundService.get_count());
+    }
+    @GetMapping("/getfoundcount")
+    public R<Long> getFoundCount(){
+        return R.success(lostFoundService.get_found_count());
+    }
 }

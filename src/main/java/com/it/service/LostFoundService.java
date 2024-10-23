@@ -18,4 +18,6 @@ public interface LostFoundService extends IService<LostFound> {
     List<LostFoundDto> getIllegalByUserId(String userId);
     List<LostFoundDto> getWaitByUserId(String userId);
     void UpdateLostfound(LostFound lostFound);
+    Long get_count();
+    Long get_found_count();
 }
