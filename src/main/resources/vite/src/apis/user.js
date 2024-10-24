@@ -53,13 +53,44 @@ export const resetPsw = ({email, password, emailCode}) => {
 }
 
 //消息
-export const commentToMe = () => {
-    
+export const countMessage = (id) => {
+    return http({
+        url: 'http://localhost:8090/notice/getUnreadCount?userId='+id,
+        method: 'GET',
+    })
+}
+
+export const replyToMe = (id) => {
+    return http({
+        url: 'http://localhost:8090/notice/getAllReplyMessages?userId='+id,
+        method: 'GET',
+    })
 }
 
 export const claimToMe = () => {
     return http({
         url: 'http://localhost:8090/notice/getClaimMessage',
+        method: 'GET',
+    })
+}
+
+export const foundMine = (id) => {
+    return http({
+        url: 'http://localhost:8090/notice/getFindTips?ownerId='+id,
+        method: 'GET',
+    })
+}
+
+export const postPass = (id) => {
+    return http({
+        url: 'http://localhost:8090/notice/getApprovedMessages?userId='+id,
+        method: 'GET',
+    })
+}
+
+export const postBack = (id) => {
+    return http({
+        url: 'http://localhost:8090/notice/getRejectedMessages?userId='+id,
         method: 'GET',
     })
 }

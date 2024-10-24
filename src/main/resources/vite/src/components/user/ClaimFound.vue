@@ -318,6 +318,7 @@
     try {
       const response = await getPostById(postid.value);
       post.value = response.data;
+      console.log("123",post.value);
     } catch (error) {
       console.error(error);
     }

@@ -1,23 +1,49 @@
 <template>
     <el-card class="header-card"></el-card>
-    
-    <div style="margin-top: 15px;">
-        <el-button @click="toggleReplyMe" :type="replyMe ? 'primary' : ''">回复我的</el-button>
-        <el-button  @click="toggleClaimFoundMe" :type="claimFoundMe ? 'primary' : ''">失物认领</el-button>
+
+
+    <div style="margin-top: 15px; gap: 20px; display: flex; justify-content: center">
+        <el-button style="font-size:16px" v-for="item in buttonList" @click="toggleMessage(item)" 
+        :type="activeIndex == item.isActive ? 'primary' : 'text'">{{ item.name }}</el-button>
     </div>
 
     <div class="body-card">
         <el-scrollbar style="height: 100%;">
-            <el-card class="message-card" v-if="claimFoundMe" v-for="claim in claimFoundList" :key="claim.id" @click="getClaimFound(claim)" title="点击查看详情">
+
+            <el-card class="message-card" style="margin-bottom: 15px" v-if="activeIndex==1">
+                <div v-for="reply in replyMeList" :key="reply.id">
+                    <el-row :gutter="20">
+                    <el-col :span="50">
+                        <a :href="`/user/index/${reply.senderId}`"> 
+                            <el-avatar :src="'http://localhost:8090/user/getAvatarById?userId='+reply.senderId" size="large"></el-avatar>
+                        </a>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-row>
+                            <span>{{ getSenderName(reply.senderId) }}<i class="text">回复了你的评论</i></span>
+                        </el-row>
+                        <el-row style="margin-top: 10px">
+                            <span class="text">{{ reply.createdAt }}</span>
+                        </el-row>
+                    </el-col>
+                </el-row>
+                    <el-divider></el-divider>
+                </div>
+            </el-card>
+            <div class="Empty" v-if="activeIndex == 1 && replyMeList.length == 0">
+                <el-empty description="还没有消息"></el-empty>
+            </div>
+
+            <el-card class="message-card" v-if="activeIndex == 2 && claimFoundList.length > 0" v-for="claim in claimFoundList" :key="claim.id" @click="getClaimFound(claim)" title="点击查看详情">
                 <el-row :gutter="20">
                     <el-col :span="50">
                         <a :href="`/user/index/${claim.userId}`"> 
                             <el-avatar :src="'http://localhost:8090/user/getAvatarById?userId='+claim.userId" size="large"></el-avatar>
                         </a>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="10">
                         <el-row>
-                            <span>{{ claim.userName }}向您发送了寻物申请</span>
+                            <span>{{ claim.userName }}<i class="text">向您发送了寻物申请</i></span>
                         </el-row>
                         <el-row style="margin-top: 10px">
                             <span class="time">{{ claim.studentId }}</span>
@@ -25,38 +51,128 @@
                     </el-col>
                 </el-row>
             </el-card>
-            <div v-if="replyMe">
+            <div class="Empty" v-if="activeIndex == 2 && claimFoundList.length == 0">
+                <el-empty description="还没有消息"></el-empty>
+            </div>
 
-                <el-divider></el-divider>
+            <el-card class="message-card" v-if="activeIndex == 3 && foundMineList.length > 0" v-for="item in foundMineList" :key="item.id" @click="getClaimFound(item)" title="点击查看详情">
+                <el-row :gutter="20">
+                    <el-col :span="50">
+                        <a :href="`/user/index/${item.userId}`"> 
+                            <el-avatar :src="'http://localhost:8090/user/getAvatarById?userId='+item.userId" size="large"></el-avatar>
+                        </a>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-row>
+                            <span>{{ item.userName }}<i class="text">向您发送了寻物申请</i></span>
+                        </el-row>
+                        <el-row style="margin-top: 10px">
+                            <span class="time">{{ item.studentId }}</span>
+                        </el-row>
+                    </el-col>
+                </el-row>
+            </el-card>
+            <div class="Empty" v-if="activeIndex == 3 && foundMineList.length == 0">
+                <el-empty description="还没有消息"></el-empty>
+            </div>
+
+            <el-card class="message-card" v-if="activeIndex == 4 && passPostList.length > 0" v-for="item in passPostList" :key="item.id" @click="getClaimFound(claim)" title="点击查看详情">
+                <el-row :gutter="20">
+                    <el-col :span="50"><el-icon size="50" color="green"><SuccessFilled/></el-icon></el-col>
+                    <el-col :span="14">
+                        <el-row>
+                            <span>{{ item.messageContent }}</span>
+                        </el-row>
+                        <el-row style="margin-top: 10px">
+                            <span class="time">{{ item.createdAt }}</span>
+                        </el-row>
+                    </el-col>
+                </el-row>
+            </el-card>
+            <div class="Empty" v-if="activeIndex == 4 && passPostList.length == 0">
+                <el-empty description="还没有消息"></el-empty>
+            </div>
+            
+            <el-card class="message-card" v-if="activeIndex == 5 && backPostList.length > 0" v-for="item in backPostList" :key="item.id" @click="getClaimFound(claim)" title="点击查看详情">
+                <el-row :gutter="20">
+                    <el-col :span="50"><el-icon size="50" color="red"><CircleCloseFilled/></el-icon></el-col>
+                    <el-col :span="14">
+                        <el-row>
+                            <span>{{ item.messageContent }}</span>
+                        </el-row>
+                        <el-row style="margin-top: 10px">
+                            <span class="time">{{ item.createdAt }}</span>
+                        </el-row>
+                    </el-col>
+                </el-row>
+            </el-card>
+            <div class="Empty" v-if="activeIndex == 5 && backPostList.length == 0">
+                <el-empty description="还没有消息"></el-empty>
             </div>
         </el-scrollbar>
     </div>
 
     <div class="overlay" v-if="showClaimFound">
         <el-button class="backPage" @click="showClaimFound=false" :icon="Close"></el-button>
-        <ClaimFound :claimFound="claimFound" ref="overlay"></ClaimFound>
+        <ClaimFound :claim-found="claimFound" ref="overlay"></ClaimFound>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { claimToMe } from '@/apis/user'
+import { claimToMe, replyToMe, getUserName, postPass, foundMine, postBack } from '@/apis/user'
+import { useUserStore } from '@/stores/user'
 import ClaimFound from '@/components/user/ClaimFound.vue'
-import { Close } from '@element-plus/icons-vue';
+import { Close, SuccessFilled, CircleCloseFilled } from '@element-plus/icons-vue';
+
+const buttonList = ref([
+    { name: '回复我的', isActive: 1 },
+    { name: '向我认领', isActive: 2 },
+    { name: '失物找回', isActive: 3 },
+    { name: '审核通过', isActive: 4 },
+    { name: '退回帖子', isActive: 5 },
+])
+
+const userStore = useUserStore()
 
 const claimFoundList = ref([])
+const foundMineList = ref([])
+const replyMeList = ref([])
+const passPostList = ref([])
+const backPostList = ref([])
 
-const replyMe = ref(false);
-const claimFoundMe = ref(false);
+const activeIndex = ref(1);
 
-const toggleReplyMe = () => {
-  replyMe.value = true;
-  claimFoundMe.value = false;
+const toggleMessage = (item) => {
+    switch (item.isActive) {
+        case 1:
+            break;
+        case 2:
+            if(claimFoundList.value.length == 0) {
+                fetchClaim();
+            }
+            break;
+        case 3:
+            if(foundMineList.value.length == 0)
+            {
+                fetchFoundMine();
+            }
+            break;
+        case 4:
+            if(passPostList.value.length == 0) {
+                fetchPassPost();
+            }
+            break;
+        case 5:
+            if(backPostList.value.length == 0) {
+                fetchBackPost();
+            }
+    }
+  activeIndex.value = item.isActive;
 };
 
-const toggleClaimFoundMe = () => {
-  claimFoundMe.value = true;
-  replyMe.value = false;
+const getSenderName = (id) => {
+    return getUserName(id)
 }
 
 const showClaimFound = ref(false)
@@ -65,43 +181,73 @@ const claimFound = ref({})
 
 const fetchClaim = async () => {
     await claimToMe().then(res => {
-            claimFoundList.value = res.data
-            console.log(res.data)
-        }
-    )
+        claimFoundList.value = res.data;
+    });
+}
+
+const getReplyMe = async () => {
+    await replyToMe(userStore.userInfo.userId).then(res => {
+        replyMeList.value = res.data;
+    });
+}
+
+const fetchFoundMine = async () => {
+    await foundMine(userStore.userInfo.userId).then(res => {
+        foundMineList.value = res.data;
+        console.log(foundMineList.value);
+    })
+}
+
+const fetchPassPost = async () => {
+    await postPass(userStore.userInfo.userId).then(res => {
+        passPostList.value = res.data;
+        console.log(passPostList.value);
+    });
+}
+
+const fetchBackPost = async () => {
+    await postBack(userStore.userInfo.userId).then(res => {
+        backPostList.value = res.data;
+    });
 }
 
 const getClaimFound = (claim) => {
-    showClaimFound.value = true
-    claimFound.value = claim
-    console.log(claimFound.value)
+    showClaimFound.value = true;
+    claimFound.value = claim;
+    console.log(claimFound.value);
 }
 
 onMounted(async () => {
-    fetchClaim();
-})
+    getReplyMe();
+});
 </script>
 
 <style scoped>
 .header-card{
-    height: 130px;
+    height: 100px;
 }
 
 .body-card{
     margin-top: 15px;
-    height: 465px;
+    height: 455px;
     background-color: azure;
 }
 
 .message-card{
     margin-top: 15px;
-    width: 1050px;
-    margin-left: 20px ;
+    width: 800px;
+    margin-left: 13% ;
 }
 
 .time{
     font-size: 14px;
     color: #999;
+}
+
+.text{
+    font-size: 14px;
+    color: #999;
+    margin-left: 10px;
 }
 
 .overlay {
