@@ -11,10 +11,6 @@ export const useUserStore = defineStore('user', () => {
     const isUser = ref(true);
     const userToken = ref(null);
     const userInfo = ref({});
-    const userFocus = ref([]);
-    const userCollect = ref([]);
-    const userFavorite = ref([]);
-    const headersObj = ref({})
 
     const userSendCode = async (email,type) => {
         await sendCode({email,type});
@@ -98,35 +94,6 @@ export const useUserStore = defineStore('user', () => {
         )
     };
 
-    const extendUserInfo = (type, id) => {
-        if (type === 1) {
-            userFocus.value = [...userFocus.value, id];
-        } else if (type === 2) {
-            userFavorite.value = [...userFavorite.value, id];
-        } else if (type === 3) {
-            userCollect.value = [...userCollect.value, id];
-        }
-    };
-
-    const removeFocus = (type, id) => {
-        if (type === 1) {
-            const index = userFocus.value.indexOf(id);
-            if (index !== -1) {
-                userFocus.value.splice(index, 1);
-            }
-        } else if (type === 2) {
-            const index = userFavorite.value.indexOf(id);
-            if (index !== -1) {
-                userFavorite.value.splice(index, 1);
-            }
-        } else if (type === 3) {
-            const index = userCollect.value.indexOf(id);
-            if (index !== -1) {
-                userCollect.value.splice(index, 1);
-            }
-        }
-    };
-
     const userLogout = async () => {
         userInfo.value = {};
         userToken.value = null;
@@ -135,11 +102,18 @@ export const useUserStore = defineStore('user', () => {
         ElMessage({ type: "success", message: "退出登录成功" });
     };
 
-    const changeInfo = ({username, signature, avatar}) => {
-        userInfo.value.username = username;
-        userInfo.value.signature = signature;
-        userInfo.value.avatar = avatar;
-    };
+    const loginOut = async () => {
+      userInfo.value = {};
+      userToken.value = null;
+      isAdmin.value = false;
+      isUser.value = false;
+  };
+
+
+    const testLink = async () => {
+        if(userToken){
+          await queryUserInfo()}
+    }
 
     return {
         isAdmin,
@@ -150,17 +124,12 @@ export const useUserStore = defineStore('user', () => {
         adminLog,
         userReset,
         getUserInfo,
-
-        userLogout,
         userSendCode,
+        userLogout,
+        loginOut,
         userRegister,
-        extendUserInfo,
-        userFocus,
-        removeFocus,
-        changeInfo,
-        userCollect,
-        userFavorite,
-        headersObj
+
+        testLink
     };
 }, {
     persist: true,

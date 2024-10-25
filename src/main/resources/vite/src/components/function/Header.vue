@@ -1,20 +1,18 @@
 <template>
-  <transition name="slide-fade">
-   <el-card v-if="sidebarVisible" class="sidebar">
-     <el-select v-model="selectedValue" placeholder="替换顶部样式" class="select-box">
-       <el-option
-         v-for="option in options"
-         :key="option.value"
-         :label="option.label"
-         :value="option.value">
-       </el-option>
-     </el-select>
-     <div class="button-box">
-       <el-button type="primary" @click="confirmSelection">确定</el-button>
-       <el-button @click="handleRightClick">取消</el-button>
-     </div>
-   </el-card>
- </transition>
+    <el-dialog v-model="dialogTableVisible" title="样式替换" width="500">
+      <el-select v-model="selectedValue" placeholder="选择更新后的顶部栏样式">
+        <el-option
+            v-for="option in options" :key="option.value"
+            :label="option.label" :value="option.value">
+          </el-option>
+        </el-select>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">取消</el-button>
+            <el-button type="primary" @click="confirmSelection">更换</el-button>
+          </div>
+        </template>
+    </el-dialog>
  <div id="header" ref="appRef" @contextmenu.prevent="handleRightClick">
  </div>
 </template>
@@ -24,7 +22,6 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import barnersData from '@/utils/config.js';
 
 const appRef = ref(null);
-const sidebarVisible = ref(false);
 const selectedValue = ref('');
 
 let allImagesData = barnersData[0].data;
@@ -80,7 +77,6 @@ function initItems() {
  }
 
  layers = Array.from(appRef.value.querySelectorAll('.layer'));
- console.log(layers);
 }
 
 // 滑动操作
@@ -150,9 +146,11 @@ const options = ref([
  }))
 ]);
 
+const dialogTableVisible = ref(false);
+
 // 处理右键点击事件
 function handleRightClick(event) {
- sidebarVisible.value = !sidebarVisible.value;
+  dialogTableVisible.value = !dialogTableVisible.value;
 }
 
 function confirmSelection() {
@@ -235,45 +233,6 @@ onUnmounted(() => {
  min-height: 155px;
  height: 10vw;
  max-height: 240px;
-}
-
-.sidebar {
- position: absolute;
- top: 8px;
- left: 0;
- padding: 20px;
- background-color: #ffffff33;
- border: 1px solid #ddd;
- z-index: 100;
- width: 200px;
- height: 110px;
- display: flex;
- flex-direction: column;
- justify-content: space-between; /* 垂直方向上均匀分布 */
-}
-
-.select-box {
- flex-grow: 1; /* 使 select 占据剩余空间 */
- margin-bottom: 10px; /* 与按钮之间留有间隔 */
-}
-
-.button-box {
- display: flex;
- justify-content: space-between; /* 按钮之间水平居中 */
-}
-
-.slide-fade-enter-active {
- transition: all 0.3s ease;
-}
-
-.slide-fade-leave-active {
- transition: all 0.3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
- transform: translateX(-10px);
- opacity: 0;
 }
 </style>
 

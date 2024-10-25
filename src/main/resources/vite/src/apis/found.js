@@ -123,3 +123,25 @@ export const claim = (data) => {
         }
     })
 }
+
+// 个人帖子获得
+export const getPersonalPassPost = (id) => {
+    return http({
+        url: 'http://localhost:8090/lost_found/getLegalPostByUserId?userId='+id,
+        method: 'GET',
+    })
+}
+
+export const getPersonalWaitPost = (id) => {
+    return http({
+        url: 'http://localhost:8090/lost_found/getWaitByUserId?userId='+id,
+        method: 'GET',
+    })
+}
+
+export const getPersonalBackPost = (id) => {
+    return http({
+        url: 'http://localhost:8090/lost_found/getIllegalByUserId?userId='+id,
+        method: 'GET',
+    })
+}

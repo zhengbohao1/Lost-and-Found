@@ -1,6 +1,6 @@
 <template>
+<div>
     <el-card class="header-card"></el-card>
-
 
     <div style="margin-top: 15px; gap: 20px; display: flex; justify-content: center">
         <el-button style="font-size:16px" v-for="item in buttonList" @click="toggleMessage(item)" 
@@ -10,6 +10,7 @@
     <div class="body-card">
         <el-scrollbar style="height: 100%;">
 
+            <transition-group name="fade">
             <el-card class="message-card" style="margin-bottom: 15px" v-if="activeIndex==1">
                 <div v-for="reply in replyMeList" :key="reply.id">
                     <el-row :gutter="20">
@@ -109,19 +110,26 @@
             <div class="Empty" v-if="activeIndex == 5 && backPostList.length == 0">
                 <el-empty description="还没有消息"></el-empty>
             </div>
+        </transition-group>
+
         </el-scrollbar>
     </div>
 
-    <div class="overlay" v-if="showClaimFound">
-        <el-button class="backPage" @click="showClaimFound=false" :icon="Close"></el-button>
-        <ClaimFound :claim-found="claimFound" ref="overlay"></ClaimFound>
-    </div>
+    <div class="backover" v-if="showClaimFound"></div>
+    <transition name="card">
+        <div class="overlay" v-if="showClaimFound">
+            <el-button class="backPage" @click="showClaimFound=false" :icon="Close"></el-button>
+            <ClaimFound :claim-found="claimFound" ref="overlay"></ClaimFound>
+        </div>
+    </transition>
+</div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { claimToMe, replyToMe, getUserName, postPass, foundMine, postBack } from '@/apis/user'
 import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router';
 import ClaimFound from '@/components/user/ClaimFound.vue'
 import { Close, SuccessFilled, CircleCloseFilled } from '@element-plus/icons-vue';
 
@@ -134,6 +142,7 @@ const buttonList = ref([
 ])
 
 const userStore = useUserStore()
+const router = useRouter()
 
 const claimFoundList = ref([])
 const foundMineList = ref([])
@@ -186,9 +195,11 @@ const fetchClaim = async () => {
 }
 
 const getReplyMe = async () => {
-    await replyToMe(userStore.userInfo.userId).then(res => {
-        replyMeList.value = res.data;
-    });
+    if(userStore.userInfo){
+        await replyToMe(userStore.userInfo.userId).then(res => {
+            replyMeList.value = res.data;
+        });
+    }
 }
 
 const fetchFoundMine = async () => {
@@ -218,7 +229,13 @@ const getClaimFound = (claim) => {
 }
 
 onMounted(async () => {
-    getReplyMe();
+    if(!userStore.userToken){
+      ElMessage.warning('请先登录')
+      router.push('/user')
+    }
+    if(userStore.userToken){
+        getReplyMe();
+    }
 });
 </script>
 
@@ -250,14 +267,23 @@ onMounted(async () => {
     margin-left: 10px;
 }
 
-.overlay {
+.backover{
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5); /* 灰色背景，透明度为0.5 */
-  z-index: 99;
+  z-index: 100;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 101;
 }
 
 .backPage {
@@ -272,5 +298,48 @@ onMounted(async () => {
   border: 1px solid var(--color-border);
   cursor: pointer;
   transition: all .3s;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.55s ease-out;
+}
+
+
+.fade-enter-to {
+  position: absolute;
+  right: 0;
+}
+
+
+.fade-enter-from {
+  position: absolute;
+  right: -100%;
+}
+
+
+.fade-leave-to {
+  position: absolute;
+  left: -100%;
+}
+
+
+.fade-leave-from {
+  position: absolute;
+  left: 0;
+}
+
+.card-enter-active {
+  transition: all 0.3s ease;
+}
+
+.card-leave-active {
+  transition: all 0.3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.card-enter-from,
+.card-leave-to {
+  transform: scale(0.5); /* 缩放比例，初始为缩小的一半 */
+  opacity: 0; /* 不透明度为0，隐藏元素 */
 }
 </style>

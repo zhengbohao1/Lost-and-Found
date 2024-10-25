@@ -28,7 +28,9 @@ public class WebConfig implements WebMvcConfigurer {
                 "/user/login","/user/register","/user/admin/login","/user/resetPwd","/user/getAvatarById",
                 "/user/getLostParentComments","/user/getLostChildComments","/user/getMissingParentComments","/user/getMissingChildComments",
                 "/lost_found/legal_list","/missing_notices/legal_list",
-                "/common/download","/common/upload"
+                "/common/download","/common/upload",
+                "/user/getNickNameByid",
+                "/lost_found/getbyid"
         );
     }
 }

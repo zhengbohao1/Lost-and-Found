@@ -30,6 +30,18 @@ http.interceptors.response.use(
     },
     (error) => {
       var config = error.config;
+
+      if (error.response && error.response.status === 401) {
+        // 处理401状态码
+        const userStore = useUserStore();
+        
+        if(userStore.userToken){
+          ElMessage.error('会话已过期，请重新登录！');
+          userStore.loginOut();
+        }
+        
+        return Promise.reject(error);
+    }
   
       if (!config || !config.retry) return Promise.reject(error);
   

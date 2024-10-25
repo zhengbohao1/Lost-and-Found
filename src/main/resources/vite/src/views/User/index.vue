@@ -1,10 +1,10 @@
 <template>
+  <div style="z-index: 80; position: absolute; left: 1020px; margin-top: 55px;">
+     <SearchBox></SearchBox>
+  </div>
   <div class="common-layout">
     <el-container>
       <el-header  style="height: 160px; padding: 0;">
-        <div style="z-index: 80; width: 50px; height: 70px; position: absolute; left: 1000px; margin-top: 40px;">
-          <SearchBox></SearchBox>
-        </div>
         <Header></Header>
       </el-header>
       <el-container style="height: 660px;">
@@ -56,14 +56,15 @@
               <el-icon><WarnTriangleFilled /></el-icon>
               <span style="margin-left: 30px">意见反馈</span>
             </el-menu-item>
-            <el-menu-item :index="''" :disabled="!userStore.userToken">
+            <el-menu-item :index="''"   v-if="userStore.userToken">
               <el-icon><SwitchButton /></el-icon>
               <span style="margin-left: 30px" @click="showLogoutConfirm">退出登录</span>
             </el-menu-item>
           </el-menu>
         </el-aside>
         <el-main id="content">
-          <transition class="child">
+          <div class="backover" v-if="showLogin"></div>
+          <transition name="fade">
             <div class="overlay" v-if="showLogin">
               <el-button class="close" @click="changeShow" plain round>
                 <el-icon size="x-large">
@@ -73,7 +74,15 @@
               <login @changeShow="changeShow"/>
             </div>
           </transition>
-          <router-view :search="search"></router-view>
+
+          <router-view v-slot="{ Component }">
+            <transition name="route" mode="out-in" appear>
+            <keep-alive>
+                <component :is="Component" />
+            </keep-alive>
+            </transition>
+          </router-view>
+
         </el-main>
       </el-container>
     </el-container>
@@ -85,7 +94,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { Fold, Expand, House, SwitchButton, Promotion, WarnTriangleFilled, User, Comment, Search, Close, BellFilled } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
-import { getUserAvatar, countMessage } from '@/apis/user';
+import { countMessage } from '@/apis/user';
 
 import Login from '@/views/Login/other.vue';
 import Header from '@/components/function/Header.vue';
@@ -105,7 +114,7 @@ const search = ref(''); //搜索传参
 
 const gettNum = async () => {
   await countMessage(userStore.userInfo.userId).then(res => {
-    numOfMessage.value = res.data
+  numOfMessage.value = res.data
   })
 }
 
@@ -208,8 +217,15 @@ const handleFeedback = () =>
   }
 });
 
+//为了确保登录未过期，在进入页面之前试运行一次连接
+
 onMounted(() => {
-  gettNum();
+  if(userStore.userToken) {
+    userStore.testLink();
+  }
+  if(userStore.userToken) {
+    gettNum();
+  }
 })
 </script>
 
@@ -219,14 +235,23 @@ onMounted(() => {
   transition: width 0.25s ease;
 }
 
+.backover{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 灰色背景，透明度为0.5 */
+  z-index: 100;
+}
+
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 设置透明度的背景色 */
-  z-index: 9999; /* 设置一个较大的z-index值，确保图层位于其他内容之上 */
+  z-index: 101; /* 设置一个较大的z-index值，确保图层位于其他内容之上 */
 }
 
 .close{
@@ -282,5 +307,29 @@ onMounted(() => {
 
 .username {
   font-weight: bold;
+}
+
+.fade-enter-active {
+  transition: all 0.3s ease;
+}
+
+.fade-leave-active {
+  transition: all 0.3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  transform: scale(0.5); /* 缩放比例，初始为缩小的一半 */
+  opacity: 0;
+}
+
+.route-enter-active,
+.route-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.route-enter-from,
+.route-leave-to {
+  opacity: 0;
 }
 </style>

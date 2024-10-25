@@ -1,5 +1,5 @@
 <template>
-    <form id="content" :class="{ on: isExpanded }">
+    <form id="con" :class="{ on: isExpanded }" title="搜索">
       <input
         type="text"
         name="input"
@@ -28,7 +28,7 @@
   </script>
   
   <style scoped>
-  #content {
+  #con {
     position: absolute;
     height: 50px;
     width: 300px;
@@ -38,7 +38,7 @@
     transform: translate(-50%, -50%);
   }
   
-  #content.on {
+  #con.on {
     -webkit-animation-name: in-out;
     animation-name: in-out;
     -webkit-animation-duration: 0.7s;
@@ -53,7 +53,7 @@
     box-sizing: border-box;
     width: 50px;
     height: 50px;
-    border: 4px solid #000000;
+    border: 4px solid #fff;
     border-radius: 50%;
     background: none;
     color: #fff;
@@ -97,7 +97,7 @@
     position: absolute;
     width: 20px;
     height: 4px;
-    background-color: #000000;
+    background-color: #fff;
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);

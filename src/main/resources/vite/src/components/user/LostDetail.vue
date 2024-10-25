@@ -6,13 +6,15 @@
           <el-col :span="50">
             <div class="banner">
               <el-carousel height="600px">
-                <el-carousel-item class="carousel-item-center">
-                  <img
-                    style="object-fit: cover;"
+                <el-carousel-item>
+                  <el-image
+                    class="carousel-item-center"
+                    style="width: 100%; height: 100%"
+                    fit="cover"
                     @load="adjustImageSize($event)"
                     ref="images"
                     :src="'http://localhost:8090/common/download?name='+post.imgUrl"
-                    alt=""
+                    :preview-src-list="previewList"
                   />
                 </el-carousel-item>
               </el-carousel>
@@ -185,6 +187,9 @@
             <div class="bottomArea">
               <div v-if="!userStore.userToken">
                 <el-link @click="router.push('/login');">请先登录</el-link>
+              </div>
+              <div v-if="post.reviewProcess == '0'">
+                <sapn>审核中</sapn>
               </div>
                 <div v-else>
                   <div v-if="!willSendComment">
@@ -405,14 +410,19 @@
     }
   }
   
-  const fetchDetail = async () => {
-    try {
-      const response = await getPostById(postid.value);
-      post.value = response.data;
-    } catch (error) {
-      console.error(error);
-    }
+const previewList = ref([]);
+
+const fetchDetail = async () => {
+  try {
+    const response = await getPostById(postid.value);
+    post.value = response.data;
+    console.log(response.data);
+    previewList.value.push('http://localhost:8090/common/download?name='+post.value.imgUrl);
+  } catch (error) {
+    console.error(error);
   }
+}
+
   
   //评论部分
   const comments = ref([]);

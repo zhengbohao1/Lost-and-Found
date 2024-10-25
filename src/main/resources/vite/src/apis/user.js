@@ -52,6 +52,19 @@ export const resetPsw = ({email, password, emailCode}) => {
     })
 }
 
+// 修改密码
+export const changePsw = ({oldPassword, newPassword}) => {
+    return http({
+        url: 'http://localhost:8090/user/updatePwd',
+        method: 'POST',
+        data: {
+            oldPassword,
+            newPassword,
+            newPassword
+        }
+    })
+}
+
 //消息
 export const countMessage = (id) => {
     return http({
