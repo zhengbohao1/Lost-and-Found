@@ -20,9 +20,9 @@ public class ClaimRequestServiceImpl extends ServiceImpl<ClaimRequestMapper, Cla
 
     @Override
     public List<ClaimRequest> getClaimMessage() {
-//        Map<String,Object> claims = ThreadLocalUtil.get();
-//        String userId = (String) claims.get("userId");
-        String userId = "39";
+        Map<String,Object> claims = ThreadLocalUtil.get();
+        String userId = (String) claims.get("userId");
+        //String userId = "39";
         QueryWrapper<ClaimRequest> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("finder_id",userId);
         List<ClaimRequest> claimRequestList = this.list(queryWrapper);

@@ -487,4 +487,8 @@ public class UserController extends CommonController{
         String nickName = userInfoService.getUserNameById(userId);
         return R.success(nickName);
     }
+    @GetMapping("/getUserAmount")
+    public R<Long> getUserAmount(){
+        return R.success(userInfoService.getBaseMapper().selectCount(null));
+    }
 }

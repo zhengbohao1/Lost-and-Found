@@ -1,24 +1,13 @@
 <template>
+  <div style="z-index: 80; position: absolute; left: 1020px; margin-top: 55px;">
+     <SearchBox></SearchBox>
+  </div>
   <div class="common-layout">
     <el-container>
-      <el-header>
-        <el-row>
-          <el-col :span="4">
-            <span>Header</span>
-          </el-col>
-          <el-col :span="12"></el-col>
-          <el-col :span="8">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px ;">
-              <!-- 添加搜索框 -->
-              <div class="btn-box mb20">
-                <span><el-icon><Search/></el-icon></span>
-                <input type="text" placeholder=" " />
-              </div>
-            </div>
-          </el-col>
-        </el-row>
+      <el-header  style="height: 160px; padding: 0;">
+        <Header></Header>
       </el-header>
-      <el-container style="height: 700px">
+      <el-container style="height: 660px;">
         <el-aside :width="isSidebarOpen ? '200px' : '70px'" class="sidebar">
           <el-menu :default-active="activeIndex" class="el-menu-vertical-demo"
                    :router="true"
@@ -54,32 +43,28 @@
               <el-icon><House /></el-icon>
               <span style="margin-left: 30px">寻物广场</span>
             </el-menu-item>
-            <el-menu-item index="">
+            <el-menu-item @click="handleUpload">
               <el-icon><Promotion /></el-icon>
-              <span style="margin-left: 40px" @click="handleUpload">发布</span>
+              <span style="margin-left: 40px">发布</span>
             </el-menu-item>
-            <el-menu-item index="/user/message">
-              <el-icon><Comment /></el-icon>
-              <el-badge v-if="value > 0 " :value="3" :hidden="value <= 0" :max="99" class="item-badge"></el-badge>
-              <span :style="value > 0 ? { 'margin-left': '20px' } : { 'margin-left': '40px' }">通知</span>
+            <el-menu-item index="" @click="handleMessage">
+              <el-icon><BellFilled /></el-icon>
+              <el-badge v-if="numOfMessage > 0 " :value="numOfMessage" :max="99"></el-badge>
+              <span :style="numOfMessage > 0 ? { 'margin-left': '20px' } : { 'margin-left': '40px' }">通知</span>
             </el-menu-item>
-            <el-menu-item index="/user/feedback">
+            <el-menu-item index="" @click="handleFeedback">
               <el-icon><WarnTriangleFilled /></el-icon>
               <span style="margin-left: 30px">意见反馈</span>
             </el-menu-item>
-            <!-- 添加 Popconfirm -->
-            <el-popconfirm title="您确定要退出登录吗？" @confirm="loginOut" :disabled="!userStore.userToken" >
-              <template #reference>
-                <el-menu-item :disabled="!userStore.userToken">
-                  <el-icon><SwitchButton /></el-icon>
-                  <span style="margin-left: 10px">退出登录</span>
-                </el-menu-item>
-              </template>
-            </el-popconfirm>
+            <el-menu-item :index="''"   v-if="userStore.userToken">
+              <el-icon><SwitchButton /></el-icon>
+              <span style="margin-left: 30px" @click="showLogoutConfirm">退出登录</span>
+            </el-menu-item>
           </el-menu>
         </el-aside>
         <el-main id="content">
-          <transition class="child">
+          <div class="backover" v-if="showLogin"></div>
+          <transition name="fade">
             <div class="overlay" v-if="showLogin">
               <el-button class="close" @click="changeShow" plain round>
                 <el-icon size="x-large">
@@ -89,22 +74,31 @@
               <login @changeShow="changeShow"/>
             </div>
           </transition>
-          <router-view :search="search"></router-view>
+
+          <router-view v-slot="{ Component }">
+            <transition name="route" mode="out-in" appear>
+            <keep-alive>
+                <component :is="Component" />
+            </keep-alive>
+            </transition>
+          </router-view>
+
         </el-main>
       </el-container>
-      <el-footer>Footer</el-footer>
     </el-container>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { Fold, Expand, House, SwitchButton, Promotion, WarnTriangleFilled, User, Comment, Search, Close } from '@element-plus/icons-vue';
+import { Fold, Expand, House, SwitchButton, Promotion, WarnTriangleFilled, User, Comment, Search, Close, BellFilled } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
-import { getUserAvatar } from '@/apis/user';
+import { countMessage } from '@/apis/user';
 
-import Login from '@/views/Login/onther.vue';
+import Login from '@/views/Login/other.vue';
+import Header from '@/components/function/Header.vue';
+import SearchBox from '@/components/function/SearchBox.vue';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -114,20 +108,37 @@ const activeIndex = ref('1');
 const post = ref(null); // 用于存储请求结果
 const show = ref(false);
 
+const numOfMessage = ref(0)
+
 const search = ref(''); //搜索传参
+
+const gettNum = async () => {
+  await countMessage(userStore.userInfo.userId).then(res => {
+  numOfMessage.value = res.data
+  })
+}
+
+const showLogoutConfirm = () => {
+  ElMessageBox.confirm(
+    '您确定要退出登录吗？',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
+    loginOut();
+  }).catch(() => {
+    ElMessage({
+      type: 'info',
+      message: '已取消退出登录'
+    });
+  });
+}
 
 const loginOut = () => {
   userStore.userLogout();
-  console.log("userToken");
-  console.log(userStore.userToken);
-  console.log("userInfo");
-  console.log(userStore.userInfo);
-  if(userStore.userToken === null) {
-      ElMessage({
-      message: '登出成功',
-      type: 'success',
-    });
-  }
   router.push('/user');
 };
 
@@ -148,13 +159,14 @@ function changeShow() {
 }
 
 function handleLoginClick() {
+  window.history.pushState({}, "", `/user`);
   if (!userStore.userToken) {
     show.value = true;
   }}
 
 function handleUpload() {
   if(userStore.userToken) {
-    router.push('/upload');
+    router.push('/user/upload');
   } else {
     show.value = true;
     ElMessage({
@@ -164,13 +176,36 @@ function handleUpload() {
   }
 }
 
-console.log("userToken", userStore.userToken);
-console.log("userInfo", userStore.userInfo);
+const handleMessage = () =>
+{
+  if(userStore.userToken) {
+    router.push('/user/message');
+  } else {
+    show.value = true;
+    ElMessage({
+      message: '请先登录',
+      type: 'warning',
+    });
+  }
+}
+
+const handleFeedback = () =>
+{
+  if(userStore.userToken) {
+    router.push('/user/feedback');
+  } else {
+    show.value = true;
+    ElMessage({
+      message: '请先登录',
+      type: 'warning',
+    });
+  }
+}
 
   const showLogin = computed(() => show.value && !userStore.userToken);
 
-  watch(() => userStore.userToken, (newToken) => {
-  if (newToken) {
+  watch(() => userStore.userInfo, (newInfo) => {
+  if (newInfo) {
     show.value = false;
     ElMessage({
       message: '登录成功',
@@ -181,6 +216,17 @@ console.log("userInfo", userStore.userInfo);
     canlogout.value = false;
   }
 });
+
+//为了确保登录未过期，在进入页面之前试运行一次连接
+
+onMounted(() => {
+  if(userStore.userToken) {
+    userStore.testLink();
+  }
+  if(userStore.userToken) {
+    gettNum();
+  }
+})
 </script>
 
 <style scoped>
@@ -189,14 +235,23 @@ console.log("userInfo", userStore.userInfo);
   transition: width 0.25s ease;
 }
 
+.backover{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 灰色背景，透明度为0.5 */
+  z-index: 100;
+}
+
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 设置透明度的背景色 */
-  z-index: 9999; /* 设置一个较大的z-index值，确保图层位于其他内容之上 */
+  z-index: 101; /* 设置一个较大的z-index值，确保图层位于其他内容之上 */
 }
 
 .close{
@@ -254,85 +309,27 @@ console.log("userInfo", userStore.userInfo);
   font-weight: bold;
 }
 
-/*搜索input框 */
-.btn-box {
-	color: #fff;
-	width: auto;
-	border-radius: 25px;
-	min-width: 50px;
-	height: 50px;
-	line-height: 50px;
-	display: inline-block;
-	position: relative;
-	overflow: hidden;
-	background-image: linear-gradient(315deg, #a0a0a0 0, #5f5f5f 100%);
-	background-size: 104% 104%;
-	cursor: pointer;
+.fade-enter-active {
+  transition: all 0.3s ease;
 }
 
-.btn-box span {
-	position: absolute;
-	right: 0;
-	top: 0;
-	width: 50px;
-	height: 50px;
-	text-align: center;
-	font-size: 18px;
-	cursor: pointer;
+.fade-leave-active {
+  transition: all 0.3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
 }
 
-.btn-box:hover span {
-  color: rgb(183, 233, 255);
-	position: absolute;
-	right: 0;
-	top: 0;
-	width: 50px;
-	height: 50px;
-	text-align: center;
-	font-size: 18px;
-	cursor: pointer;
+.fade-enter-from,
+.fade-leave-to {
+  transform: scale(0.5); /* 缩放比例，初始为缩小的一半 */
+  opacity: 0;
 }
 
-.btn-box input {
-	display: inline-block;
-	background: 0 0;
-	border: none;
-	color: #fff;
-	padding-left: 20px;
-	line-height: 50px !important;
-	height: 50px;
-	box-sizing: border-box;
-	vertical-align: 4px;
-	font-size: 16px;
-	width: 50px;
-	transition: all .3s ease-in-out;
-	font-style: italic;
-	text-transform: uppercase;
-	letter-spacing: 5px;
+.route-enter-active,
+.route-leave-active {
+  transition: opacity 0.5s ease;
 }
 
-.btn-box:hover input {
-	display: inline-block;
-	width: 210px;
-	padding-right: 50px
-}
-
-.btn-box input:not(:placeholder-shown) {
-	display: inline-block;
-	width: 300px;
-	padding-right: 50px;
-}
-
-.btn-box input:focus {
-  outline: none;
-  border: 0;
-  box-shadow: none;
-}
-
-/* 在特定类下的 el-input 应用样式，并穿透子组件 */
-.custom-class :deep(.el-input) {
-  /* 你的样式 */
-  color: red;
-  background-color: yellow;
+.route-enter-from,
+.route-leave-to {
+  opacity: 0;
 }
 </style>

@@ -113,7 +113,7 @@
                   <el-input  v-model="formRegister.emailCode" placeholder="输入验证码" :prefix-icon="ChatLineSquare">
                     <template #append>
                       <el-button type="primary" plain
-                      :disabled="!isValidEmail(formRegister.email)"  
+                      :disabled="!isValidEmail(formRegister.email) || isDisabled"  
                         @click="sendCodeZero"
                         v-text="buttonText"
                       ></el-button>
@@ -163,7 +163,7 @@
                   <el-input  v-model="formReset.emailCode" placeholder="输入验证码" :prefix-icon="ChatLineSquare">
                     <template #append>
                       <el-button type="primary" plain
-                      :disabled="!isValidEmail(formReset.email)"  
+                      :disabled="!isValidEmail(formReset.email) || isDisabled2"  
                         @click="sendCodeOne"
                         v-text="buttonText2"
                       ></el-button>
@@ -189,7 +189,7 @@
 </template>
   
   <script setup>
-  import {ref} from "vue";
+  import {onMounted, ref} from "vue";
   import 'element-plus/theme-chalk/el-message.css'
   import {User, Lock, ChatLineSquare, Message} from "@element-plus/icons-vue";
   import {ElMessage} from "element-plus";
@@ -489,7 +489,7 @@ document.body.appendChild(script2);
       buttonText2.value = `${secondsLeft} 秒后重试`;
       countdown2 = setInterval(() => {
         if (--secondsLeft > 0) {
-          buttonText.value = `${secondsLeft} 秒后重试`;
+          buttonText2.value = `${secondsLeft} 秒后重试`;
         } else {
           clearInterval(countdown2);
           buttonText2.value = '发送验证码';
@@ -572,6 +572,13 @@ document.body.appendChild(script2);
     startCountdown2();
     userStore.userSendCode(email, 1);
   }
+
+  onMounted(() => {
+    ElMessage.warning('不要重复登录')
+    if(userStore.userToken){
+      router.push({path: '/user'})
+    }
+  })
   </script>
   
   <style scoped>

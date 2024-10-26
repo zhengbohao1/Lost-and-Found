@@ -67,6 +67,7 @@ import { ref, reactive, onMounted, nextTick } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { addFoundPost } from '@/apis/found';
 import { addLostPost } from '@/apis/lost';
+import { useRouter } from 'vue-router';
 import { Plus } from '@element-plus/icons-vue';
 
 const formRef = ref(null);
@@ -81,6 +82,8 @@ const finderId = userStore.userInfo.userId;
 const status = ref(0);
 const claimantId = ref(null);
 const imgUrl = ref('');
+
+const router = useRouter();
 
 const form = reactive({
   itemName: '',
@@ -161,21 +164,32 @@ async function submitForm() {
         upload.value.submit();
         if(uploadSuccess){
             // 构建 POST 数据
-          const postData = {
-            itemName: form.itemName,
-            description: form.description,
-            foundDate: form.foundDate,
-            foundLocation: form.foundLocation,
-            status: status.value,
-            finderId: '123',
-            claimantId: claimantId.value,
-            imgUrl: imgUrl.value,
-            reviewProcess: '0'
-          };  
           // 发送 POST 请求
           if(form.type == 'found'){
+            const postData = {
+              itemName: form.itemName,
+              description: form.description,
+              foundDate: form.foundDate,
+              foundLocation: form.foundLocation,
+              status: status.value,
+              finderId: finderId,
+              claimantId: claimantId.value,
+              imgUrl: imgUrl.value,
+              reviewProcess: '0'
+            };  
             await addFoundPost(postData);
           }else{
+            const postData = {
+              itemName: form.itemName,
+              description: form.description,
+              lostDate: form.foundDate,
+              lostLocation: form.foundLocation,
+              status: status.value,
+              ownerId: finderId,
+              claimantId: claimantId.value,
+              imgUrl: imgUrl.value,
+              reviewProcess: '0'
+            };  
             await addLostPost(postData);
           }
         }else{
@@ -186,10 +200,13 @@ async function submitForm() {
         }
         // 成功后的处理
         ElMessage({
-          message: '提交成功',
+          message: '我可以发布',
           type: 'success',
         });
       }
+      setTimeout(() => {
+        router.push('/user');
+      },2500)
     });
   } catch (error) {
     // 失败后的处理
@@ -207,7 +224,10 @@ function resetForm() {
 }
 
 onMounted(() => {
-  // 确保上传组件在DOM中存在后再引用
+  if(!userStore.userToken){
+      ElMessage.warning('请先登录')
+      router.push('/user')
+  }
   nextTick(() => {
   });
 });

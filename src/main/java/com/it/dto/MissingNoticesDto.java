@@ -35,7 +35,7 @@ public class MissingNoticesDto implements Serializable {
     private String lostLocation;
     @Getter
     @Setter
-    private int ownerId;
+    private String ownerId;
     @Getter
     @Setter
     @TableField(fill = FieldFill.INSERT)

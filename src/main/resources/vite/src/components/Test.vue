@@ -1,135 +1,132 @@
-<template>  
-  <div class="box">  
-    <div style="border-radius: 0.8rem;background-color:#fff;">  
-      <el-row :gutter="20">  
-        <!-- 图片区 -->  
-        <el-col :span="50">  
-          <div class="banner">  
-            <el-carousel height="600px">  
-              <el-carousel-item class="carousel-item-center">  
-                <img style="object-fit: cover;"  
-                     @load="adjustImageSize($event)" ref="images"  
-                     src="D:\picture\Full_of_youself-assets\Full_of_youself.png"  
-                     alt=""/>  
-              </el-carousel-item>  
-            </el-carousel>  
-          </div>  
-        </el-col>  
-        <!-- 图片区结束 -->  
-        <el-col :span="50">
-          <div class="info" style="width: 300px;margin-top: 20px;">
-            <!-- 卡片头部 -->
-            <el-row style="align-items: center;width: 500px;">
-              <a :href="`/user/index/`">
-                <el-avatar :src="1" size="large"/>
-              </a>
-              <div class="username">test</div>
-            </el-row>
-            <!-- 卡片头部结束 -->
-            <div class="main-content">
-              <!-- 卡片内容 -->
-              <el-row style="margin-top: 20px;">
-                <h2>test</h2>
-              </el-row>
-              <el-row>
-                <div class="content">test</div>
-              </el-row>
-              <el-row>
-                <time class="time">test</time>
-              </el-row>
-              <!-- 卡片内容结束 -->
-              <hr/>
-                <div class="comments" v-if="comments" v-infinite-scroll="load" :infinite-scroll-disabled="disabled">
-              </div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>  
-    </div>  
-  </div>  
-</template>  
-  
-<script setup>  
-import { ref, defineEmits } from 'vue'
+<div class="container">
+  <input style="height:35px; font-size: 16px;" type="text" placeholder="Search...">
+  <div class="search"></div>
+</div>
 
-const comments = ref([])
+<style lang="scss" scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-const emit = defineEmits('afterDoComment'); //发送评论时通知父组件更新评论
-
-const adjustImageSize = (event) => {
-  const img = event.target;
-  const naturalWidth = img.naturalWidth;
-  const naturalHeight = img.naturalHeight;
-  const imageRatio = naturalWidth / naturalHeight;
-  if (imageRatio > 1) {
-    img.style.width = '100%';
-    img.style.height = 'auto';
-  } else {
-    img.style.height = '100%';
-    img.style.width = 'auto';
+.container {
+  z-index: 90;
+  position: absolute;
+  margin: auto;
+  top: 20px;
+  left: 1000px;
+  width: 300px;
+  height: 100px;
+  .search {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    background: rgba(130, 130, 130, 0.6);
+    border-radius: 50%;
+    transition: all 1s;
+    z-index: 4;
+    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.4);
+    // box-shadow: 0 0 25px 0 crimson;
+    &:hover {
+      cursor: pointer;
+    }
+    &::before {
+      content: "";
+      position: absolute;
+      margin: auto;
+      top: 22px;
+      right: 0;
+      bottom: 0;
+      left: 22px;
+      width: 12px;
+      height: 2px;
+      background: white;
+      transform: rotate(45deg);
+      transition: all .5s;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      margin: auto;
+      top: -5px;
+      right: 0;
+      bottom: 0;
+      left: -5px;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      border: 2px solid white;
+      transition: all .5s;
+    }
+  }
+  input {
+    font-family: 'Inconsolata', monospace;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    outline: none;
+    border: none;
+    // border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgb(150, 150, 150, 0.6);
+    color: white;
+    text-shadow: 0 0 10px rgb(20, 53, 220);
+    padding: 0 80px 0 20px;
+    border-radius: 30px;
+    box-shadow: 0 0 25px 0 rgb(20, 120, 220),
+                0 20px 25px 0 rgba(0, 0, 0, 0.2);
+    // box-shadow: inset 0 0 25px 0 rgba(0, 0, 0, 0.5);
+    transition: all 1s;
+    opacity: 0;
+    z-index: 5;
+    font-weight: bolder;
+    letter-spacing: 0.1em;
+    &:hover {
+      cursor: pointer;
+    }
+    &:focus {
+      width: 300px;
+      opacity: 1;
+      cursor: text;
+    }
+    &:focus ~ .search {
+      right: -250px;
+      background: #151515dd;
+      z-index: 6;
+      &::before {
+        top: 0;
+        left: 0;
+        width: 25px;
+      }
+      &::after {
+        top: 0;
+        left: 0;
+        width: 25px;
+        height: 2px;
+        border: none;
+        background: white;
+        border-radius: 0%;
+        transform: rotate(-45deg);
+      }
+    }
+    &::placeholder {
+      color: white;
+      opacity: 0.5;
+      font-weight: bolder;
+    }
   }
 }
-</script>  
-  
-<style scoped>  
-.box {  
-  position: absolute;  
-  left: 200px;  
-  top: 100px;  
-  border-radius: 0.8rem;  
-  width: 950px;  
-  height: 600px;  
-  margin-top: 5px;  
-  box-shadow: -16px 28px 28px -3px rgba(0, 0, 0, 0.1), 0px 10px 61px -8px rgba(0, 0, 0, 0.1);  
-}  
-  
-.banner {  
-  background-color: rgb(242, 242, 242);
-  width: 600px;  
-  border-radius: 0.8rem 0 0 0.8rem;  
-}  
-
-.username {
-  margin-left: 20px;
-  font-size: 20px;
-}
-
-.main-content::-webkit-scrollbar {
-  width: 0.1em; /* 设置滚动条宽度为0.1em */
-  background-color: transparent; /* 设置滚动条背景颜色为透明 */
-}
-
-.main-content {
-  height: 420px;
-  overflow-y: scroll;
-}
-
-  
-.content {
-  margin: 0;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 28px;
-  color: #333;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-}
-
-.time {
-  font-size: 12px;
-  color: #999;
-}
-
-.carousel-item-center {  
-  display: flex;  
-  justify-content: center; /* 水平居中（如果需要） */  
-  align-items: center; /* 垂直居中 */  
-  height: 100%; /* 确保容器高度被设置 */  
-}  
-  
-/* 确保图片不会超出轮播图项容器的边界 */  
-.carousel-item-center img {  
-  max-width: 100%;  
-  max-height: 100%; /* 可选，根据实际需要调整 */  
-}  
 </style>

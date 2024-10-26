@@ -111,3 +111,37 @@ export const postChildComment = (data) => {
         }
     })
 }
+
+//认领
+export const claim = (data) => {
+    return http({
+        url: 'http://localhost:8090/user/sendClaimInfo',
+        method: 'POST',
+        data: data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+// 个人帖子获得
+export const getPersonalPassPost = (id) => {
+    return http({
+        url: 'http://localhost:8090/lost_found/getLegalPostByUserId?userId='+id,
+        method: 'GET',
+    })
+}
+
+export const getPersonalWaitPost = (id) => {
+    return http({
+        url: 'http://localhost:8090/lost_found/getWaitByUserId?userId='+id,
+        method: 'GET',
+    })
+}
+
+export const getPersonalBackPost = (id) => {
+    return http({
+        url: 'http://localhost:8090/lost_found/getIllegalByUserId?userId='+id,
+        method: 'GET',
+    })
+}

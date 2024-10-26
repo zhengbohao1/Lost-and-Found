@@ -10,15 +10,22 @@ const ManageUsers = () => import('@/views/Control/Manage/users/index.vue');
 const ManageAdvise = () => import('@/views/Control/Manage/advise/index.vue');
 const User = () => import('@/views/User/index.vue');
 const Space = () => import('@/views/User/Space/index.vue');
+const MyFoundPost = () => import('@/views/User/Space/found/index.vue');
+const MyLostPost = () => import('@/views/User/Space/lost/index.vue');
+const waitPostFound = () => import('@/views/User/Space/wait/found/index.vue')
+const waitPostLost = () => import('@/views/User/Space/wait/lost/index.vue')
+const backPostFound = () => import('@/views/User/Space/back/found/index.vue')
+const backPostLost = () => import('@/views/User/Space/back/lost/index.vue')
+const Prize = () => import('@/views/User/Space/prize/index.vue');
 const Message = () => import('@/views/User/Message/index.vue');
 const FoundWaterFall = () => import('@/views/User/WaterFall/found/index.vue');
 const LostWaterFall = () => import('@/views/User/WaterFall/lost/index.vue');
 const UserUpLoad = () => import('@/views/User/UpLoad/index.vue');
 const FeedBack = () => import('@/views/User/FeedBack/index.vue');
-const Detail = () => import('@//components/user/Detail.vue');
+const FoundDetail = () => import('@/components/user/FoundDetail.vue');
+const LostDetail = () => import('@/components/user/LostDetail.vue');
 const NotFound = () => import('@/views/NotFound/index.vue');
 const Test = () => import('@/components/Test2.vue');
-const Test2 = () => import('@/components/user/Detail.vue');
 
 
     export const routes= [
@@ -108,7 +115,7 @@ const Test2 = () => import('@/components/user/Detail.vue');
                     children:[
                         {
                             path: 'explore/:id',
-                            component: Detail,
+                            component: FoundDetail,
                             meta: {
                                 title: '详情',
                             },
@@ -120,7 +127,16 @@ const Test2 = () => import('@/components/user/Detail.vue');
                     component: LostWaterFall,
                     meta: {
                         title: '寻物启事',
-                    }
+                    },
+                    children:[
+                        {
+                            path: 'explore/:id',
+                            component: LostDetail,
+                            meta: {
+                                title: '详情',
+                            },
+                        },
+                    ]
                 },
                 {
                     path: 'space',
@@ -130,7 +146,79 @@ const Test2 = () => import('@/components/user/Detail.vue');
                         requireAuth: true,
                         isUser: true,
                         isAdmin: false,
-                    }
+                    },
+                    children:[
+                        {
+                            path: 'found',
+                            component: MyFoundPost,
+                            meta: {
+                                title: '我的失物',
+                                requireAuth: true,
+                                isUser: true,
+                                isAdmin: false,
+                            }
+                        },
+                        {
+                            path: 'lost',
+                            component: MyLostPost,
+                            meta: {
+                                title: '我的寻物',
+                                requireAuth: true,
+                                isUser: true,
+                                isAdmin: false,
+                            }
+                        },
+                        {
+                            path: 'waitfound',
+                            component: waitPostFound,
+                            meta: {
+                                title: '待审核',
+                                requireAuth: true,
+                                isUser: true,
+                                isAdmin: false,
+                            },
+                        },
+                        {
+                            path: 'waitlost',
+                            component: waitPostLost,
+                            meta: {
+                                title: '待审核',
+                                requireAuth: true,
+                                isUser: true,
+                                isAdmin: false,
+                            },
+                        },
+                        {
+                            path: 'backfound',
+                            component: backPostFound,
+                            meta: {
+                                title: '帖子退回',
+                                requireAuth: true,
+                                isUser: true,
+                                isAdmin: false,
+                            },
+                        },
+                        {
+                            path: 'backlost',
+                            component: backPostLost,
+                            meta: {
+                                title: '帖子退回',
+                                requireAuth: true,
+                                isUser: true,
+                                isAdmin: false,
+                            }
+                        },
+                        {
+                            path: 'prize',
+                            component: Prize,
+                            meta:{
+                                title: '奖品兑换',
+                                requireAuth: true,
+                                isUser: true,
+                                isAdmin: false,
+                            }
+                        }
+                    ]
                 },
                 {
                     path: 'upload',
