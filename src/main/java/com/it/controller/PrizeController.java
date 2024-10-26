@@ -1,13 +1,20 @@
 package com.it.controller;
 
 import com.it.common.R;
+import com.it.constants.Constants;
 import com.it.entity.Prize;
+import com.it.entity.UserPrize;
 import com.it.mapper.UserInfoMapper;
 import com.it.service.PrizeService;
 import com.it.utils.ThreadLocalUtil;
+import com.it.vo.UserPrizeVo;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,13 +29,16 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/prize")
-public class PrizeController {
+public class PrizeController extends CommonController {
 
     @Resource
     private PrizeService prizeService;
 
     @Resource
     private UserInfoMapper userInfoMapper;
+
+    @Value("${project.folder}")
+    private String baseFolder;
 
     /**
      * 获取所有奖品信息
@@ -38,6 +48,18 @@ public class PrizeController {
     public R<List<Prize>> selectPrizeList() {
         List<Prize> prizeList = prizeService.selectPrizeList();
         return R.success(prizeList);
+    }
+
+    /**
+     * 获取奖品图片
+     * @param response
+     * @param prizeImageUrl
+     */
+    @GetMapping("/image")
+    public void getPrizeImage(HttpServletResponse response, @RequestParam String prizeImageUrl){
+        String prizeImagePath = baseFolder + Constants.FILE_FOLDER_PRIZE_NAME + prizeImageUrl;
+        response.setContentType("image/jpeg");
+        readFile(response, prizeImagePath);
     }
 
     /**
@@ -86,5 +108,24 @@ public class PrizeController {
         String userId = (String) claims.get("userId");
         prizeService.exchangePrize(id, userId);
         return R.success(null);
+    }
+
+    /**
+     * 获取所有用户兑换奖品的记录信息
+     * @return
+     */
+    @GetMapping("/userPrizeList")
+    public R<List<UserPrizeVo>> getUserPrizeList() {
+        List<UserPrize> userPrizeList = prizeService.getUserPrizeList();
+        List<UserPrizeVo> userPrizeVoList = new ArrayList<>();
+        for (UserPrize userPrize : userPrizeList) {
+            UserPrizeVo userPrizeVo = new UserPrizeVo();
+            BeanUtils.copyProperties(userPrize, userPrizeVo);
+            userPrizeVoList.add(userPrizeVo);
+        }
+        userPrizeVoList.forEach(userPrizeVo ->
+            userPrizeVo.setNickName(userInfoMapper.selectNickNameByUserId(userPrizeVo.getUserId()))
+        );
+        return R.success(userPrizeVoList);
     }
 }

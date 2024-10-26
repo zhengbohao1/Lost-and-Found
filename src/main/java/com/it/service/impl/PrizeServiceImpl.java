@@ -2,8 +2,10 @@ package com.it.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.it.entity.Prize;
+import com.it.entity.UserPrize;
 import com.it.exception.BusinessException;
 import com.it.mapper.GoldCoinMapper;
+import com.it.mapper.UserPrizeMapper;
 import com.it.service.PrizeService;
 import com.it.mapper.PrizeMapper;
 import jakarta.annotation.Resource;
@@ -26,6 +28,9 @@ public class PrizeServiceImpl extends ServiceImpl<PrizeMapper, Prize>
 
     @Resource
     private GoldCoinMapper goldCoinMapper;
+
+    @Resource
+    private UserPrizeMapper userPrizeMapper;
 
     /**
      * 查询全部奖品信息
@@ -87,6 +92,15 @@ public class PrizeServiceImpl extends ServiceImpl<PrizeMapper, Prize>
     @Override
     public void addPrize(Prize prize) {
         this.prizeMapper.insert(prize);
+    }
+
+    /**
+     * 获取所有用户兑换奖品的记录信息
+     * @return
+     */
+    @Override
+    public List<UserPrize> getUserPrizeList() {
+        return userPrizeMapper.selectAll();
     }
 }
 

@@ -74,6 +74,14 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
      */
     @Update("UPDATE user_info SET status = 0 WHERE user_id = #{userId}")
     void disableUser(String  userId);
+
+    /**
+     * 根据用户id查询用户昵称
+     * @param userId
+     * @return
+     */
+    @Select("SELECT nick_name FROM user_info WHERE user_id = #{userId}")
+    String selectNickNameByUserId(String userId);
 }
 
 

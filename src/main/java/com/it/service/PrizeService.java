@@ -2,6 +2,7 @@ package com.it.service;
 
 import com.it.entity.Prize;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.it.entity.UserPrize;
 
 import java.util.List;
 
@@ -26,4 +27,7 @@ public interface PrizeService extends IService<Prize> {
 
     //管理员添加新的奖品
     void addPrize(Prize prize);
+
+    //获取所有用户兑换奖品的记录信息
+    List<UserPrize> getUserPrizeList();
 }
