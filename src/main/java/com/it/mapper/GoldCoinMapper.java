@@ -11,4 +11,8 @@ public interface GoldCoinMapper extends BaseMapper<GoldCoin> {
     // 根据UserId查询用户金币信息
     @Select("SELECT * FROM gold_coin WHERE user_id = #{userId}")
     GoldCoin selectByUserId(String userId);
+
+    // 根据UserId查询用户金币数量
+    @Select("SELECT amount FROM gold_coin WHERE user_id = #{userId}")
+    Integer getGoldCoin(String userId);
 }
