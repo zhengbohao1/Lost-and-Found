@@ -46,7 +46,7 @@ public class FindTipsDto {
     private String ownerId;
     @Getter
     @Setter
-    private String isRead;
+    private int isRead;
     @Getter
     @Setter
     private String imgUrl;
