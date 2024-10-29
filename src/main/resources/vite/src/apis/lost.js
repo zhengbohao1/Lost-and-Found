@@ -115,3 +115,27 @@ export const getChildComment = (id) => {
         method: 'GET',
     })
 }
+
+//交还
+
+//个人帖子
+export const getPersonalPassPost = (id) => {
+    return http({
+        url: 'http://localhost:8090/missing_notices/getLegalPostByUserId?userId='+id,
+        method: 'GET',
+    })
+}
+
+export const getPersonalWaitPost = (id) => {
+    return http({
+        url: 'http://localhost:8090/missing_notices/getWaitByUserId?userId='+id,
+        method: 'GET',
+    })
+}
+
+export const getPersonalBackPost = (id) => {
+    return http({
+        url: 'http://localhost:8090/missing_notices/getIllegalByUserId?userId='+id,
+        method: 'GET',
+    })
+}

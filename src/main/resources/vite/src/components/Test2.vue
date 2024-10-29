@@ -1,162 +1,41 @@
-<template>  
-  <div class="box">  
-    <div style="border-radius: 0.8rem;background-color:#fff;">  
-      <el-row :gutter="20">  
-        <!-- 图片区 -->  
-        <el-col :span="50">  
-          <div class="banner">  
-            <el-carousel height="600px">  
-              <el-carousel-item class="carousel-item-center">  
-                <img style="object-fit: cover;"  
-                     @load="adjustImageSize($event)" ref="images"  
-                     src="D:\picture\Full_of_youself-assets\Full_of_youself.png"  
-                     alt=""/>  
-              </el-carousel-item>  
-            </el-carousel>  
-          </div>  
-        </el-col>  
-        <!-- 图片区结束 -->  
-        <el-col :span="50">
-          <div class="info" style="width: 300px;margin-top: 20px;">
-            <!-- 卡片头部 -->
-            <el-row style="align-items: center;width: 500px;">
-              <a :href="`/user/index/`">
-                <el-avatar :src="1" size="large"/>
-              </a>
-              <div class="username">test</div>
-            </el-row>
-            <!-- 卡片头部结束 -->
-            <div class="main-content">
-              <!-- 卡片内容 -->
-              <el-row style="margin-top: 20px;">
-                <h2>test</h2>
-              </el-row>
-              <el-row>
-                <div class="content">test</div>
-              </el-row>
-              <el-row>
-                <time class="time">test</time>
-              </el-row>
-              <!-- 卡片内容结束 -->
-              <hr/>
-                <div class="comments" v-if="comments" v-infinite-scroll="load" :infinite-scroll-disabled="disabled">
-                  <el-empty description="现在还没有评论" v-if="comments.length === 0"/> 
-              </div>
-            </div>
-            <el-divider/>
-          </div>
-          <div class="bottomArea">
-            <el-input
-                v-model="content" class="comment-input my" type="text" :placeholder="content.length === 0 ? inputArea : ''" ref="commentInput"
-                :prefix-icon="Edit" @keyup.enter="sendComment()" clearable style="margin-top: 5px"
-                :disabled="review"
-            />
-          </div>
-        </el-col>
-      </el-row>  
-    </div>  
-  </div>  
-</template>  
-  
-<script setup>  
-import { ref, defineEmits } from 'vue'
-import { Edit } from "@element-plus/icons-vue";
-import { useUserStore } from '@/stores/user'
+<template>
+  <div class="demo-image__preview">
+    <el-image
+      style="width: 100px; height: 100px"
+      :src="url"
+      :zoom-rate="1.2"
+      :max-scale="7"
+      :min-scale="0.2"
+      :preview-src-list="srcList"
+      :initial-index="4"
+      fit="cover"
+    />
+  </div>
+</template>
 
-const comments = ref([])
-const content = ref('')
+<script lang="ts" setup>
+const url =
+  'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
+const srcList = [
+  'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
+  'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
+  'https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg',
+  'https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg',
+  'https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg',
+  'https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg',
+  'https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg',
+]
+</script>
 
-const userStore = useUserStore()
-
-const emit = defineEmits('afterDoComment'); //发送评论时通知父组件更新评论
-
-const inputArea = ref('说点什么...')
-
-const adjustImageSize = (event) => {
-  const img = event.target;
-  const naturalWidth = img.naturalWidth;
-  const naturalHeight = img.naturalHeight;
-  const imageRatio = naturalWidth / naturalHeight;
-  if (imageRatio > 1) {
-    img.style.width = '100%';
-    img.style.height = 'auto';
-  } else {
-    img.style.height = '100%';
-    img.style.width = 'auto';
-  }
+<style scoped>
+.demo-image__error .image-slot {
+  font-size: 30px;
 }
-
-const sendComment = () => {
-  //发评论独立于卡片
-  emit('afterDoComment')
-  //提醒消息已发送，更新评论
+.demo-image__error .image-slot .el-icon {
+  font-size: 30px;
 }
-</script>  
-  
-<style scoped>  
-.box {  
-  position: absolute;  
-  left: 200px;  
-  top: 100px;  
-  border-radius: 0.8rem;  
-  width: 950px;  
-  height: 600px;  
-  margin-top: 5px;  
-  box-shadow: -16px 28px 28px -3px rgba(0, 0, 0, 0.1), 0px 10px 61px -8px rgba(0, 0, 0, 0.1);  
-}  
-  
-.banner {  
-  background-color: rgb(242, 242, 242);
-  width: 600px;  
-  border-radius: 0.8rem 0 0 0.8rem;  
-}  
-
-.username {
-  margin-left: 20px;
-  font-size: 20px;
+.demo-image__error .el-image {
+  width: 100%;
+  height: 200px;
 }
-
-.main-content::-webkit-scrollbar {
-  width: 0.1em; /* 设置滚动条宽度为0.1em */
-  background-color: transparent; /* 设置滚动条背景颜色为透明 */
-}
-
-.main-content {
-  height: 420px;
-  overflow-y: scroll;
-}
-
-  
-.content {
-  margin: 0;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 28px;
-  color: #333;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-}
-
-.time {
-  font-size: 12px;
-  color: #999;
-}
-
-.carousel-item-center {  
-  display: flex;  
-  justify-content: center; /* 水平居中（如果需要） */  
-  align-items: center; /* 垂直居中 */  
-  height: 100%; /* 确保容器高度被设置 */  
-}  
-  
-/* 确保图片不会超出轮播图项容器的边界 */  
-.carousel-item-center img {  
-  max-width: 100%;  
-  max-height: 100%; /* 可选，根据实际需要调整 */  
-}  
-
-.bottomArea {
-  position: absolute;
-}
-
 </style>

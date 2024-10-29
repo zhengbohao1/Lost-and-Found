@@ -69,6 +69,9 @@ public class UserController extends CommonController{
     private FindTipsService findTipsService;
 
     @Resource
+    private GoldCoinService goldCoinService;
+
+    @Resource
     private AppConfig appConfig;
 
     /**
@@ -490,5 +493,18 @@ public class UserController extends CommonController{
     @GetMapping("/getUserAmount")
     public R<Long> getUserAmount(){
         return R.success(userInfoService.getBaseMapper().selectCount(null));
+    }
+
+    /**
+     * 获取用户当前的金币数量
+     * @return
+     */
+    @GetMapping("/getGoldCoin")
+    public R<Integer> getGoldCoin(){
+        // 从ThreadLocal中获取用户id
+        Map<String,Object> claims = ThreadLocalUtil.get();
+        String userId = (String) claims.get("userId");
+        Integer goldCoin = goldCoinService.getGoldCoin(userId);
+        return R.success(goldCoin);
     }
 }

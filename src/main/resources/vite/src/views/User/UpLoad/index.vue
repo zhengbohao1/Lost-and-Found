@@ -224,7 +224,10 @@ function resetForm() {
 }
 
 onMounted(() => {
-  // 确保上传组件在DOM中存在后再引用
+  if(!userStore.userToken){
+      ElMessage.warning('请先登录')
+      router.push('/user')
+  }
   nextTick(() => {
   });
 });

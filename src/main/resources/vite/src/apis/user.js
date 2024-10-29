@@ -52,14 +52,58 @@ export const resetPsw = ({email, password, emailCode}) => {
     })
 }
 
+// 修改密码
+export const changePsw = ({oldPassword, newPassword}) => {
+    return http({
+        url: 'http://localhost:8090/user/updatePwd',
+        method: 'POST',
+        data: {
+            oldPassword,
+            newPassword,
+            newPassword
+        }
+    })
+}
+
 //消息
-export const commentToMe = () => {
-    
+export const countMessage = (id) => {
+    return http({
+        url: 'http://localhost:8090/notice/getUnreadCount?userId='+id,
+        method: 'GET',
+    })
+}
+
+export const replyToMe = (id) => {
+    return http({
+        url: 'http://localhost:8090/notice/getAllReplyMessages?userId='+id,
+        method: 'GET',
+    })
 }
 
 export const claimToMe = () => {
     return http({
         url: 'http://localhost:8090/notice/getClaimMessage',
+        method: 'GET',
+    })
+}
+
+export const foundMine = (id) => {
+    return http({
+        url: 'http://localhost:8090/notice/getFindTips?ownerId='+id,
+        method: 'GET',
+    })
+}
+
+export const postPass = (id) => {
+    return http({
+        url: 'http://localhost:8090/notice/getApprovedMessages?userId='+id,
+        method: 'GET',
+    })
+}
+
+export const postBack = (id) => {
+    return http({
+        url: 'http://localhost:8090/notice/getRejectedMessages?userId='+id,
         method: 'GET',
     })
 }

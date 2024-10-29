@@ -35,4 +35,5 @@ public interface UserInfoService extends IService<UserInfo> {
     void disableUser(String userId);
     //根据id获取用户名
     String getUserNameById(String userId);
+
 }

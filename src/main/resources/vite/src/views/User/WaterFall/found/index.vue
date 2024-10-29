@@ -1,5 +1,6 @@
 <template v-if="cards.length>0">  
-    <div class="Empty" v-if="cards.length === 0">
+<div>
+  <div class="Empty" v-if="cards.length === 0">
     <el-empty description="没有帖子..."/>
   </div>
   <el-scrollbar v-else>
@@ -7,19 +8,15 @@
       <ViewCard :card_columns="card_columns" @show-detail="showMessage" ></ViewCard>
     </div>
   </el-scrollbar>
-  <transition
-        name="fade"
-        @before-enter="onBeforeEnter"
-        @after-enter="onAfterEnter"
-        @before-leave="onBeforeLeave"
-        @after-leave="onAfterLeave"
-    >
+  <div class="backover" v-if="show"></div>
+  <transition name="fade">
       <div class="overlay" v-if="show">
         <el-button class="backPage" @click="close" :icon="Close"></el-button>
         <CardDetail :postid="postid" @afterDoComment="afterDoComment" ref="overlay"></CardDetail>
         <!--路由中携带了id，可以选择不用父子传递信息，而使用path传值或者pinia的方式-->
       </div>
     </transition>
+</div>
 </template>
 
 <script setup>
@@ -87,8 +84,6 @@ const loadMore = async () => {
 };
 
 // 卡片详情 //////////////////////////////////////////////////////////////////
-
-const postDetail = ref(null);
 const show = ref(false);
 const overlayX = ref(0); // 覆盖层的水平位置
 const overlayY = ref(0); // 覆盖层的垂直位置
@@ -128,15 +123,25 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.overlay {
+.backover{
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5); /* 灰色背景，透明度为0.5 */
-  z-index: 99;
+  z-index: 100;
 }
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 101;
+}
+
 .backPage {
   position: fixed;
   top: 5%;
@@ -149,5 +154,19 @@ onMounted(() => {
   border: 1px solid var(--color-border);
   cursor: pointer;
   transition: all .3s;
+}
+
+.fade-enter-active {
+  transition: all 0.3s ease;
+}
+
+.fade-leave-active {
+  transition: all 0.3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  transform: scale(0.5); /* 缩放比例，初始为缩小的一半 */
+  opacity: 0; /* 不透明度为0，隐藏元素 */
 }
 </style>
