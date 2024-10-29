@@ -66,7 +66,7 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
     public List<LostFoundDto> selectByCondition(String content) {
         QueryWrapper<LostFound> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.like("item_name",content);
-        List<LostFound> lostFounds= baseMapper.selectList(queryWrapper1);
+        List<LostFound> lostFounds= baseMapper.selectList(queryWrapper1).stream().filter(lostFound -> lostFound.getReviewProcess() == 1).toList();
         //
         List<LostFoundDto> lostFoundsDto = new ArrayList<>();
         QueryWrapper<Image> queryWrapper = new QueryWrapper<>();

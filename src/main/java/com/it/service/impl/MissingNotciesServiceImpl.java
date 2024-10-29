@@ -64,7 +64,7 @@ public class MissingNotciesServiceImpl extends ServiceImpl<MissingNoticesMapper,
     public List<MissingNoticesDto> selectByCondition(String content) {
         QueryWrapper<MissingNotices> queryWrapper = new QueryWrapper<>();
         queryWrapper.like("item_name",content);
-        List<MissingNotices> missingNotices = baseMapper.selectList(queryWrapper);
+        List<MissingNotices> missingNotices = baseMapper.selectList(queryWrapper).stream().filter(MissingNotices -> MissingNotices.getReviewProcess() == 1).toList();;
         List<MissingNoticesDto> missingNoticesDtos = new ArrayList<>();
         //
         for (MissingNotices missingnotice : missingNotices) {
