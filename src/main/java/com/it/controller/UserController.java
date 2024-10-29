@@ -507,4 +507,20 @@ public class UserController extends CommonController{
         Integer goldCoin = goldCoinService.getGoldCoin(userId);
         return R.success(goldCoin);
     }
+
+    /**
+     * 打赏金币
+     * @param goldCoin
+     * @param targetUserId
+     * @param postId
+     * @return
+     */
+    @PostMapping("/tipping")
+    public R<String> Tipping(@RequestParam Integer goldCoin, @RequestParam String targetUserId, @RequestParam Integer postId){
+        // 从ThreadLocal中获取用户id
+        Map<String,Object> claims = ThreadLocalUtil.get();
+        String userId = (String) claims.get("userId");
+        goldCoinService.tipping(goldCoin, userId, targetUserId, postId);
+        return R.success("打赏成功");
+    }
 }
