@@ -284,7 +284,7 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
 
     @Override
     public void UpdateLostfound(LostFound lostFound) {
-        this.baseMapper.updateById(lostFound);
+        this.updateById(lostFound);
     }
 
     @Override

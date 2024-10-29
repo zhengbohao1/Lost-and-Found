@@ -52,7 +52,8 @@ public class NoticeController {
     public R<Integer> getUnreadCount(String userId){
         int unreadCount = claimRequestService.getUnreadCount(userId);
         int unreadCount2 = messageNotificationService.getUnreadCount(userId);
-        return R.success(unreadCount+unreadCount2);
+        int unreadCount3 = findTipsService.getUnreadCount(userId);
+        return R.success(unreadCount+unreadCount2+unreadCount3);
     }
     @GetMapping("/getRejectedMessages")
     public R<List<MessageNotification>> getRejectedMessages(String userId){

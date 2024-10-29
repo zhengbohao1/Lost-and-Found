@@ -80,6 +80,12 @@ public class FindTipsServiceImpl extends ServiceImpl<FindTipsMapper, FindTips> i
     }
 
     @Override
+    public int getUnreadCount(String userId) {
+        return this.baseMapper.getUnreadCount(userId);
+    }
+
+
+    @Override
     public void markFindTipsAsRead(int id) {
         FindTips tip = getById(id);
         tip.setIsRead(1);

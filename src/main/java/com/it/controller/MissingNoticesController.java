@@ -142,4 +142,13 @@ public class MissingNoticesController {
     public R<Long> getFoundCount(){
         return R.success(missingNoticesService.get_found_count());
     }
+    @PutMapping("/updateMissingNotices")
+    public R<String> updateMissingNotices(@RequestBody MissingNotices missingNotices){
+        try {
+            missingNoticesService.updateById(missingNotices);
+            return R.success("修改成功");
+        } catch (Exception e) {
+            throw new BusinessException(e);
+        }
+    }
 }
