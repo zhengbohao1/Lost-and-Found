@@ -10,5 +10,5 @@ public interface GoldCoinService extends IService<GoldCoin> {
     Integer getGoldCoin(String userId);
 
     // 打赏金币
-    void tipping(Integer goldCoin, String userId, String targetUserId, Integer postId);
+    void tipping(Integer goldCoin, String userId, String targetUserId, Integer postId,int category);
 }

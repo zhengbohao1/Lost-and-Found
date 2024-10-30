@@ -516,11 +516,11 @@ public class UserController extends CommonController{
      * @return
      */
     @PostMapping("/tipping")
-    public R<String> Tipping(@RequestParam Integer goldCoin, @RequestParam String targetUserId, @RequestParam Integer postId){
+    public R<String> Tipping(@RequestParam Integer goldCoin, @RequestParam String targetUserId, @RequestParam Integer postId,@RequestParam int category){
         // 从ThreadLocal中获取用户id
         Map<String,Object> claims = ThreadLocalUtil.get();
         String userId = (String) claims.get("userId");
-        goldCoinService.tipping(goldCoin, userId, targetUserId, postId);
+        goldCoinService.tipping(goldCoin, userId, targetUserId, postId,category);
         return R.success("打赏成功");
     }
 }

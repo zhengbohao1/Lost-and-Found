@@ -41,9 +41,9 @@ public class GoldCoinServiceImpl extends ServiceImpl<GoldCoinMapper, GoldCoin> i
      */
     @Transactional
     @Override
-    public void tipping(Integer goldCoin, String userId, String targetUserId, Integer postId) {
+    public void tipping(Integer goldCoin, String userId, String targetUserId, Integer postId,int category) {
         // TODO: 查看是否已经对该用户打过赏
-        int rows = goldCoinMapper.checkTipped(userId, targetUserId, postId);
+        int rows = goldCoinMapper.checkTipped(userId, targetUserId, postId, category);
         if(rows > 0){
             throw new BusinessException("已经对该用户打过赏了");
         }
@@ -56,7 +56,7 @@ public class GoldCoinServiceImpl extends ServiceImpl<GoldCoinMapper, GoldCoin> i
         goldCoinMapper.increaseGoldCoin(targetUserId, goldCoin);
         goldCoinMapper.decreaseGoldCoin(userId, goldCoin);
         // TODO: 添加打赏记录
-        goldCoinMapper.insertTippingRecord(postId, userId, targetUserId);
+        goldCoinMapper.insertTippingRecord(postId, userId, targetUserId,category);
         // TODO: 发消息
         MessageNotification messageNotification = new MessageNotification();
         messageNotification.setRecipientId(targetUserId);

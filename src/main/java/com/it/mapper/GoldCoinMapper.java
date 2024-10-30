@@ -20,8 +20,8 @@ public interface GoldCoinMapper extends BaseMapper<GoldCoin> {
 
 
     // 查看是否已经对该用户打过赏
-    @Select("SELECT COUNT(*) FROM tipping_record WHERE user_id = #{userId} AND target_user_id = #{targetUserId} AND post_id = #{postId}")
-    int checkTipped(String userId, String targetUserId, Integer postId);
+    @Select("SELECT COUNT(*) FROM tipping_record WHERE user_id = #{userId} AND target_user_id = #{targetUserId} AND post_id = #{postId} AND category = #{category}")
+    int checkTipped(String userId, String targetUserId, Integer postId,int category);
 
 
     // 增加用户金币数量
@@ -33,6 +33,6 @@ public interface GoldCoinMapper extends BaseMapper<GoldCoin> {
     void decreaseGoldCoin(String userId, Integer goldCoin);
 
     // 插入打赏记录
-    @Insert("INSERT INTO tipping_record (post_id, user_id, target_user_id) VALUES (#{postId}, #{userId}, #{targetUserId})")
-    void insertTippingRecord(Integer postId, String userId, String targetUserId);
+    @Insert("INSERT INTO tipping_record (post_id, user_id, target_user_id, category) VALUES (#{postId}, #{userId}, #{targetUserId}, #{category})")
+    void insertTippingRecord(Integer postId, String userId, String targetUserId,int category);
 }
