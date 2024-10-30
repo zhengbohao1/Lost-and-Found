@@ -50,7 +50,7 @@ public class Constants {
 
     public static final String AVATAR_SUFFIX = ".jpg";
 
-    public static final String FILE_FOLDER_AVATAR_NAME = "/avatar/";
+    public static final String FILE_FOLDER_AVATAR_NAME = "avatar/";
 
     public static final String FILE_FOLDER_PRIZE_NAME = "prize/";
 
