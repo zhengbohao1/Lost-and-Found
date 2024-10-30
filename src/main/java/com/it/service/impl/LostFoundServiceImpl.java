@@ -219,10 +219,11 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
         queryWrapper.eq("finder_id", userId);
         List<LostFound> lostFounds =this.baseMapper.selectList(queryWrapper).stream().filter(lostFound -> lostFound.getReviewProcess() == 1).toList();
         List<LostFoundDto> lostFoundsDto = new ArrayList<>();
-        QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
+
 
         for (LostFound lostFound : lostFounds) {
             String path = lostFound.getImgUrl();
+            QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
             queryWrapper2.eq("path", path);
             Image image = imageService.getOne(queryWrapper2);
 
@@ -245,10 +246,11 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
         queryWrapper.eq("finder_id", userId);
         List<LostFound> lostFounds =this.baseMapper.selectList(queryWrapper).stream().filter(lostFound -> lostFound.getReviewProcess() == 2).toList();
         List<LostFoundDto> lostFoundsDto = new ArrayList<>();
-        QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
+
 
         for (LostFound lostFound : lostFounds) {
             String path = lostFound.getImgUrl();
+            QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
             queryWrapper2.eq("path", path);
             Image image = imageService.getOne(queryWrapper2);
 
@@ -271,10 +273,11 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
         queryWrapper.eq("finder_id", userId);
         List<LostFound> lostFounds =this.baseMapper.selectList(queryWrapper).stream().filter(lostFound -> lostFound.getReviewProcess() == 0).toList();
         List<LostFoundDto> lostFoundsDto = new ArrayList<>();
-        QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
+
 
         for (LostFound lostFound : lostFounds) {
             String path = lostFound.getImgUrl();
+            QueryWrapper<Image> queryWrapper2 = new QueryWrapper<>();
             queryWrapper2.eq("path", path);
             Image image = imageService.getOne(queryWrapper2);
 
