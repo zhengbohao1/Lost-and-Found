@@ -268,6 +268,7 @@ public class MissingNotciesServiceImpl extends ServiceImpl<MissingNoticesMapper,
                 tradingVolume.setCategory("寻物启事");
                 tradingVolumeService.save(tradingVolume);
             }
+
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }

@@ -180,6 +180,15 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
                 tradingVolume.setCategory("失物招领");
                 tradingVolumeService.save(tradingVolume);
             }
+            MessageNotification messageNotification = new MessageNotification();
+            messageNotification.setRecipientId(user_id);
+            messageNotification.setMessageType(MessageType.CONFIRM_MISSING);
+            messageNotification.setMessageContent("您有一条失物认领已通过！请点击详情查看！");
+            messageNotification.setRelatedPostId(id);
+            messageNotification.setPostCategory(0);
+            messageNotification.setIsRead(0);
+            messageNotification.setSenderId("系统");
+            messageNotificationService.save(messageNotification);
             return "认领信息已确认";
         } catch (Exception e) {
             return e.getMessage();

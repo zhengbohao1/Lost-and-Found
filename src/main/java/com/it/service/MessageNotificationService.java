@@ -11,6 +11,8 @@ public interface MessageNotificationService extends IService<MessageNotification
     List<MessageNotification> getRejectedMessages(String userId);
     void sendApprovedMessage(String recipientId,int relatedPostId,int postCategory);
     List<MessageNotification> getApprovedMessages(String userId);
+    List<MessageNotification> getConfirmMessages(String userId);
+    List<MessageNotification> getGoldMessages(String userId);
     void sendLostParentReplyMessage(String senderId, int relatedPostId, String postWriterId,String content);
     //发布的评论收到了一个子评论！，通过父评论id获取发布者id，然后发布给他。
     void sendLostChildReplyMessage(String senderId, int parentId,int relatedPostId,String content);

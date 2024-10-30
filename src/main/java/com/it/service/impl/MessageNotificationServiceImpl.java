@@ -68,6 +68,26 @@ public class MessageNotificationServiceImpl extends ServiceImpl<MessageMapper, M
     }
 
     @Override
+    public List<MessageNotification> getConfirmMessages(String userId) {
+        QueryWrapper<MessageNotification> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("recipient_id", userId)
+                .eq("message_type", MessageType.CONFIRM_MISSING);
+        return list(queryWrapper).stream()
+                .sorted(Comparator.comparingInt(MessageNotification::getIsRead)) // 根据 readStatus 从低到高排序
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MessageNotification> getGoldMessages(String userId) {
+        QueryWrapper<MessageNotification> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("recipient_id", userId)
+                .eq("message_type", MessageType.GOLD_DASHANG);
+        return list(queryWrapper).stream()
+                .sorted(Comparator.comparingInt(MessageNotification::getIsRead)) // 根据 readStatus 从低到高排序
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void sendLostParentReplyMessage(String senderId, int relatedPostId, String postWriterId, String content) {
         MessageNotification notification = new MessageNotification();
         notification.setRecipientId(postWriterId);

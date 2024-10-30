@@ -3,11 +3,14 @@ package com.it.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.it.entity.GoldCoin;
 import com.it.entity.Image;
+import com.it.entity.MessageNotification;
+import com.it.enums.MessageType;
 import com.it.exception.BusinessException;
 import com.it.mapper.GoldCoinMapper;
 import com.it.mapper.ImageMapper;
 import com.it.service.GoldCoinService;
 import com.it.service.ImageService;
+import com.it.service.MessageNotificationService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +31,8 @@ public class GoldCoinServiceImpl extends ServiceImpl<GoldCoinMapper, GoldCoin> i
         return goldCoinMapper.getGoldCoin(userId);
     }
 
+    @Resource
+    private MessageNotificationService messageNotificationService;
     /**
      * 打赏金币
      * @param goldCoin
@@ -52,6 +57,14 @@ public class GoldCoinServiceImpl extends ServiceImpl<GoldCoinMapper, GoldCoin> i
         goldCoinMapper.decreaseGoldCoin(userId, goldCoin);
         // TODO: 添加打赏记录
         goldCoinMapper.insertTippingRecord(postId, userId, targetUserId);
+        // TODO: 发消息
+        MessageNotification messageNotification = new MessageNotification();
+        messageNotification.setRecipientId(targetUserId);
+        messageNotification.setMessageType(MessageType.GOLD_DASHANG);
+        messageNotification.setMessageContent("您有一条打赏记录，获得"+goldCoin+"个金币！请点击查看~");
+        messageNotification.setIsRead(0);
+        messageNotification.setSenderId(userId);
+        messageNotificationService.save(messageNotification);
     }
 
 

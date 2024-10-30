@@ -80,4 +80,14 @@ public class NoticeController {
         findTipsService.markFindTipsAsRead(id);
         return R.success("已标记为已读");
     }
+    @GetMapping("/getAllConfirmMessages")
+    public R<List<MessageNotification>> getAllConfirmMessages(String userId){
+        List<MessageNotification> allConfirmMessages = messageNotificationService.getConfirmMessages(userId);
+        return R.success(allConfirmMessages);
+    }
+    @GetMapping("/getGoldMessages")
+    public R<List<MessageNotification>> getGoldMessages(String userId){
+        List<MessageNotification> goldMessages = messageNotificationService.getGoldMessages(userId);
+        return R.success(goldMessages);
+    }
 }
