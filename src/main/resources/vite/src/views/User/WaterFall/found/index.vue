@@ -1,29 +1,33 @@
-<template v-if="cards.length>0">  
-<div>
-  <div class="Empty" v-if="cards.length === 0">
-    <el-empty description="没有帖子..."/>
-  </div>
-  <el-scrollbar v-else>
-    <div v-infinite-scroll="loadMore" :infinite-scroll-disabled="disabled" :infinite-scroll-distance="200">
-      <ViewCard :card_columns="card_columns" @show-detail="showMessage" ></ViewCard>
-    </div>
-  </el-scrollbar>
-  <div class="backover" v-if="show"></div>
-  <transition name="fade">
-      <div class="overlay" v-if="show">
-        <el-button class="backPage" @click="close" :icon="Close"></el-button>
-        <CardDetail :postid="postid" @afterDoComment="afterDoComment" ref="overlay"></CardDetail>
-        <!--路由中携带了id，可以选择不用父子传递信息，而使用path传值或者pinia的方式-->
+<template>  
+  <div>
+    <LoadView v-if="loading"></LoadView>
+    <div v-else>
+      <div class="Empty" v-if="cards.length === 0">
+        <el-empty :description=" route.query.input ? '没有找到相关帖子' : '没有帖子...'"></el-empty>
       </div>
-    </transition>
-</div>
+      <div class="waterfall" v-else>
+        <div v-infinite-scroll="loadMore" :infinite-scroll-disabled="disabled" :infinite-scroll-distance="200">
+          <ViewCard :card_columns="card_columns" @show-detail="showMessage" ></ViewCard>
+        </div>
+      </div>
+      <div class="backover" v-if="show"></div>
+      <transition name="fade">
+          <div class="overlay" v-if="show">
+            <el-button class="backPage" @click="close" :icon="Close"></el-button>
+            <CardDetail :postid="postid" @afterDoComment="afterDoComment" ref="overlay"></CardDetail>
+            <!--路由中携带了id，可以选择不用父子传递信息，而使用path传值或者pinia的方式-->
+          </div>
+        </transition>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { onMounted, onUnmounted, ref, nextTick, watch } from 'vue';
 import ViewCard from '@/components/user/Card.vue';
 import CardDetail from '@/components/user/FoundDetail.vue';
-import { queryPost } from '@/apis/found';
+import LoadView from '@/components/public/LoadView.vue';
+import { queryPost, search } from '@/apis/found';
 import { getUserName } from '@/apis/user';
 import { useRoute } from 'vue-router';
 import { waterFallInit, waterFallMore, resizeWaterFall } from '@/utils/waterFall';
@@ -34,6 +38,7 @@ const cards = ref([]);  //包含了所有帖子的所有内容
 
 // 主页卡片 //////////////////////////////////////////////////////////////////
 
+const loading = ref(true);
 const disabled = ref(true);
 const route = useRoute();
 
@@ -64,8 +69,28 @@ const queryPosts = async () => {
   nextTick(() => {
     waterFallInit(columns, card_columns, arrHeight, cards)
   })
+  loading.value = false;
   disabled.value = false; // 启用滚动加载
 };
+
+const querySearchPosts = async () => {
+  loading.value = true;
+  await search(route.query.input).then(res => {
+    if(res.code == 1){
+      let data = res.data;
+      data = data.filter(item => item.reviewProcess == 1);
+      cards.value = data;
+      addSenderName()
+      nextTick(() => {
+        waterFallInit(columns, card_columns, arrHeight, cards)
+      })
+  disabled.value = false; // 启用滚动加载
+    }else{
+      ElMessage.error('搜索失败')
+    }
+    loading.value = false;
+  })
+}
 
 // 无限滚动
 const loadMore = async () => {
@@ -92,7 +117,7 @@ const postid = ref(null)
 
 //显示卡片详情
 const showMessage = async (id, left, top) => {
-  window.history.pushState({}, "", `/user/found/explore/${id}`);
+  window.history.pushState({}, "", `/user/found/${id}`);
   overlayX.value = left;
   overlayY.value = top;
   postid.value = id;
@@ -107,12 +132,12 @@ const close = () => {
 
 const needToLog = ref(false);
 
-watch(route, () => {
-    queryPosts();
-  });
-
 onMounted(() => {
-  queryPosts(); 
+  if(route.query.input){
+    querySearchPosts();
+  }else{
+    queryPosts(); 
+  }
   // 清理函数
   onUnmounted(() => {
     window.removeEventListener('resize', () => {
@@ -123,6 +148,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.waterfall::-webkit-scrollbar {
+    width: 0.1em; /* 设置滚动条宽度为0.1em */
+}
+
 .backover{
   position: fixed;
   top: 0;

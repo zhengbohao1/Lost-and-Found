@@ -1,6 +1,8 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
 import {login, Register, sendCode, queryUserInfo } from "@/apis/main";
+import { getCoin } from "@/apis/prize";
+import { countMessage } from "@/apis/user";
 import { adminLogin } from "@/apis/admin";
 import { resetPsw } from "@/apis/user";
 
@@ -11,6 +13,8 @@ export const useUserStore = defineStore('user', () => {
     const isUser = ref(true);
     const userToken = ref(null);
     const userInfo = ref({});
+    const coinNum  =ref(0);
+    const messageNum = ref(0);
 
     const userSendCode = async (email,type) => {
         await sendCode({email,type});
@@ -109,6 +113,18 @@ export const useUserStore = defineStore('user', () => {
       isUser.value = false;
   };
 
+  const getCoinNum = async () => {
+    await getCoin().then(res => {
+      coinNum.value = res.data;
+    }
+    )
+  }
+
+  const coutMsg = async () => {
+    await countMessage(userInfo.value.userId).then(res => {
+      messageNum.value = res.data;
+    })
+  }
 
     const testLink = async () => {
         if(userToken){
@@ -120,6 +136,8 @@ export const useUserStore = defineStore('user', () => {
         isUser,
         userToken,
         userInfo,
+        coinNum,
+        messageNum,
         userLogin,
         adminLog,
         userReset,
@@ -128,6 +146,8 @@ export const useUserStore = defineStore('user', () => {
         userLogout,
         loginOut,
         userRegister,
+        getCoinNum,
+        coutMsg,
 
         testLink
     };

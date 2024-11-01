@@ -39,9 +39,7 @@
           :on-preview="handlePictureCardPreview"
           :on-remove="handleRemove"
           :on-change="handleChange"
-          :on-success="handleSuccess"
           :pn-error="handleError"
-          :before-upload="beforeUpload"
           v-model:file-list="fileList"
           :auto-upload="false"
           :on-exceed="handleExceed"
@@ -128,7 +126,7 @@ function handlePictureCardPreview(file) {
 }
 
 function handleRemove(file, fileList) {
-  console.log(file, fileList);
+  ElMessage.warning('替换图片');
 }
 
 function handleChange(uploadFile, uploadFiles) {
@@ -204,9 +202,10 @@ async function submitForm() {
           type: 'success',
         });
       }
+      resetForm();
       setTimeout(() => {
         router.push('/user');
-      },2500)
+      },2000)
     });
   } catch (error) {
     // 失败后的处理
@@ -221,6 +220,7 @@ async function submitForm() {
 function resetForm() {
   formRef.value.resetFields();
   fileList.value = [];
+  imgUrl.value = '';
 }
 
 onMounted(() => {

@@ -452,8 +452,9 @@ const doLogin = () => {
       if(await userStore.userLogin({email, password, checkCode}) === 1)
       {
         await userStore.getUserInfo()
-        ElMessage({type: 'success', message: '登录成功'})
-        window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        },1000)
       }else{
         reloadImage() //改变验证码
       }

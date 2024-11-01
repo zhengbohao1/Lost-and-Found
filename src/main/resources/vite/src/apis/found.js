@@ -112,6 +112,17 @@ export const postChildComment = (data) => {
     })
 }
 
+//查询
+export const search = (data) => {
+    return http({
+        url: 'http://localhost:8090/lost_found/query?content=' + data,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
 //认领
 export const claim = (data) => {
     return http({
@@ -142,6 +153,34 @@ export const getPersonalWaitPost = (id) => {
 export const getPersonalBackPost = (id) => {
     return http({
         url: 'http://localhost:8090/lost_found/getIllegalByUserId?userId='+id,
+        method: 'GET',
+    })
+}
+
+// 修改帖子
+export const updatePost = (data) => {
+    return http({
+        url: 'http://localhost:8090/lost_found/updateLostFound',
+        method: 'PUT',
+        data: data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+//确认失主
+export const confirmOwner = (id, post) => {
+    return http({
+        url: `http://localhost:8090/user/confirmClaim?user_id=${encodeURIComponent(id)}&post_id=${encodeURIComponent(post)}`,
+        method: 'PUT',
+    });
+};
+
+//我是失主
+export const iAmOwner = (id) => {
+    return http({
+        url: 'http://localhost:8090/notice/getAllConfirmMessages?userId='+id,
         method: 'GET',
     })
 }

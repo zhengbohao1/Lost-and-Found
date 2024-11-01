@@ -8,7 +8,7 @@ const http = axios.create({
     baseURL: 'api',
     timeout: 5000,
     retry: 6, //设置全局重试请求次数（最多重试几次请求）
-    retryDelay: 1500, //设置全局请求间隔
+    retryDelay: 2000, //设置全局请求间隔
 });
 
 // axios请求拦截器

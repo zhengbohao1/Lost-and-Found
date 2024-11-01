@@ -8,7 +8,7 @@ export const getPrizeList = () =>{
     })
 }
 
-export  const getPrize = (id) => {
+export  const exchangePrize = (id) => {
     return http({
         url: 'http://localhost:8090/prize/exchange?id='+id,
         method: 'PUT'
@@ -37,5 +37,21 @@ export const deletePrize = (id) => {
         url: 'http://localhost:8090/prize/delete?id='+id,
         method: 'DELETE',
         data: id
+    })
+}
+
+export const getCoin = () => {
+    return http({
+        url: 'http://localhost:8090/user/getGoldCoin',
+        method: 'GET'
+    })
+}
+
+//发送奖励
+export const sendCoin = (data) => {
+    return http({
+        url: 'http://localhost:8090/user/tipping',
+        method: 'POST',
+        data: data
     })
 }

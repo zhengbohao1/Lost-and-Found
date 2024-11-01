@@ -121,12 +121,19 @@
 
             <div class="bottomArea">
               <div v-if="!showComment">
-                <el-row>
-                  <el-col :span="10">
+                <el-row style="width: 360px;">
+                  <el-col :span="8">
                     <el-button class="button" @click="showComment=true" 
                       v-if="'!userStore.userInfo.userId==post.finderId'"
                       >显示评论</el-button>
                     </el-col>
+                    <el-row :span="14" >
+                      <div v-if="!post.claimantId">
+                        <el-button class="button2" @click="claim">不是他的</el-button>
+                        <el-button class="button2" @click="verifyOwner">失主是他</el-button>
+                      </div>
+                      <el-button v-else class="button2" @click="thank">聊表谢意</el-button>
+                    </el-row>
                   </el-row>
                 </div>
               <div v-else>
@@ -185,7 +192,7 @@
   import { ref, defineEmits, watch, toRef, onMounted, reactive  } from 'vue';
   import { Edit, ChatRound, Promotion, Phone, Paperclip, EditPen, User } from "@element-plus/icons-vue";
   import { useUserStore } from '@/stores/user';
-  import { getPostById, getComment, getChildComment, postComment, postChildComment, claim } from '@/apis/found';
+  import { getPostById, getComment, getChildComment, postComment, postChildComment, confirmOwner } from '@/apis/found';
   import { getUserName } from '@/apis/user';
   import { useRouter } from "vue-router";
   import { ElMessage } from 'element-plus';
@@ -194,46 +201,14 @@
   const router = useRouter()
   
   const content = ref('');
-  const review = ref(false);
   const post = ref({});
   const commentInput = ref(null); 
   const userStore = useUserStore();
   const senderName = ref('');
   
-  const formRef = ref(null);
-  const form = reactive({
-    contact_details: '',
-    selectedType: '',
-    evidence: '',
-    notes: '',
-    student_id: '',
-    user_name: ''
-  })
-  
-  const rules = reactive(
-    {
-      contact_details: [
-        { required: true, message: '请输入联系方式', trigger: 'blur' }
-      ],
-      selectedType: [
-        { required: true, message: '请选择联系方式类型', trigger: 'blur' }
-      ],
-      evidence: [
-        { required: true, message: '请输入凭证', trigger: 'blur' }
-      ],
-      student_id: [
-        { required: true, message: '请输入学工号', trigger: 'blur' }
-      ],
-      user_name: [
-        { required: true, message: '请输入真实姓名', trigger: 'blur' }
-      ]
-    }
-  )
-  
   const willSendComment = ref(false);
   const isreply = ref(false);
   const showComment = ref(false);
-  const toClaim = ref(false);
   
   const emit = defineEmits(['afterDoComment']); // 发送评论时通知父组件更新评论
   
@@ -322,11 +297,21 @@ const fetchDetail = async () => {
   try {
     const response = await getPostById(postid.value);
     post.value = response.data;
-    console.log(response.data);
     previewList.value.push('http://localhost:8090/common/download?name='+post.value.imgUrl);
   } catch (error) {
     console.error(error);
   }
+}
+
+//确认失主
+const verifyOwner = async () => {
+  await confirmOwner(claimFound.value.userId, postid.value).then(res =>{
+    if(res.code == 1){
+      ElMessage.success('确认成功');
+    }else{
+      ElMessage.error('确认失败');
+    }
+  })
 }
 
   //评论部分

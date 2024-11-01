@@ -7,9 +7,6 @@ export const getUserList = () => {
     return http({
         url: '/admin/userInfo/all',
         method: 'GET',
-        headers: {
-            'Authorization': userStore.userToken,
-        },
         data: {}
     })
 }
@@ -62,6 +59,27 @@ export const changePsw = ({oldPassword, newPassword}) => {
             newPassword,
             newPassword
         }
+    })
+}
+
+//换头像
+export const changeAvatar = (formData) => {
+  return http({
+    url: 'http://localhost:8090/user/updateAvatar',
+    method: 'POST',
+    data: formData, // 使用 FormData 作为请求体
+    headers: {
+      'Content-Type': 'multipart/form-data' // 设置请求头
+    }
+  });
+}
+
+//修改密码
+export const updatePassword = (data) => {
+    return http({
+        url: 'http://localhost:8090/user/updatePwd',
+        method: 'POST',
+        data: data
     })
 }
 

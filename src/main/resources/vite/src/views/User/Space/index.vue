@@ -1,170 +1,319 @@
-<template>  
-    <div> 
-      <el-row :gutter="20" class="full-height-row">  
-        <el-col :span="8" class="left-card-col">  
-          <el-card class="full-height-card">  
-            <div class="scrollable-content">  
-                <el-row>
-                    <el-col :span="4">
-                        <el-avatar title="点击修改头像" size="large" :src="'http://localhost:8090/user/getAvatarById?userId='+userStore.userInfo.userId"></el-avatar>
-                    </el-col>
-                    <el-col :span="3"></el-col>
-                    <el-col :span="17">
-                        <span class="username">{{ userStore.userInfo.nickName }}</span>
-                        <br>
-                        <span style="font-size: 12px; color: #989">用户编号：{{ userStore.userInfo.userId }}</span>
-                    </el-col>
-                </el-row>
-                <el-row style="margin-top: 15px;">
-                  <el-button>编辑信息</el-button>
-                </el-row>
-            </div>  
-          </el-card>  
-        </el-col>  
-        <el-col :span="16" class="right-card-col">  
-          <el-card class="full-height-card">  
-            <div class="scrollable-content">  
-              <!-- 右侧内容 -->  
-            </div>  
-          </el-card>  
-        </el-col>  
-      </el-row>  
-
-      <transition name="btnin">
-        <div style="margin-top: 15px; gap: 20px; display: flex; justify-content: center">
-          <el-button style="font-size:16px" v-for="item in buttonList" @click="toggleMessage(item)" 
-          :type="activeIndex == item.isActive ? 'primary' : 'text'">{{ item.name }}</el-button>
-        </div>
-      </transition>
-
-    <div style="margin-top: 15px; gap: 20px; display: flex; justify-content: center" v-if="activeIndex == 3">
-      <el-button @click="toggleWaitFound"  :type="activeIndexWait == 1? 'primary' : 'text'">失物招领</el-button>
-      <el-button @click="toggleWaitLost"  :type="activeIndexWait == 2 ? 'primary' : 'text'">寻物启事</el-button>
+<template>
+  <div class="bodypage">
+    <div class="sidepage">
+      <!--个人信息-->
+      <SideCard :details="details">
+        <el-row>
+          <el-avatar @click="details_avatar.close=false" :src="'http://localhost:8090/user/getAvatarById?userId='+userStore.userInfo.userId" :size="50"></el-avatar>
+          <span class="name">{{ userStore.userInfo.nickName }}</span>
+        </el-row>
+        <el-row>
+          <span class="uid">用户编号：{{ userStore.userInfo.userId }}</span>
+        </el-row>
+        <el-row class="function">
+          <el-link @click="details_reset.close = false">重置密码</el-link>
+        </el-row>
+      </SideCard>
+      <!--重置密码-->
+      <NextCard :details="details_reset" :mystyle="mystyle" @closed="details_reset.close = true">
+        <v-form v-model="valid">
+          <v-row>
+            <v-text-field v-model="oldPassword" type="password" :counter="16"
+            :rules="passwordRule"
+            label="旧密码"
+            required
+          ></v-text-field>
+          </v-row>
+          <v-row>
+            <v-text-field v-model="newPassword" type="password" :counter="16"
+            :rules="passwordRule"
+            label="新密码"
+            required
+          ></v-text-field>
+          </v-row>
+          <v-row>
+            <v-text-field v-model="confirmPassword" type="password" :counter="16"
+            :rules="confirmPasswordRule"
+            label="确认密码"
+            required
+          ></v-text-field>
+          </v-row>
+          <v-btn style="position: relative; top: -55px; left: 185px" icon="mdi-check" density="compact" @click="resetPassword"></v-btn>
+        </v-form>
+      </NextCard>
+      <!--头像-->
+      <NextCard  :details="details_avatar" :mystyle="mystyle" @closed="details_avatar.close = true">
+        <el-row style="justify-content: center">
+          <el-upload
+          list-type="picture-card"
+          :class="{ 'showBtnDealImg': canAdd, 'disUoloadSty': !canAdd}"
+          ref="upload"
+          :on-preview="handlePictureCardPreview"
+          :on-remove="handleRemove"
+          :on-change="handleChange"
+          :pn-error="handleError"
+          v-model:file-list="fileList"
+          :auto-upload="false"
+          :on-exceed="handleExceed"
+          :limit="1"
+        >
+          <v-icon icon="mdi-plus" size="50"></v-icon>
+        </el-upload>
+        </el-row>
+        <el-row style="justify-content: center; margin-top: 20px;">
+            <v-btn icon="mdi-check" @click="toChangeAvatar"></v-btn>
+        </el-row>
+      </NextCard>
+      <!--帖子-->
+      <SideCard :details="details_post" :mystyle="mystyle">
+        <transition-group name="expand">
+          <el-row>
+            <el-link class="postlink" v-if="activeIndex!=1" @click="activeIndex=1">发布过的帖子</el-link>
+            <div v-if="activeIndex==1">
+              <el-link class="postlink" @click="router.push('/user/space/found')">失物招领</el-link>
+              <el-link class="postlink" @click="router.push('/user/space/lost')">寻物启事</el-link>
+            </div>
+          </el-row>
+          <el-row>
+            <el-link class="postlink" v-if="activeIndex!=2" @click="activeIndex=2">审核中的帖子</el-link>
+            <div v-if="activeIndex==2">
+              <el-link class="postlink" @click="router.push('/user/space/waitfound')">失物招领</el-link>
+              <el-link class="postlink"  @click="router.push('/user/space/waitlost')">寻物启事</el-link>
+            </div>
+          </el-row>
+          <el-row>
+            <el-link class="postlink" v-if="activeIndex!=3" @click="activeIndex=3">被退回的帖子</el-link>
+            <div v-if="activeIndex==3">
+              <el-link class="postlink" @click="router.push('/user/space/backfound')">失物招领</el-link>
+              <el-link class="postlink"  @click="router.push('/user/space/backlost')">寻物启事</el-link>
+            </div>
+          </el-row>
+        </transition-group>
+      </SideCard>
+      <!--积分-->
+      <SideCard :details="details_coin" :mystyle="mystyle">
+        <v-row>
+          <v-chip size="large" prepend-icon="mdi-cash" variant="text">
+            {{ userStore.coinNum }}
+          </v-chip>
+        </v-row>
+        <v-row>
+          <el-link @click="router.push('/user/space/prize')">
+            <v-icon density="compact" icon="mdi-coffee-to-go-outline" />
+            前往奖品兑换页面
+          </el-link>
+        </v-row>
+      </SideCard>
     </div>
 
-    <div style="margin-top: 15px; gap: 20px; display: flex; justify-content: center" v-if="activeIndex == 4">
-      <el-button @click="toggleBackFound"  :type="activeIndexBack == 1? 'primary' : 'text'">失物招领</el-button>
-      <el-button @click="toggleBackLost"  :type="activeIndexBack == 2 ? 'primary' : 'text'">寻物启事</el-button>
-    </div>
-
-
-    <div class="main-card">
-     
-        <router-view v-slot="{ Component }">
+    <div class="mainpage">
+      <router-view v-slot="{ Component }">
+        <el-scrollbar>
           <transition name="fade" mode="out-in">
             <keep-alive>
               <component :is="Component" />
             </keep-alive>
           </transition>
-        </router-view>
-      </div>
-    </div>  
-  </template>  
-    
-  <script setup>  
-  import { onMounted, ref } from 'vue';
-  import { useUserStore } from '@/stores/user'; 
-  import { useRouter } from 'vue-router';
+        </el-scrollbar>
+      </router-view>
+    </div>
+  </div>
+</template>
 
-  const userStore = useUserStore();
-  const router = useRouter();
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user' 
+import { changeAvatar, updatePassword } from '@/apis/user';
+import { ElMessage } from 'element-plus'
+import {Expand, Fold, Coin, Plus, Lock, Close} from "@element-plus/icons-vue";
 
-  const buttonList = ref([
-    { name: '我捡到的', isActive: 1 },
-    { name: '我丢失的', isActive: 2 },
-    { name: '待审核的', isActive: 3 },
-    { name: '未通过的', isActive: 4 },
-    { name: '奖品兑换', isActive: 5 },
-])
+import SideCard from '@/components/public/SideCard.vue'
+import NextCard from '@/components/public/NextCard.vue'
 
-const activeIndex = ref(1);
+const router = useRouter()
+const userStore = useUserStore()
 
-const toggleMessage = (item) => {
-    switch (item.isActive) {
-        case 1:
-          router.push('/user/space/found');
-          break;
-        case 2:
-          router.push('/user/space/lost');
-          break;
-        case 3:
-          break;
-        case 4:
-            break;
-        case 5:
-          router.push('/user/space/prize');
-          break;
-    }
-  activeIndex.value = item.isActive;
-};
+const details = ref({
+  width: 255,
+  height: 200,
+  icon: 'mdi-account-circle-outline',
+})
 
-const activeIndexWait = ref(0);
+const details_coin = ref({
+  width: 255,
+  height: 100,
+  icon: 'mdi-cash'
+})
 
-const toggleWaitFound = () => {
-  router.push('/user/space/waitfound');
-  activeIndexWait.value = 1;
+const mystyle = ref({
+  marginTop: '15px',
+})
+
+//帖子相关
+const details_post = ref({
+  width: 255,
+  height: 180,
+  icon: 'mdi-folder-account-outline e'
+})
+
+const activeIndex = ref(0)
+
+//重置密码
+const details_reset = ref({
+  width: 255,
+  height: 255,
+  close: true,
+})
+
+//换头像
+const details_avatar = ref({
+  width: 255,
+  height: 255,
+  close: true,
+})
+
+const canAdd = ref(true)
+
+const upload = ref(null)
+const fileList = ref([]);
+const imgUrl = ref('');
+const avatar = ref([])
+const dialogImageUrl = ref('');
+const dialogVisible = ref(false);
+const uploadSuccess = ref(true);
+
+function handlePictureCardPreview(file) {
+dialogImageUrl.value = file.url;
+dialogVisible.value = true;
 }
 
-const toggleWaitLost = () => {
-  router.push('/user/space/waitlost');
-  activeIndexWait.value = 2;
+function handleRemove(file, fileList) {
+ElMessage.warning('替换图片');
+canAdd.value = true;
 }
 
-const activeIndexBack = ref(0);
+function handleChange(uploadFile, uploadFiles) {
+const allowedTypes = ['image/jpeg', 'image/png'];
+if (!allowedTypes.includes(uploadFile.raw.type)) {
+  ElMessage.error('只允许上传 JPG/PNG 类型的图片');
+  return false;
+}
+if (uploadFiles.length === 1) {
+  canAdd.value = false;
+  console.log(canAdd.value)
+}
+imgUrl.value = uploadFile.name;
+avatar.value = uploadFile.raw;
 
-const toggleBackFound = () => {
-  router.push('/user/space/backfound');
-  activeIndexBack.value = 1;
+return true;
 }
 
-const toggleBackLost = () => {
-  router.push('/user/space/backlost');
-  activeIndexBack.value = 2;
+const handleExceed = () => {
+ElMessage.warning(
+    '最多添加1张图片!'
+)
 }
 
-  onMounted(() => {
-    if(!userStore.userToken){
-      ElMessage.warning('请先登录')
-      router.push('/user')
-    }
-  })
-  </script>  
-    
-    <style scoped>
-    .main-card {
-        margin-top: 15px;
-        height: 590px;
-        overflow-y: auto; /* 添加滚动条 */
-    }
-    
-    .full-height-row {  
-        height: 170px; /* 使行的高度继承自父容器 */
-    }
-    
-    .full-height-card {  
-        height: 100%; /* 使卡片高度为父容器高度 */
-        overflow: hidden; /* 隐藏卡片内部的溢出内容 */
-        padding: 10px; /* 为卡片内容添加内边距 */
-        box-sizing: border-box; /* 确保内边距不会增加卡片的高度 */
-    }
-    
-    .scrollable-content {  
-        height: calc(100% - 32px); /* 减去卡片上下内边距的总和，确保内容区域高度正确 */
-        overflow-y: auto; /* 启用垂直滚动条 */
-    }
-    
-    .username {
-        font-weight: bold;
-        font-size: 24px;
-    }
+function handleError(){
+uploadSuccess.value = false;
+ElMessage({
+  message: '上传失败',
+  type: 'error',
+})
+}
 
-    @keyframes sheen {
-  0% {
-    transform: skewY(-45deg) translateX(0);
+const toChangeAvatar = () => {
+const formData = new FormData();
+formData.append('avatar', avatar.value);
+changeAvatar(formData).then(res => {
+  console.log(res)
+  if(res.code === 1){
+    ElMessage.success('更换头像成功');
+    details_avatar.value.close = true;
   }
-  100% {
-    transform: skewY(-45deg) translateX(12.5em);
+})
+}
+
+//密码表单
+const valid = ref(false)
+const oldPassword = ref('')
+const newPassword = ref('')
+const confirmPassword = ref('')
+const passwordRule = [
+  value => !!value || '密码不能为空',
+  value => (value && value.length >= 6) || '密码至少需要6个字符',
+  value => (value && /[a-zA-Z]/.test(value) && /\d/.test(value)) || '密码必须包含字母和数字'
+];
+const confirmPasswordRule = [
+value => !!value || '密码不能为空',
+  value => (value && value.length >= 6) || '密码至少需要6个字符',
+  value => (value && /[a-zA-Z]/.test(value) && /\d/.test(value)) || '密码必须包含字母和数字',
+  value => (newPassword.value === value) || '两次输入的密码不一致'
+]
+
+const resetPassword = async () => {
+  const data = {
+    oldPwd: oldPassword.value,
+    newPwd: newPassword.value,
+    rePwd: confirmPassword.value
   }
+  if (valid) {
+      await updatePassword(data).then(res => {
+      if (res.code === 1) {
+        ElMessage.success('密码修改成功！')    
+        details_reset.value.close = true    
+      }else{
+        ElMessage.error(res.msg)
+      }
+    })
+  }
+}
+</script>
+
+<style scoped>
+.bodypage {
+  width: 1090px;
+  height: 100%;
+  gap: 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+.sidepage {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.mainpage {
+  height: 100%;
+  background-color: #ffffff;
+  flex-grow: 1; /* 让 .mainpage 占据剩余的空间 */
+}
+
+.name{
+    font-weight: bold;
+    margin-left: 15px;
+    margin-top: 10px;
+    font-size: 20px
+}
+
+.uid{
+  margin-top: 10px; 
+  font-size: 16px; 
+  color: #666;
+}
+
+.function{
+  margin-top: 30px; 
+  font-size: 16px; 
+}
+
+.postlink{
+  margin-right: 15px;
+  margin-top: 15px;
+  font-size: 16px;
 }
 
 .fade-enter-active,
@@ -175,5 +324,22 @@ const toggleBackLost = () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-} 
+}
+
+.expand-enter-active, .expand-leave-active {  
+  transition: all 0.5s;  
+}  
+.expand-enter, .expand-leave-to {  
+  opacity: 0;  
+  transform: translateY(30px);  
+}
+</style>
+
+<style>
+  .showBtnDealImg .el-upload--picture-card{
+  }
+
+  .disUoloadSty .el-upload--picture-card{
+    display:none;   /* 上传按钮隐藏 */
+  }
 </style>

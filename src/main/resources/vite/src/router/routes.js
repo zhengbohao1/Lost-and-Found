@@ -18,12 +18,19 @@ const backPostFound = () => import('@/views/User/Space/back/found/index.vue')
 const backPostLost = () => import('@/views/User/Space/back/lost/index.vue')
 const Prize = () => import('@/views/User/Space/prize/index.vue');
 const Message = () => import('@/views/User/Message/index.vue');
+const Reply = () => import('@/views/User/Message/reply/index.vue');
+const Claim = () => import('@/views/User/Message/claim/index.vue');
+const Find = () => import('@/views/User/Message/find/index.vue');
+const Owner = () => import('@/views/User/Message/owner/index.vue');
+const Pass = () => import('@/views/User/Message/pass/index.vue');
+const Back = () => import('@/views/User/Message/back/index.vue');
+const Pay = () => import('@/views/User/Message/pay/index.vue');
 const FoundWaterFall = () => import('@/views/User/WaterFall/found/index.vue');
 const LostWaterFall = () => import('@/views/User/WaterFall/lost/index.vue');
 const UserUpLoad = () => import('@/views/User/UpLoad/index.vue');
 const FeedBack = () => import('@/views/User/FeedBack/index.vue');
-const FoundDetail = () => import('@/components/user/FoundDetail.vue');
-const LostDetail = () => import('@/components/user/LostDetail.vue');
+const FoundDetail = () => import('@/components/user/FoundDetailForRoute.vue');
+const LostDetail = () => import('@/components/user/LostDetailForRoute.vue');
 const NotFound = () => import('@/views/NotFound/index.vue');
 const Test = () => import('@/components/Test2.vue');
 
@@ -113,13 +120,6 @@ const Test = () => import('@/components/Test2.vue');
                         title: '失物招领',
                     },
                     children:[
-                        {
-                            path: 'explore/:id',
-                            component: FoundDetail,
-                            meta: {
-                                title: '详情',
-                            },
-                        },
                     ]
                 },
                 {
@@ -128,15 +128,6 @@ const Test = () => import('@/components/Test2.vue');
                     meta: {
                         title: '寻物启事',
                     },
-                    children:[
-                        {
-                            path: 'explore/:id',
-                            component: LostDetail,
-                            meta: {
-                                title: '详情',
-                            },
-                        },
-                    ]
                 },
                 {
                     path: 'space',
@@ -205,7 +196,7 @@ const Test = () => import('@/components/Test2.vue');
                                 title: '帖子退回',
                                 requireAuth: true,
                                 isUser: true,
-                                isAdmin: false,
+                                isAdmin: false, 
                             }
                         },
                         {
@@ -233,16 +224,99 @@ const Test = () => import('@/components/Test2.vue');
                     path: 'message',
                     component: Message,
                     meta:{
-                        title: '我的通知'
-                    }
+                        title: '我的通知',
+                        requireAuth: false,
+                        isUser: true,
+                    },
+                    children:[
+                        {
+                            path: 'reply',
+                            component: Reply,
+                            meta: {
+                                title: '回复我的',
+                                requireAuth: false,
+                                isUser: true,
+                            }
+                        },
+                        {
+                            path: 'claim',
+                            component: Claim,
+                            meta: {
+                                title: '向我认领',
+                                requireAuth: false,
+                                isUser: true,
+                            }
+                        },
+                        {
+                            path: 'find',
+                            component: Find,
+                            meta: {
+                                title: '我的失物',
+                                requireAuth: false,
+                                isUser: true,
+                            },
+                        },
+                        {
+                            path: 'owner',
+                            component: Owner,
+                            meta: {
+                                title: '请求确认',
+                                requireAuth: false,
+                                isUser: true,
+                            }
+                        },
+                        {
+                            path: 'pass',
+                            component: Pass,
+                            meta: {
+                                title: '审核通过',
+                                requireAuth: false,
+                                isUser: true,
+                            }
+                        },
+                        {
+                            path: 'back',
+                            component: Back,
+                            meta: {
+                                title: '审核失败',
+                                requireAuth: false,
+                                isUser: true,
+                            }
+                        },
+                        {
+                            path: 'pay',
+                            component: Pay,
+                            meta: {
+                                title: '打赏详情',
+                                requireAuth: false,
+                                isUser: true,
+                            }
+                        }
+                    ]
                 },
                 {
                     path: 'feedback',
                     component: FeedBack,
                     meta: {
                         title: '意见反馈',
+                        requireAuth: false,
+                        isUser: true,
                     }
-                }
+                },
+                {
+                    path: '/user/found/:id',
+                    component: FoundDetail,
+                    meta: {
+                        title: '详情',
+                    },
+                },
+                {
+                    path: '/user/lost/:id',
+                    component: LostDetail,
+                    meta: {
+                        title: '详情',
+                    },
+                },
             ]
         },
         {

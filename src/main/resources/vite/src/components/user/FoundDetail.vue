@@ -104,18 +104,6 @@
                     </div>
                     <div v-else>
                     <el-form :model="form" :rules="rules" ref="formRef">
-                      <!-- 联系方式 -->
-                      <el-form-item prop="contact_details" >
-                        <el-input
-                          style="margin-top: 10px;"
-                          v-model="form.contact_details"
-                          maxlength="200"
-                          :prefix-icon="Phone"
-                          placeholder="输入联系方式"
-                          :disabled="!form.selectedType"
-                        ></el-input>
-                      </el-form-item>
-                      
                       <el-form-item prop="selectedType" style="margin-top: 10px; width: 100%;">
                         <el-select v-model="form.selectedType" placeholder="请选择类型">
                           <el-option label="QQ" value="qq"></el-option>
@@ -126,6 +114,18 @@
                           <el-option label="LINE" value="line"></el-option>
                           <el-option label="TIM" value="tim"></el-option>
                         </el-select>
+                      </el-form-item>
+
+                      <!-- 联系方式 -->
+                      <el-form-item prop="contact_details" >
+                        <el-input
+                          style="margin-top: 10px;"
+                          v-model="form.contact_details"
+                          maxlength="200"
+                          :prefix-icon="Phone"
+                          placeholder="输入联系方式"
+                          :disabled="!form.selectedType"
+                        ></el-input>
                       </el-form-item>
 
                       <el-form-item prop="evidence">
@@ -188,9 +188,6 @@
             <div v-if="!userStore.userToken">
               <el-link @click="router.push('/login');">请先登录</el-link>
             </div>
-            <div v-if="post.reviewProcess == '0'">
-              <sapn>审核中</sapn>
-            </div>
               <div v-else>
                 <div v-if="!willSendComment">
                     <el-row>
@@ -206,10 +203,11 @@
                       <el-col :span="2"> </el-col>
                       <el-col :span="14">
                         <el-button class="button" @click="toClaim=true" 
-                          v-if="'!userStore.userInfo.userId==post.finderId'"
+                          v-if="userStore.userInfo.userId!=post.finderId&&!post.claimantId"
                           :disabled="toClaim"
                         >认领</el-button>
-                        <el-button class="button2">暂无</el-button>
+                        <el-button v-if="!post.claimantId" class="button2">暂无</el-button>
+                        <span v-if="post.claimantId">此贴已完结</span>
                       </el-col>
                     </el-row>
                     </div>
@@ -251,18 +249,26 @@ import { Edit, ChatRound, Promotion, Phone, Paperclip, EditPen, User } from "@el
 import { useUserStore } from '@/stores/user';
 import { getPostById, getComment, getChildComment, postComment, postChildComment, claim } from '@/apis/found';
 import { getUserName } from '@/apis/user';
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { ElMessage } from 'element-plus';
 import { isClient } from 'element-plus/es/utils/browser.mjs';
 
 const router = useRouter()
 
 const content = ref('');
-const review = ref(false);
 const post = ref({});
 const commentInput = ref(null); 
 const userStore = useUserStore();
 const senderName = ref('');
+
+const props = defineProps({
+  postid: {
+    type: String,
+    required: true
+  }
+});
+
+const route = useRoute();
 
 const formRef = ref(null);
 const form = reactive({
@@ -299,13 +305,6 @@ const isreply = ref(false);
 const toClaim = ref(false);
 
 const emit = defineEmits(['afterDoComment']); // 发送评论时通知父组件更新评论
-
-const props = defineProps({
-  postid: {
-    type: String,
-    required: true
-  }
-});
 
 const postid = toRef(props, 'postid');
 
@@ -347,6 +346,7 @@ const sendClaim = async () => {
           ElMessage.success(res.data);
         }
         })
+        toClaim.value = false;
       }catch (error) {
         ElMessage.error('认领失败');
       }
@@ -356,10 +356,10 @@ const sendClaim = async () => {
 
 const replyId = ref('');
 
+// 发送评论的逻辑
 const sendComment = async () => {
   try{
     if (content.value.trim().length > 0) {
-      // 发送评论的逻辑
       if(!isreply.value){
         const newComment = {
           is_parent: '0',
@@ -373,7 +373,6 @@ const sendComment = async () => {
         ElMessage.success('评论成功');
         willSendComment.value = false;
         content.value = '';
-        emit('afterDoComment'); // 提醒父组件更新评论
         updateComment();
       }else{
         const newComment = {
@@ -388,7 +387,6 @@ const sendComment = async () => {
         willSendComment.value = false;
         content.value = '';
         isreply.value = false;
-        emit('afterDoComment'); // 提醒父组件更新评论
         fetchComments();
       }
     }
@@ -416,7 +414,6 @@ const fetchDetail = async () => {
   try {
     const response = await getPostById(postid.value);
     post.value = response.data;
-    console.log(response.data);
     previewList.value.push('http://localhost:8090/common/download?name='+post.value.imgUrl);
   } catch (error) {
     console.error(error);

@@ -116,7 +116,29 @@ export const getChildComment = (id) => {
     })
 }
 
+//查询
+export const search = (data) => {
+    return http({
+        url: 'http://localhost:8090/missing_notices/query?content=' + data,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+
 //交还
+export const claim = (data) => {
+    return http({
+        url: 'http://localhost:8090/user/sendFindTips',
+        method: 'POST',
+        data: data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
 
 //个人帖子
 export const getPersonalPassPost = (id) => {
@@ -137,5 +159,26 @@ export const getPersonalBackPost = (id) => {
     return http({
         url: 'http://localhost:8090/missing_notices/getIllegalByUserId?userId='+id,
         method: 'GET',
+    })
+}
+
+// 修改帖子
+export const updatePost = (data) => {
+    return http({
+        url: 'http://localhost:8090/missing_notices/update',
+        method: 'PUT',
+        data: data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+//确认找到失主
+export const confirmOwner = (id, post) => {
+    return http({
+        url: `http://localhost:8090/user/confirmFindTips?user_id=${encodeURIComponent(id)}&post_id=${encodeURIComponent(post)}`,
+        method: 'PUT',
+        data: post,
     })
 }

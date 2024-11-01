@@ -47,7 +47,7 @@
         nickName: '',
       }));
       for(let card of cards.value){
-        getUserName(card.finderId).then(response => {
+        getUserName(card.ownerId).then(response => {
           card.nickName  = response.data;
         });
       }
@@ -62,6 +62,7 @@
                 ElMessage.error('获取帖子失败')
                 return;
             }
+            console.log(res.data)
             cards.value = res.data
             //这里会出现执行顺序问题的原因不明和
             addSenderName()
