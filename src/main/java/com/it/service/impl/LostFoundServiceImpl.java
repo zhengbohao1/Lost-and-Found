@@ -30,7 +30,7 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
     @Autowired
     private TradingVolumeService tradingVolumeService;
     @Autowired
-    private IMissingNoticesService missingNoticesService;
+    private IntelligentMatchingService intelligentMatchingService;
     @Autowired
     private MessageNotificationService messageNotificationService;
 
@@ -130,25 +130,7 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
                 img.setWidth(width);
                 img.setHeight(height);
                 imageService.save(img);
-
-                // 使用改进的智能推送逻辑
-                QueryWrapper<MissingNotices> queryWrapper = new QueryWrapper<>();
-                List<MissingNotices> missingNoticesList = missingNoticesService.list(queryWrapper);
-
-                for (MissingNotices missingNotices : missingNoticesList) {
-                    if (isSimilar(lostFound.getItemName(), missingNotices.getItemName())) {
-                        String ownerId = missingNotices.getOwnerId();
-                        MessageNotification messageNotification = new MessageNotification();
-                        messageNotification.setRecipientId(ownerId);
-                        messageNotification.setMessageType(MessageType.SYSTEM_NOTIFICATION);
-                        messageNotification.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
-                        messageNotification.setRelatedPostId(missingNotices.getId());
-                        messageNotification.setIsRead(0);
-                        messageNotification.setSenderId("系统");
-                        messageNotification.setPostCategory(1);
-                        messageNotificationService.save(messageNotification);
-                    }
-                }
+                intelligentMatchingService.processSmartPush(lostFound);
             } else {
                 throw new BusinessException("图片不存在");
             }
