@@ -92,7 +92,7 @@ const postid = ref(null)
 
 //显示卡片详情
 const showMessage = async (id, left, top) => {
-window.history.pushState({}, "", `/user/lost/explore/${id}`);
+window.history.pushState({}, "", `/user/lost/${id}`);
 overlayX.value = left;
 overlayY.value = top;
 postid.value = id;

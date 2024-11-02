@@ -11,9 +11,7 @@
         <el-aside :width="isSidebarOpen ? '200px' : '70px'" class="sidebar">
           <el-menu :default-active="activeIndex" class="el-menu-vertical-demo"
                    :router="true"
-                   :collapse="!isSidebarOpen"
-                   @open="handleOpen"
-                   @close="handleClose">
+                   :collapse="!isSidebarOpen">
             <!-- 折叠按钮 -->
             <el-tooltip :content="isSidebarOpen ? '收起' : '展开'" placement="right">
               <el-button text style="margin-left: 7px; margin-top: 20px; margin-bottom: 5px; background-color: #f1f1f1;"
@@ -49,8 +47,8 @@
             </el-menu-item>
             <el-menu-item index="" @click="handleMessage">
               <el-icon><BellFilled /></el-icon>
-              <el-badge v-if="numOfMessage > 0 " :value="numOfMessage" :max="99"></el-badge>
-              <span :style="numOfMessage > 0 ? { 'margin-left': '20px' } : { 'margin-left': '40px' }">通知</span>
+              <el-badge v-if="userStore.messageNum > 0 " :value="userStore.messageNum" :max="99"></el-badge>
+              <span :style="userStore.messageNum > 0 ? { 'margin-left': '20px' } : { 'margin-left': '40px' }">通知</span>
             </el-menu-item>
             <el-menu-item index="" @click="handleFeedback">
               <el-icon><WarnTriangleFilled /></el-icon>
@@ -108,15 +106,8 @@ const activeIndex = ref('1');
 const post = ref(null); // 用于存储请求结果
 const show = ref(false);
 
-const numOfMessage = ref(0)
-
 const search = ref(''); //搜索传参
 
-const gettNum = async () => {
-  await countMessage(userStore.userInfo.userId).then(res => {
-  numOfMessage.value = res.data
-  })
-}
 
 const showLogoutConfirm = () => {
   ElMessageBox.confirm(
@@ -146,14 +137,6 @@ function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value;
 }
 
-const handleOpen = (key, keyPath) => {
-  console.log(key, keyPath);
-}
-
-function handleClose(key, keyPath) {
-  console.log(key, keyPath);
-}
-
 function changeShow() {
   show.value = false;
 }
@@ -165,6 +148,7 @@ function handleLoginClick() {
   }}
 
 function handleUpload() {
+  window.history.pushState({}, "", `/user`);
   if(userStore.userToken) {
     router.push('/user/upload');
   } else {
@@ -176,8 +160,8 @@ function handleUpload() {
   }
 }
 
-const handleMessage = () =>
-{
+const handleMessage = () => {
+  window.history.pushState({}, "", `/user`);
   if(userStore.userToken) {
     router.push('/user/message');
   } else {
@@ -223,8 +207,8 @@ onMounted(() => {
   if(userStore.userToken) {
     userStore.testLink();
   }
-  if(userStore.userToken) {
-    gettNum();
+  {
+    userStore.coutMsg();
   }
 })
 </script>
@@ -257,8 +241,8 @@ onMounted(() => {
 .close{
   border: 0;
   position: absolute;
-  left: 70%;
-  top: 16%;
+  left: 100px;
+  top: 80px;
   background-color: #ebeaea;
   z-index: 1000; /* 设置一个较大的z-index值，确保图层位于其他内容之上 */
 }
@@ -268,13 +252,7 @@ onMounted(() => {
   height: 100%;
   background-color: #f1f1f1; /* 改变菜单背景颜色 */
   border-radius: 16px;
-}
-
-.el-menu--collapse {
-  height: 100%;
-  background-color: #f1f1f1; /* 折叠后的背景颜色 */
-  border-radius: 16px;
-}
+}   
 
 .top-menu-item {
   margin-top: -10px; /* 调整顶部间距 */

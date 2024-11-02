@@ -57,16 +57,17 @@
     const userStore = useUserStore();
 
     const queryPosts = async () => {
-        getPersonalPassPost(userStore.userInfo.userId).then(res => {
-            if(res.msg == 'error'){
-                ElMessage.error('获取帖子失败')
-                return;
+       await getPersonalPassPost(userStore.userInfo.userId).then(res => {
+            if(res.code == 1){
+              cards.value = res.data
+              console.log(cards.value)
+              addSenderName()
+            }else{
+              ElMessage.error('获取帖子失败')
+              return;
             }
-            cards.value = res.data
-            //这里会出现执行顺序问题的原因不明和
-            addSenderName()
-            waterFallInit(columns, card_columns, arrHeight, cards)
         })
+        waterFallInit(columns, card_columns, arrHeight, cards)
       disabled.value = false; // 启用滚动加载
     };
     

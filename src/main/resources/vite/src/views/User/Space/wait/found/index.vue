@@ -21,7 +21,7 @@
     <script setup>
     import { onMounted, onUnmounted, ref, nextTick, watch } from 'vue';
     import ViewCard from '@/components/user/Card.vue';
-    import CardDetail from '@/components/user/FoundDetail.vue';
+    import CardDetail from '@/components/user/NotPassFound.vue';
     import { getPersonalWaitPost } from '@/apis/found';
     import { useUserStore } from '@/stores/user';
     import { getUserName } from '@/apis/user';
@@ -95,7 +95,7 @@
     
     //显示卡片详情
     const showMessage = async (id, left, top) => {
-      window.history.pushState({}, "", `/user/found/explore/${id}`);
+      window.history.pushState({}, "", `/user/waitfound/explore/${id}`);
       overlayX.value = left;
       overlayY.value = top;
       postid.value = id;
@@ -105,7 +105,7 @@
     
     const close = () => {
       show.value = false;
-      window.history.pushState({}, "", `/user/found`);
+      window.history.pushState({}, "", `/user/space/waitfound`);
     }
     
     const needToLog = ref(false);

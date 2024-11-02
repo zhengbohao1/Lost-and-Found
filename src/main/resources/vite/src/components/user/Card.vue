@@ -2,12 +2,12 @@
   <div class="col">
     <div v-for="column in card_columns" :key="column.id">
       <section v-for="card in column" :key="card.id">
-        <div class="card">
+        <div v-show="loading" class="card">
           <a :href="`/explore/${card.id}`" @click.prevent="details(card.id)">
             <img
                 :src="'http://localhost:8090/common/download?name=' + card.imgUrl"
                 class="image"
-                @load="handleLoad(card)"
+                @load="handleLoad"
                 alt=""
             />
           </a>
@@ -27,6 +27,28 @@
             </div>
           </div>
         </div>
+
+        <div v-if="!loading">
+          <div class="card loading">
+            <div class="image" :style="{height: card.height / (card.width / 250) + 'px'}">
+            </div>
+            <div style="padding: 10px">
+              <div
+                  style="margin-bottom: 10px;height: 20px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+                <span style="font-size: 1.0rem;" @click="details(card.id)">{{ card.itemName }}</span>
+              </div>
+              <div class="bottom">
+                <el-row style="align-items: center;">
+                  <RouterLink :to="`/user/index/${card.userId}`">
+                    <div class="avatar"></div>
+                  </RouterLink>
+                  <div class="username">{{ card.nickName }}</div>
+                </el-row>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </section>
     </div>
   </div>
@@ -37,7 +59,7 @@ import { ref, toRef, computed, onMounted } from 'vue';
 import { ElRow, ElAvatar } from 'element-plus';
 import { RouterLink } from 'vue-router';
 
-const loading =ref(true);
+const loading =ref(false);
 
 const props = defineProps({
   card_columns: {
@@ -57,10 +79,9 @@ const details = (id) => {
     //left, top确定详情页的显示位置
 }
 
-const handleLoad = (card) => {
-  card.load = true;
+const handleLoad = (event) => {
+  loading.value = true;
 };
-
 
 onMounted(async () => {
   try {

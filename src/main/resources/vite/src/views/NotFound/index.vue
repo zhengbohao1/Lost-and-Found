@@ -39,7 +39,7 @@ const back = () => {
 }
 </script>  
 
-<style>
+<style scoped>
 * {
 margin:0;
 outline:none;

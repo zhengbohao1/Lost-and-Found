@@ -47,7 +47,7 @@
         nickName: '',
       }));
       for(let card of cards.value){
-        getUserName(card.finderId).then(response => {
+        getUserName(card.ownerId).then(response => {
           card.nickName  = response.data;
         });
       }
