@@ -32,10 +32,8 @@ public class MissingNotciesServiceImpl extends ServiceImpl<MissingNoticesMapper,
     private String basepath;
     @Autowired
     private TradingVolumeService tradingVolumeService;
-    @Resource
-    private ILostFoundService iLostFoundService;
-    @Resource
-    private MessageNotificationService messageNotificationService;
+    @Autowired
+    private IntelligentMatchingService intelligentMatchingService;
     @Override
     public List<MissingNoticesDto> legalList() {
         List<MissingNotices> missingNotices = list().stream().filter(MissingNotices -> MissingNotices.getReviewProcess() == 1).toList();
@@ -125,24 +123,7 @@ public class MissingNotciesServiceImpl extends ServiceImpl<MissingNoticesMapper,
                 img.setWidth(width);
                 img.setHeight(height);
                 imageService.save(img);
-
-                // 使用改进的智能推送逻辑
-                List<LostFound> lostFoundList = iLostFoundService.list();
-
-                for (LostFound lostFound : lostFoundList) {
-                    if (isSimilar(missingNotices.getItemName(), lostFound.getItemName())) {
-                        String ownerId = missingNotices.getOwnerId();
-                        MessageNotification messageNotification = new MessageNotification();
-                        messageNotification.setRecipientId(ownerId);
-                        messageNotification.setMessageType(MessageType.SYSTEM_NOTIFICATION);
-                        messageNotification.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
-                        messageNotification.setRelatedPostId(lostFound.getId());
-                        messageNotification.setIsRead(0);
-                        messageNotification.setSenderId("系统");
-                        messageNotification.setPostCategory(0);
-                        messageNotificationService.save(messageNotification);
-                    }
-                }
+                intelligentMatchingService.processSmartPush2(missingNotices);
             } else {
                 throw new BusinessException("图片不存在");
             }
