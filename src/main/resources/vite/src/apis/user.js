@@ -5,7 +5,7 @@ import { useUserStore } from '@/stores/user'
 export const getUserList = () => {
     const userStore = useUserStore();
     return http({
-        url: '/admin/userInfo/all',
+        url: 'http://localhost:8090/admin/userInfo/all',
         method: 'GET',
         data: {}
     })
@@ -14,7 +14,7 @@ export const getUserList = () => {
 //禁用用户
 export const updateUser = (id) => {
     return http({
-        url: '/admin/disable?userId=' + id,
+        url: 'http://localhost:8090/admin/disable?userId=' + id,
         method: 'GET',
         data: {}
     })

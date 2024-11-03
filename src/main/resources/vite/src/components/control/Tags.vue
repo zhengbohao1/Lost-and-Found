@@ -1,12 +1,12 @@
 <template>  
-  <el-tabs v-model="activeTabName" @tab-click="handleTabClick" @tab-remove="handleTabRemove" type="card" class="demo-tabs" editable>  
+  <el-tabs v-model="activeTabName" @tab-click="handleTabClick" @tab-remove="handleTabRemove" type="tabPosition" class="demo-tabs" editable>  
     <el-tab-pane  
       v-for="tab in tabs"  
       :key="tab.name"  
       :label="tab.label"  
       :name="tab.name"  
+      :style="{ 'backgrond- color': tab.name == activeTabName ? 'rgb(150, 170, 255)' : 'white'}"
     >  
-      <!-- 可以在这里放置标签的内容 -->
     </el-tab-pane>  
   </el-tabs>  
 </template>  
@@ -58,9 +58,6 @@ if (activeTabName.value === targetName && newTabs.length > 0) {
 }  
 };  
 
-onMounted(() => {  
-  // 组件挂载时，可以根据需要初始化tabs（但在这个例子中，由于使用了watch，所以不需要在这里初始化）  
-});  
 </script>  
 
 <style scoped>  

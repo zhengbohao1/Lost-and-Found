@@ -25,6 +25,7 @@ import { getPrizeList, exchangePrize } from '@/apis/prize'
 
 import ViewCard from '@/components/user/PrizeCard.vue';
 import { waterFallInitForPrize, waterFallMore, resizeWaterFall } from '@/utils/waterFall';
+import { ElMessage } from 'element-plus'
 import { Close } from '@element-plus/icons-vue';
 
 const disabled = ref(true);

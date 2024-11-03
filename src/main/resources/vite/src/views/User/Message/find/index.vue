@@ -45,6 +45,7 @@ import { foundMine } from '@/apis/user'
 import { markFindTipsAsRead } from '@/apis/msg'
 import ClaimLost from '@/components/user/ClaimLost.vue'
 import LoadView from '@/components/public/LoadView.vue'
+import { ElMessage } from 'element-plus'
 import { Close } from '@element-plus/icons-vue';
 
 const loading = ref(true)

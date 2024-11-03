@@ -2,6 +2,8 @@ import {createRouter, createWebHistory} from 'vue-router';
 import {useUserStore} from "@/stores/user";
 import { routes } from "./routes";
 
+import { ElMessage } from 'element-plus'
+
 const router = createRouter({
     history: createWebHistory(),  //取消hash模式，换为history模式，防止'#'和'/'自动添加
     routes,

@@ -13,8 +13,8 @@ const http = axios.create({
 
 // axios请求拦截器
 http.interceptors.request.use(config => {
-    const shoeError = showErrorState()
-    shoeError.showError.value = false
+    const errorState = showErrorState()
+    errorState.errorProblem.failJoin = false
     const userStore = useUserStore();
     if (userStore.userToken) {
         config.headers.Authorization = `${userStore.userToken}`
@@ -49,8 +49,8 @@ http.interceptors.response.use(
   
       if (config.__retryCount >= config.retry) {
         // 显示错误信息
-        const shoeError = showErrorState()
-        shoeError.showError.value = true
+        const errorState = showErrorState()
+        errorState.errorProblem.failJoin = false
         ElMessage.error('请求失败，请稍后再试！');
         return Promise.reject(error);
       }

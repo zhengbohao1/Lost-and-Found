@@ -39,6 +39,7 @@ import { useRouter } from 'vue-router'
 import { getUserName } from '@/apis/user'
 import SelectCard from '@/components/public/SelectCard.vue'
 import SideCard from '@/components/public/SideCard.vue'
+import { ElMessage } from 'element-plus'
 
 const userStore = useUserStore()
 const router = useRouter()

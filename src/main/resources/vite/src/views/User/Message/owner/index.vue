@@ -1,22 +1,25 @@
 <template>
     <div>
-        <el-card class="message-card" v-if="details.length > 0" v-for="item in details" :key="item.id" @click="readMessage(item)" title="点击查看详情">
-            <el-badge :is-dot="!item.isRead" style="margin-left: 750px; margin-top: -20px;"></el-badge>
-                <el-row :gutter="20">
-                    <el-col :span="10">
-                        <el-row>
-                            <span>你的失物申请通过了</span>
-                        </el-row>
-                        <el-row style="margin-top: 10px">
-                            <span class="time">{{ item.createdAt }}</span>
-                            <el-link @click="getDetails(item)" style="margin-left: 30px;">点击查看详情</el-link>
-                        </el-row>
-                    </el-col>
-                </el-row>
-            </el-card>
-        <div class="Empty" v-if="details.length == 0">
-            <el-empty description="还没有消息"></el-empty>
-        </div>
+       <LoadView v-if="loading"></LoadView>
+       <div v-else>
+            <el-card class="message-card" v-if="details.length > 0" v-for="item in details" :key="item.id" @click="readMessage(item)" title="点击查看详情">
+                <el-badge :is-dot="!item.isRead" style="margin-left: 750px; margin-top: -20px;"></el-badge>
+                    <el-row :gutter="20">
+                        <el-col :span="10">
+                            <el-row>
+                                <span>你的失物申请通过了</span>
+                            </el-row>
+                            <el-row style="margin-top: 10px">
+                                <span class="time">{{ item.createdAt }}</span>
+                                <el-link @click="getDetails(item)" style="margin-left: 30px;">点击查看详情</el-link>
+                            </el-row>
+                        </el-col>
+                    </el-row>
+                </el-card>
+            <div class="Empty" v-if="details.length == 0">
+                <el-empty description="还没有消息"></el-empty>
+            </div>
+       </div>
 
         <transition name="fade">
             <div class="backover" v-if="showDetails"></div>
@@ -35,7 +38,11 @@ import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { iAmOwner } from '@/apis/found'
 import ClaimFound from '@/components/user/ClaimFound.vue'
+import LoadView from '@/components/public/LoadView.vue'
+import { ElMessage } from 'element-plus'
 import { Close } from '@element-plus/icons-vue';
+
+const loading = ref(true)
 
 const userStore = useUserStore()
 
@@ -46,6 +53,7 @@ const detail = ref({})
 const fetchData = async () =>{
     await iAmOwner( userStore.userInfo.userId ).then(res => {
         details.value = res.data
+        loading.value = false
     })
 }
 

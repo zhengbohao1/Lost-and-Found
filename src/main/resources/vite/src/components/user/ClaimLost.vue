@@ -40,8 +40,8 @@
                 <div class="content">{{ post.description }}</div>
               </el-row>
               <el-row style="gap:15px">
-                <time class="timeF">发现时间：{{ post.foundDate }}</time>
-                <time class="pos">{{ post.foundLocation }}</time>
+                <time class="timeF">丢失时间：{{ post.lostDate }}</time>
+                <time class="pos">{{ post.lostLocation }}</time>
               </el-row>
               <el-row>
                 <time class="time">{{ post.createdAt }}</time>
@@ -126,11 +126,11 @@
                     <el-button class="button" @click="showComment=true" >显示评论</el-button>
                     </el-col>
                     <el-row :span="16">
-                      <div v-if="!post.finderId">
+                      <div v-if="!post.ownerId">
                         <el-button class="button-red" @click="">不是我的</el-button>
                         <el-button class="button-green" @click="verifyOwner">我的东西</el-button>
                       </div>
-                      <el-button v-else class="button" @click="thank">聊表谢意</el-button>
+                      <el-button type="text" v-else class="button-green" @click="toThank">聊表谢意</el-button>
                     </el-row>
                   </el-row>
                 </div>
@@ -185,24 +185,31 @@
       </div>
     </div>
 
-    <el-dialog v-model="thankForSender" title="回复详情" width="500">
-      <el-form ref="formRef" :model="form" :rules="rules" >
-        <el-form-item prop="goldCoin">
-          <el-input-number v-model="value" :min="1" :max="100" label="给多少呢？" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取消</el-button>
-          <el-button type="primary" @click="thank">确定</el-button>
-        </div>
-      </template>
-    </el-dialog>
-
+    <div class="pay" :style=" {'height': (thankForSender ? 80 : 0) + 'px', 'padding': (thankForSender ? 10 : 0) + 'px', 'width': (thankForSender ? 330 : 0) + 'px'}">
+      <v-row v-if="thankShow">
+       <v-col cols="6">
+          <v-number-input
+          :max="20"
+          :min="1"
+          v-model="goldCoin"
+          :reverse="false"
+          controlVariant="default"
+          :hideInput="false"
+          :inset="false"
+          variant="solo-filled"
+          control-variant="split"
+        ></v-number-input>
+       </v-col>
+        <v-col cols="6">
+          <v-btn style="margin-left: 20px; margin-top: 5px;" icon="mdi-check" @click="thank"></v-btn>
+          <v-btn style="margin-left: 20px; margin-top: 5px;" icon="mdi-close"></v-btn>
+        </v-col>
+      </v-row>
+    </div>
   </template>
   
   <script setup>
-  import { ref, defineEmits, watch, toRef, onMounted, reactive  } from 'vue';
+  import { ref, watch, toRef, onMounted, reactive  } from 'vue';
   import { Edit, ChatRound, Promotion, Phone, Paperclip, EditPen, User } from "@element-plus/icons-vue";
   import { useUserStore } from '@/stores/user';
   import { getPostById, getComment, getChildComment, postComment, postChildComment, confirmOwner } from '@/apis/lost';
@@ -210,6 +217,7 @@
   import { getUserName } from '@/apis/user';
   import { useRouter } from "vue-router";
   import { ElMessage } from 'element-plus';
+  import { VNumberInput } from 'vuetify/labs/VNumberInput'
   
   const router = useRouter()
   
@@ -222,8 +230,6 @@
   const willSendComment = ref(false);
   const isreply = ref(false);
   const showComment = ref(false);
-  
-  const emit = defineEmits(['afterDoComment']); // 发送评论时通知父组件更新评论
   
   const props = defineProps({
     claimLost: {
@@ -250,26 +256,34 @@
   }
   
   //表示感谢
-  const formRef = ref(null)
   const thankForSender =ref(false)
-  const form = ref({
-    goldCoin: 1,
-  })
-  const rules = ref({
-    goldCoin: [{required: true, message: '给点吧？', trigger: 'blur'}],
-  })
+  const thankShow = ref(false)
+  const goldCoin = ref(1)
+
+  const toThank = () => {
+    thankForSender.value = !thankForSender.value
+    if(!thankForSender.value){
+      thankShow.value = !thankShow.value
+    }else{
+      setTimeout(() => {
+        thankShow.value = !thankShow.value
+      }, 400)
+    }
+  }
 
   const thank = async () => {
   const data = {
-      goldCoin: form.value.goldCoin,
+    goldCoin: goldCoin.value,
       targetUserId: claimLost.value.userId,
-      postId: claimLost.value.postId
+      postId: claimLost.value.postId,
+      category: '1'
     }
-    await sendCoin(data).then(() => {
+    console.log(data)
+    await sendCoin(data).then(res => {
       if(res.cod == 1){
         ElMessage.success('我们已传达你的谢意');
       }else{
-        ElMessage.error('好像有什么问题');
+        ElMessage.error(res.data);
       }
     })
   }
@@ -319,7 +333,6 @@
           willSendComment.value = false;
           content.value = '';
           isreply.value = false;
-          emit('afterDoComment'); // 提醒父组件更新评论
           fetchComments();
         }
       }
@@ -349,6 +362,7 @@ const fetchDetail = async () => {
   try {
     const response = await getPostById(postid.value);
     post.value = response.data;
+    console.log(response.data);
     previewList.value.push('http://localhost:8090/common/download?name='+post.value.imgUrl);
     previewListForSend.value.push('http://localhost:8090/common/download2?name='+claimLost.value.imgUrl);
   } catch (error) {
@@ -491,6 +505,16 @@ const fetchDetail = async () => {
     margin-left: 10px;
     font-size: 13px;
     color: #666;
+  }
+
+  .pay{
+    position: absolute;
+    background-color: #fff;
+    top:720px; 
+    left: 800px;
+    border-radius: 10px;
+    -webkit-transition: height 0.4s ease-in-out, width 0.4s ease-in-out;
+    transition:height 0.4s ease-in-out, width 0.4s ease-in-out;
   }
   
   .carousel-item-center {

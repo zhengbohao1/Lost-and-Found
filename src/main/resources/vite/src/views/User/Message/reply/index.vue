@@ -34,6 +34,7 @@ import { replyToMe } from '@/apis/user'
 import { markCommentAsRead } from '@/apis/msg'
 import { useUserStore } from '@/stores/user'
 import LoadView from '@/components/public/LoadView.vue'
+import { ElMessage } from 'element-plus'
 
 const userStore = useUserStore();
 const loading = ref(true);

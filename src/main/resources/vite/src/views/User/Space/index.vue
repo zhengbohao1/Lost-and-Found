@@ -66,6 +66,9 @@
       </NextCard>
       <!--帖子-->
       <SideCard :details="details_post" :mystyle="mystyle">
+        <el-row>
+          <span>空间导航</span>
+        </el-row>
         <transition-group name="expand">
           <el-row>
             <el-link class="postlink" v-if="activeIndex!=1" @click="activeIndex=1">发布过的帖子</el-link>

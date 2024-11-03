@@ -27,6 +27,7 @@
     import { getUserName } from '@/apis/user';
     import { useRoute } from 'vue-router';
     import { waterFallInit, waterFallMore, resizeWaterFall } from '@/utils/waterFall';
+    import { ElMessage } from 'element-plus'
     import { Close } from '@element-plus/icons-vue';
     
     

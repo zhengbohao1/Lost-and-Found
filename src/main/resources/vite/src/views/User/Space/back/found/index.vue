@@ -21,6 +21,7 @@
     <script setup>
     import { onMounted, onUnmounted, ref, nextTick, watch } from 'vue';
     import ViewCard from '@/components/user/Card.vue';
+  
     import CardDetail from '@/components/user/NotPassLost.vue';
     import { getPersonalBackPost } from '@/apis/found';
     import { useUserStore } from '@/stores/user';
@@ -28,6 +29,7 @@
     import { useRoute } from 'vue-router';
     import { waterFallInit, waterFallMore, resizeWaterFall } from '@/utils/waterFall';
     import { Close } from '@element-plus/icons-vue';
+    import { ElMessage } from 'element-plus'
     
     
     const cards = ref([]);  //包含了所有帖子的所有内容

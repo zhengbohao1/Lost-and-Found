@@ -1,14 +1,13 @@
 <template>
-  <el-card class="manage-card" style="height: calc(100vh - 20px); overflow-y: auto;">
+  <el-card class="manage-card" style="height: 610px">
     <template #header>
       <div class="card-header">
-        <span>用户管理</span>
+        <span>用户建议</span>
         <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleDelete">删除</el-button>
       </div>
     </template>
 
-    <!-- 添加 ElResult 组件 -->
-    <el-result v-if="showError.showError.value" icon="error" title="连接失败">
+    <el-result v-if="errorState.errorProblem.failJoin" icon="error" title="连接失败">
       <template #extra>
         <el-button @click="handleRetry">重试</el-button>
       </template>
@@ -98,7 +97,7 @@ import { ElMessage } from 'element-plus'; // 导入消息提示模块
 import { Delete, InfoFilled } from '@element-plus/icons-vue';
 
 // 从 store 获取错误显示状态
-const showError = showErrorState();
+const errorState = showErrorState();
 
 // 用户数据
 const users = ref([]);

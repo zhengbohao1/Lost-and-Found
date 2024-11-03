@@ -94,6 +94,8 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { countMessage } from '@/apis/user';
 
+import { ElMessage, ElMessageBox } from 'element-plus';
+
 import Login from '@/views/Login/other.vue';
 import Header from '@/components/function/Header.vue';
 import SearchBox from '@/components/function/SearchBox.vue';

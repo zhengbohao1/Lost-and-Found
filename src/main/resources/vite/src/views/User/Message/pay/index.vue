@@ -11,7 +11,7 @@
               </el-col>
               <el-col :span="18">
                 <el-row>
-                  <span>{{ reply.senderId }}<i class="text">回复了你的评论</i></span>
+                  <span>{{ reply.senderId }}<i class="text">感谢了你的帮助</i></span>
                 </el-row>
                 <el-row style="margin-top: 10px">
                   <span class="text">{{ reply.createdAt }}</span>
@@ -21,7 +21,7 @@
             </el-row>
         </el-card>
       <div class="Empty" v-if="details.length == 0">
-        <el-empty description="还没有回复你的评论哦~"></el-empty>
+        <el-empty description="帮助别人，获得感谢~"></el-empty>
         </div>  
      </div>
      <LoadView v-else></LoadView>
@@ -30,10 +30,11 @@
   
   <script setup>
   import { ref, onMounted, defineEmits } from 'vue'
-  import { replyToMe } from '@/apis/user'
+  import { getCoinRecord } from '@/apis/prize'
   import { markCommentAsRead } from '@/apis/msg'
   import { useUserStore } from '@/stores/user'
   import LoadView from '@/components/public/LoadView.vue'
+  import { ElMessage } from 'element-plus'
   
   const userStore = useUserStore();
   const loading = ref(true);
@@ -43,7 +44,7 @@
   
   //加载消息
   const fetchData = async () => {
-      await replyToMe(userStore.userInfo.userId).then(res => {
+      await getCoinRecord(userStore.userInfo.userId).then(res => {
           details.value = res.data;
       });
       loading.value = false;

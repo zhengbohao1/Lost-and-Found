@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <el-card class="custom-card">
+  <el-container>
+    <el-header>
+      <el-card class="custom-card">
         <el-row>
           <el-col :span="2">
             <el-checkbox v-model="selectAll" @change="toggleAllSelections">全选</el-checkbox>
@@ -12,96 +13,104 @@
           </el-col>
         </el-row>
       </el-card>
-    <el-scrollbar class="cards-container">
+    </el-header>
 
-      <el-result v-if="showError.showError.value" icon="error" title="连接失败">
-        <template #extra>
-          <el-button @click="handleRetry">重试</el-button>
-        </template>
-      </el-result>
+    <el-main>
+      <el-scrollbar class="cards-container">
 
-      <el-card v-if="loading&&!showError.showError.value" class="custom-card" v-loading="loading">
-        <el-descriptions title="未知" direction="vertical" border style="margin-top: 20px;">
-          <el-checkbox v-model="selectAll" @change="toggleAllSelections"></el-checkbox>
-          <el-descriptions-item :rowspan="2" :width="140" label="照片" align="center">
-            <el-image style="width: 100px;" :src="'默认图片链接'" fit="cover"/>
-          </el-descriptions-item>
-          <el-descriptions-item label="发布人">未知</el-descriptions-item>
-          <el-descriptions-item label="发布时间">未知</el-descriptions-item>
-          <el-descriptions-item label="状态">
-            <el-tag size="large">已审核</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item :span="3">
-            <div class="description-actions">
-              <el-button type="link" size="default" :icon="Close" disabled>删除</el-button>
-            </div>
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-card>
+        <el-result v-if="errorState.errorProblem.failJoin" icon="error" title="连接失败">
+          <template #extra>
+            <el-button @click="handleRetry">重试</el-button>
+          </template>
+        </el-result>
 
-      <el-empty v-if="!loading && !showError.showError.value && !displayedCards.length" description="暂无数据"/>
-
-     <!-- 显示实际数据的卡片 -->
-     <el-card
-        v-for="item in displayedCards"
-        :key="item.id"
-        class="custom-card"
-        @click="selectCard(item)">
-        <el-descriptions
-            :title="item.itemName"
-            direction="vertical"
-            border
-            style="margin-top: 20px;">
-            <el-descriptions-item
-              :rowspan="3"
-              :width="140"
-              label="照片"
-              align="center">
-              <el-image
-                  style="width: 100px;"
-                  :src="'http://localhost:8090/common/download?name='+item.imgUrl || '默认图片链接'"
-                  fit="cover"/>
+        <el-card v-if="loading&&!errorState.errorProblem.failJoin" class="custom-card" v-loading="loading">
+          <el-descriptions title="未知" direction="vertical" border style="margin-top: 20px;">
+            <el-checkbox v-model="selectAll" @change="toggleAllSelections"></el-checkbox>
+            <el-descriptions-item :rowspan="2" :width="140" label="照片" align="center">
+              <el-image style="width: 100px;" :src="'默认图片链接'" fit="cover"/>
             </el-descriptions-item>
-          <el-descriptions-item label="发布人">
-            {{ item.finderId || '未知' }}
-          </el-descriptions-item>
-          <el-descriptions-item label="物品">
-            {{ item.itemName || '未知' }}
-          </el-descriptions-item>
-          <el-descriptions-item label="发布时间">
-            {{ item.createdAt || '未知' }}
-          </el-descriptions-item>
-          <el-descriptions-item label="类型">
-            <el-tag size="large">{{ '失物' }}</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="状态">
-            <el-tag size="large">{{ '已审核' }}</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item :span="2">
-            <div class="description-actions">
-              <el-row>
-                <el-col :span="4">
-                  <el-checkbox :label="item.id" v-model="selectedCards" ></el-checkbox>
-                </el-col>
-                <el-col :span="12"></el-col>
-                <el-col :span="8">
-                  <el-popconfirm
-                    confirm-button-text='确定'
-                    cancel-button-text='取消'
-                    icon="InfoFilled"
-                    icon-color="red"
-                    title="你确定要删除这条记录吗？"
-                    @confirm="() => deleteItem(item)">
-                    <template #reference>
-                      <el-button type="danger" :icon="Delete" @click.stop>删除</el-button>
-                    </template>
-                  </el-popconfirm>
-                </el-col>
-              </el-row>
-            </div>
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-card>
+            <el-descriptions-item label="发布人">未知</el-descriptions-item>
+            <el-descriptions-item label="发布时间">未知</el-descriptions-item>
+            <el-descriptions-item label="状态">
+              <el-tag size="large">已审核</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item :span="3">
+              <div class="description-actions">
+                <el-button type="link" size="default" :icon="Close" disabled>删除</el-button>
+              </div>
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+
+        <el-empty v-if="!loading && !errorState.errorProblem.failJoin && !displayedCards.length" description="暂无数据"/>
+
+      <!-- 显示实际数据的卡片 -->
+      <el-card
+          v-for="item in displayedCards"
+          :key="item.id"
+          class="custom-card"
+          @click="selectCard(item)">
+          <el-descriptions
+              :title="item.itemName"
+              direction="vertical"
+              border
+              :column="4" 
+              style="margin-top: 20px;">
+              <el-descriptions-item
+                :rowspan="2"
+                :width="140"
+                label="照片"
+                align="center">
+                <el-image
+                    style="width: 100px;"
+                    :src="'http://localhost:8090/common/download?name='+item.imgUrl || '默认图片链接'"
+                    fit="cover"/>
+              </el-descriptions-item>
+            <el-descriptions-item label="发布人">
+              {{ item.ownerId || '未知' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="物品">
+              {{ item.itemName || '未知' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="发布时间">
+              {{ item.createdAt || '未知' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="类型">
+              <el-tag size="large">{{ '失物' }}</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="状态">
+              <el-tag size="large">{{ '已审核' }}</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item :span="2">
+              <div class="description-actions">
+                <el-row>
+                  <el-col :span="4">
+                    <el-checkbox :label="item.id" v-model="selectedCards" ></el-checkbox>
+                  </el-col>
+                  <el-col :span="12"></el-col>
+                  <el-col :span="8">
+                    <el-popconfirm
+                      confirm-button-text='确定'
+                      cancel-button-text='取消'
+                      icon="InfoFilled"
+                      icon-color="red"
+                      title="你确定要删除这条记录吗？"
+                      @confirm="() => deleteItem(item)">
+                      <template #reference>
+                        <el-button type="danger" :icon="Delete" @click.stop>删除</el-button>
+                      </template>
+                    </el-popconfirm>
+                  </el-col>
+                </el-row>
+              </div>
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </el-scrollbar>
+    </el-main>
+
+    <el-footer>
       <el-pagination
         background
         layout="prev, pager, next"
@@ -110,10 +119,11 @@
         :current-page="currentPage"
         @current-change="handleCurrentChange">
       </el-pagination>
-    </el-scrollbar>
+    </el-footer>
+  </el-container>
 
-    <!-- el-drawer 用于显示详细信息 -->
-    <el-drawer
+   <!-- el-drawer 用于显示详细信息 -->
+   <el-drawer
       v-model="drawerVisible"
       title="详细信息"
       direction="rtl"
@@ -130,12 +140,12 @@
             </el-carousel-item>
           </el-carousel>
           <el-descriptions :column="2" border >
-            <el-descriptions-item label="发布人">{{ selectedCard.finderId }}</el-descriptions-item>
+            <el-descriptions-item label="发布人">{{ selectedCard.ownerId }}</el-descriptions-item>
             <el-descriptions-item label="发现地点">{{ selectedCard.foundLocation }}</el-descriptions-item>
             <el-descriptions-item span="2" label="描述">{{ selectedCard.description }}</el-descriptions-item>
             <!-- 使用 span 属性控制同一行中的列数 -->
-            <el-descriptions-item label="找到时间"><div>{{ selectedCard.foundDate }}</div></el-descriptions-item>
-            <el-descriptions-item label="状态">{{ selectedCard.status === 0 ? '待审核' : '已审核' }}</el-descriptions-item>
+            <el-descriptions-item label="丢失时间"><div>{{ selectedCard.lostDate }}</div></el-descriptions-item>
+            <el-descriptions-item label="状态">{{ selectedCard.status === 0 ? '已审核' : '待审核' }}</el-descriptions-item>
             <el-descriptions-item label="创建时间"><div>{{ selectedCard.createdAt }}</div></el-descriptions-item>
             <el-descriptions-item label="更新时间"><div>{{ selectedCard.updatedAt }}</div></el-descriptions-item>
           </el-descriptions>
@@ -156,7 +166,6 @@
         </div>
       </template>
     </el-drawer>
-  </div>
 </template>
 
 <script setup>
@@ -164,18 +173,17 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { showErrorState } from '@/stores/showErrorState';
 import { Check, Delete, InfoFilled } from '@element-plus/icons-vue';
 import { deletePost, queryPost, deletePosts } from '@/apis/lost';
-import { ElNotification } from 'element-plus';
-import { ElCheckbox, ElCheckboxGroup } from 'element-plus'; // 引入必要的组件
+import { ElCheckbox, ElMessage } from 'element-plus'; // 引入必要的组件
 
 const currentPage = ref(1);
-const pageSize = 3;
+const pageSize = 5;
 const totalCards = ref();
 const posts = ref([]);
 const loading = ref(true);
 const drawerVisible = ref(false); // 控制 el-drawer 的显示状态
 const selectedCard = ref(null); // 存储当前选中的卡片信息
 const selectedCards = ref([]); // 存储被选中的卡片ID
-const showError = showErrorState();
+const errorState = showErrorState();
 const selectAll = ref(false);
 
 const adjustImageSize = (event) => {
@@ -291,11 +299,10 @@ onMounted(() => {
 
 <style scoped>
 .cards-container {
-  height: 530px; /* 设置最大高度，减去其他元素的高度 */
+  height: 521px;
 }
 
 .custom-card {
-  margin: 10px;
   cursor: pointer;
 }
 

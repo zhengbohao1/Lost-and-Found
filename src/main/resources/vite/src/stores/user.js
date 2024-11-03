@@ -6,7 +6,7 @@ import { countMessage } from "@/apis/user";
 import { adminLogin } from "@/apis/admin";
 import { resetPsw } from "@/apis/user";
 
-//之后补写错误处理的逻辑
+import { ElMessage } from 'element-plus'
 
 export const useUserStore = defineStore('user', () => {
     const isAdmin = ref(false);

@@ -153,7 +153,7 @@
 import {ref} from "vue";
 import 'element-plus/theme-chalk/el-message.css'
 import {User, Lock, ChatLineSquare, Message} from "@element-plus/icons-vue";
-import {ElMessage} from "element-plus";
+import { ElMessage } from "element-plus";
 import {useUserStore} from "@/stores/user";
 import {useRouter} from "vue-router";
 

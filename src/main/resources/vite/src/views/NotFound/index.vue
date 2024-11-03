@@ -23,6 +23,7 @@
 <script setup>  
 import { onMounted, ref } from 'vue';  
 import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus'
 
 ElMessage({
   message: '404 Not Found',

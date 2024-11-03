@@ -129,10 +129,11 @@
                     </el-col>
                     <el-row :span="14" >
                       <div v-if="!post.claimantId">
-                        <el-button class="button2" @click="claim">不是他的</el-button>
-                        <el-button class="button2" @click="verifyOwner">失主是他</el-button>
+                        <el-button class="button-red" @click="claim">不是他的</el-button>
+                        <el-button class="button-green" @click="verifyOwner">失主是他</el-button>
                       </div>
-                      <el-button v-else class="button2" @click="thank">聊表谢意</el-button>
+                      <el-button type="text" v-if="post.claimantId&&userStore.userInfo.userId == post.claimantId" class="button-green" @click="toThank">聊表谢意</el-button>
+                      <span v-if="post.claimantId&&userStore.userInfo.userId == post.finderId">你已找到失主</span>
                     </el-row>
                   </el-row>
                 </div>
@@ -152,7 +153,7 @@
                           <el-button class="button" @click="showComment=false" 
                             v-if="'!userStore.userInfo.userId==post.finderId'"
                           >显示申请</el-button>
-                          <el-button class="button2">暂无</el-button>
+                          <el-button class="button-red">暂无</el-button>
                         </el-col>
                       </el-row>
                       </div>
@@ -173,7 +174,7 @@
                         </el-col>
                         <el-col :span="8"></el-col>
                         <el-col :span="8">
-                          <el-button class="button2" style="margin-top: 20px" @click="willSendComment = false;isreply = false" >
+                          <el-button class="button-red" style="margin-top: 20px" @click="willSendComment = false;isreply = false" >
                                 取消
                             </el-button>
                         </el-col>
@@ -186,17 +187,40 @@
         </el-row>
       </div>
     </div>
+
+    <div class="pay" :style=" {'height': (thankForSender ? 80 : 0) + 'px', 'padding': (thankForSender ? 10 : 0) + 'px', 'width': (thankForSender ? 330 : 0) + 'px'}">
+      <v-row v-if="thankShow">
+       <v-col cols="6">
+          <v-number-input
+          :max="20"
+          :min="1"
+          v-model="goldCoin"
+          :reverse="false"
+          controlVariant="default"
+          :hideInput="false"
+          :inset="false"
+          variant="solo-filled"
+          control-variant="split"
+        ></v-number-input>
+       </v-col>
+        <v-col cols="6">
+          <v-btn style="margin-left: 20px; margin-top: 5px;" icon="mdi-check" @click="thank"></v-btn>
+          <v-btn style="margin-left: 20px; margin-top: 5px;" icon="mdi-close"></v-btn>
+        </v-col>
+      </v-row>
+    </div>
   </template>
   
   <script setup>
-  import { ref, defineEmits, watch, toRef, onMounted, reactive  } from 'vue';
+  import { ref, watch, toRef, onMounted, reactive  } from 'vue';
   import { Edit, ChatRound, Promotion, Phone, Paperclip, EditPen, User } from "@element-plus/icons-vue";
   import { useUserStore } from '@/stores/user';
   import { getPostById, getComment, getChildComment, postComment, postChildComment, confirmOwner } from '@/apis/found';
   import { getUserName } from '@/apis/user';
+  import { sendCoin } from '@/apis/prize';
   import { useRouter } from "vue-router";
   import { ElMessage } from 'element-plus';
-  import { isClient } from 'element-plus/es/utils/browser.mjs';
+  import { VNumberInput } from 'vuetify/labs/VNumberInput'
   
   const router = useRouter()
   
@@ -209,8 +233,6 @@
   const willSendComment = ref(false);
   const isreply = ref(false);
   const showComment = ref(false);
-  
-  const emit = defineEmits(['afterDoComment']); // 发送评论时通知父组件更新评论
   
   const props = defineProps({
     claimFound: {
@@ -302,6 +324,38 @@ const fetchDetail = async () => {
     console.error(error);
   }
 }
+
+//表示感谢
+const thankForSender =ref(false)
+  const thankShow = ref(false)
+  const goldCoin = ref(1)
+
+  const toThank = () => {
+    thankForSender.value = !thankForSender.value
+    if(!thankForSender.value){
+      thankShow.value = !thankShow.value
+    }else{
+      setTimeout(() => {
+        thankShow.value = !thankShow.value
+      }, 400)
+    }
+  }
+
+  const thank = async () => {
+  const data = {
+      goldCoin: goldCoin.value,
+      targetUserId: claimFound.value.userId,
+      postId: claimFound.value.postId,
+      category: '0'
+    }
+    await sendCoin(data).then(res => {
+      if(res.cod == 1){
+        ElMessage.success('我们已传达你的谢意');
+      }else{
+        ElMessage.error(res.data);
+      }
+    })
+  }
 
 //确认失主
 const verifyOwner = async () => {
@@ -450,6 +504,16 @@ const verifyOwner = async () => {
     font-size: 13px;
     color: #666;
   }
+
+  .pay{
+    position: absolute;
+    background-color: #fff;
+    top:720px; 
+    left: 800px;
+    border-radius: 10px;
+    -webkit-transition: height 0.4s ease-in-out, width 0.4s ease-in-out;
+    transition:height 0.4s ease-in-out, width 0.4s ease-in-out;
+  }
   
   .carousel-item-center {
     border-radius: 0.8rem 0 0 0.8rem;
@@ -543,7 +607,7 @@ const verifyOwner = async () => {
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       }
   
-      .button2 {
+      .button-red {
         padding: 0.5em 1em;
         text-align: center;
         text-decoration: none;
@@ -557,7 +621,7 @@ const verifyOwner = async () => {
         overflow: hidden;
       }
   
-        .button2:before {
+        .button-red:before {
           content: "";
           background-color: rgba(255, 255, 255, 0.5);
           height: 100%;
@@ -570,18 +634,18 @@ const verifyOwner = async () => {
           transition: none;
         }
   
-        .button2:hover {
+        .button-red:hover {
           background-color: #ff3333;
           color: #fff;
           border-bottom: 3px solid #aa0000;
         }
   
-          .button2:hover:before {
+          .button-red:hover:before {
             transform: skewX(-45deg) translateX(13.5em);
             transition: all 0.5s ease-in-out;
           }
   
-          .button2:active {
+          .button-red:active {
             background-color: #aa0000;
             border-color: #aa0000;
             border-bottom: 0px solid #aa0000;
@@ -591,15 +655,63 @@ const verifyOwner = async () => {
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
           }
 
-          .claim-info {
-  font-family: Arial, sans-serif;
-  font-size: 1rem;
-  line-height: 1.6;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
+          .button-green {
+            padding: 0.5em 1em;
+            text-align: center;
+            text-decoration: none;
+            color: #55ff55;
+            border: 2px solid #55ff55;
+            font-size: 15px;
+            display: inline-block;
+            border-radius: 0.3em;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            overflow: hidden;
+          }
+      
+            .button-green:before {
+              content: "";
+              background-color: rgba(255, 255, 255, 0.5);
+              height: 100%;
+              width: 3em;
+              display: block;
+              position: absolute;
+              top: 0;
+              left: -4.5em;
+              transform: skewX(-45deg) translateX(0);
+              transition: none;
+            }
+      
+            .button-green:hover {
+              background-color: #55ff55;
+              color: #fff;
+              border-bottom: 3px solid #2f902f;
+            }
+      
+              .button-green:hover:before {
+                transform: skewX(-45deg) translateX(13.5em);
+                transition: all 0.5s ease-in-out;
+              }
+      
+              .button-green:active {
+                background-color: #2f902f;
+                border-color: #2f902f;
+                border-bottom: 0px solid #2f902f;
+                color: #fff;
+                /* 可以添加额外的动画效果，例如缩放或阴影 */
+                transform: scale(0.98);
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+              }
+
+  .claim-info {
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
 
 .claim-info p {
   margin: 0 0 10px;

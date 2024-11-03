@@ -66,6 +66,7 @@ import { useUserStore } from '@/stores/user';
 import { addFoundPost } from '@/apis/found';
 import { addLostPost } from '@/apis/lost';
 import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue';
 
 const formRef = ref(null);

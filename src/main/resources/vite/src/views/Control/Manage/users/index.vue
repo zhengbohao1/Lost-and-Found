@@ -1,5 +1,5 @@
 <template>
-  <el-card class="manage-card" style="height: calc(100vh - 20px); overflow-y: auto;">
+  <el-card class="manage-card" style="height: 610px;">
       <template #header>
           <div class="card-header">
               <span>用户管理</span>

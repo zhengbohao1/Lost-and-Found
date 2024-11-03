@@ -1,28 +1,32 @@
-<template v-if="cards.length>0">  
-<div>
-  <div class="Empty" v-if="cards.length === 0">
-  <el-empty description="没有帖子..."/>
-  </div>
-  <el-scrollbar v-else>
-    <div v-infinite-scroll="loadMore" :infinite-scroll-disabled="disabled" :infinite-scroll-distance="200">
-      <ViewCard :card_columns="card_columns" @show-detail="showMessage" ></ViewCard>
-    </div>
-  </el-scrollbar>
-  <div class="backover" v-if="show"></div>
-    <transition name="fade">
-        <div class="overlay" v-if="show">
-          <el-button class="backPage" @click="close" :icon="Close"></el-button>
-          <CardDetail :postid="postid" @afterDoComment="afterDoComment" ref="overlay"></CardDetail>
-          <!--路由中携带了id，可以选择不用父子传递信息，而使用path传值或者pinia的方式-->
+<template>  
+  <div>
+    <LoadView v-if="loading"></LoadView>
+    <div v-else>
+      <div class="Empty" v-if="cards.length === 0">
+        <el-empty :description=" route.query.input ? '没有找到相关帖子' : '没有帖子...'"></el-empty>
+      </div>
+      <div class="waterfall" v-else>
+        <div v-infinite-scroll="loadMore" :infinite-scroll-disabled="disabled" :infinite-scroll-distance="200">
+          <ViewCard :card_columns="card_columns" @show-detail="showMessage" ></ViewCard>
         </div>
-    </transition>
-</div>
+      </div>
+      <div class="backover" v-if="show"></div>
+      <transition name="fade">
+          <div class="overlay" v-if="show">
+            <el-button class="backPage" @click="close" :icon="Close"></el-button>
+            <CardDetail :postid="postid" @afterDoComment="afterDoComment" ref="overlay"></CardDetail>
+            <!--路由中携带了id，可以选择不用父子传递信息，而使用path传值或者pinia的方式-->
+          </div>
+        </transition>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { onMounted, onUnmounted, ref, nextTick, watch } from 'vue';
 import ViewCard from '@/components/user/Card.vue';
 import CardDetail from '@/components/user/LostDetail.vue';
+import LoadView from '@/components/public/LoadView.vue';
 import { queryPost } from '@/apis/lost';
 import { getUserName } from '@/apis/user';
 import { useRoute } from 'vue-router';
@@ -35,6 +39,8 @@ const cards = ref([]);  //包含了所有帖子的所有内容
 // 主页卡片 //////////////////////////////////////////////////////////////////
 
 const disabled = ref(true);
+const loading = ref(true);
+
 const route = useRoute();
 
 const columns = ref(0);
@@ -64,6 +70,7 @@ addSenderName()
 nextTick(() => {
   waterFallInit(columns, card_columns, arrHeight, cards)
 })
+loading.value = false
 disabled.value = false; // 启用滚动加载
 };
 
