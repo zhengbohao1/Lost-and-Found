@@ -7,14 +7,13 @@
           <div class="banner">
             <el-carousel height="600px">
               <el-carousel-item>
-                <el-image
+                <n-image
                   class="carousel-item-center"
                   style="width: 100%; height: 100%"
                   fit="cover"
                   @load="adjustImageSize($event)"
                   ref="images"
                   :src="'http://localhost:8090/common/download?name='+post.imgUrl"
-                  :preview-src-list="previewList"
                 />
               </el-carousel-item>
             </el-carousel>
@@ -40,11 +39,11 @@
                 <div class="content">{{ post.description }}</div>
               </el-row>
               <el-row style="gap:15px">
-                <time class="timeF">丢失时间：{{ post.lostDate }}</time>
+                <time class="timeF">丢失时间：{{ formatDate(post.lostDate) }}</time>
                 <time class="pos">{{ post.lostLocation }}</time>
               </el-row>
               <el-row>
-                <time class="time">{{ post.createdAt }}</time>
+                <time class="time">{{ formatDate(post.createdAt) }}</time>
               </el-row>
               <!-- 卡片内容结束 -->
               <hr />
@@ -70,7 +69,7 @@
                               </div>
                             </div>
                             <div style="color:#333333;margin-top: 2px;margin-bottom: 5px;">{{ item.comment }}</div>
-                            <time class="time">{{ item.createdAt }}</time>
+                            <time class="time">{{ formatDate(item.createdAt) }}</time>
                             <el-icon style="margin-left:60px; margin-top: 0px; font-size: small" @click="commentMain(item)">
                               <ChatRound/>
                             </el-icon>
@@ -91,7 +90,7 @@
                                     </div>
                                   </div>
                                   <div style="color:#333333;margin-top: 2px;margin-bottom: 10px;">{{ reply.comment }}</div>
-                                  <time class="time">{{ reply.createAt }}</time>
+                                  <time class="time">{{ formatDate(reply.createdAt) }}</time>
                                 </el-col>
                               </el-row>
                             </div>
@@ -107,8 +106,7 @@
                         <p>你好</p>
                         <p>我是 {{ claimLost.userName }}，我似乎找到了你掉的东西</p>
                         <p style="margin-top: 15px; margin-bottom: 15px;">{{ claimLost.content }}</p>
-                        <el-image :src="'http://localhost:8090/common/download2?name='+claimLost.imgUrl"
-                        :preview-src-list="previewListForSend"></el-image>
+                        <n-image :src="'http://localhost:8090/common/download2?name='+claimLost.imgUrl"></n-image>
                         <p style="font-size: 15px; color: #777;">联系方式：</p>
                         <p style="font-size: 16px; color: #555; margin-left: 30px">{{ claimLost.contactWay }}：{{ claimLost.contactDetails }}</p>
                       </div>
@@ -353,18 +351,12 @@
       commentInput.value = `回复${item.userName}: `
     }
   }
-  
-const previewList = ref([]);
-
-const previewListForSend = ref([]);
 
 const fetchDetail = async () => {
   try {
     const response = await getPostById(postid.value);
     post.value = response.data;
     console.log(response.data);
-    previewList.value.push('http://localhost:8090/common/download?name='+post.value.imgUrl);
-    previewListForSend.value.push('http://localhost:8090/common/download2?name='+claimLost.value.imgUrl);
   } catch (error) {
     console.error(error);
   }
@@ -429,6 +421,14 @@ const fetchDetail = async () => {
   watch(postid, async (newPostId) => {
     await fetchDetail();
   });
+
+  //时间显示
+  const formatDate = (date) => {
+    if (!date) return '';
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+    return new Date(date).toLocaleDateString('zh-CN', options);
+  };
+  
   
   onMounted(async () => {
     postid.value = claimLost.value.postId;

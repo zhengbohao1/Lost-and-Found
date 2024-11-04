@@ -9,6 +9,7 @@ const DeleteLost = () => import('@/views/Control/Manage/lost/delete/index.vue')
 const ManageUsers = () => import('@/views/Control/Manage/users/index.vue');
 const ManageAdvise = () => import('@/views/Control/Manage/advise/index.vue');
 const MangePrize = () => import('@/views/Control/Manage/prize/control/index.vue');
+const PrizeItem = () => import('@/views/Control/Manage/prize/item/index.vue');
 const User = () => import('@/views/User/index.vue');
 const Space = () => import('@/views/User/Space/index.vue');
 const MyFoundPost = () => import('@/views/User/Space/found/index.vue');
@@ -101,6 +102,13 @@ const Test = () => import('@/components/Test2.vue');
                     component: MangePrize,
                     meta: {
                         title: '奖品管理',
+                    }
+                },
+                {
+                    path: 'function/prizeitem',
+                    component: PrizeItem,
+                    meta: {
+                        title: '兑奖记录',
                     }
                 },
                 {

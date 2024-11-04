@@ -5,7 +5,46 @@
       <div class="Empty" v-if="cards.length === 0">
         <el-empty :description=" route.query.input ? '没有找到相关帖子' : '没有帖子...'"></el-empty>
       </div>
-      <div class="waterfall" v-else>
+      <div v-else>
+
+        <!---试做-->
+        <div class="push">
+          <h1 style="  margin-bottom: 30px;">可能与你有关的帖子</h1>
+          <n-carousel show-arrow autoplay style="width: 300px; height: 300px;">
+            <n-image class="carousel-img" :src="'http://localhost:8090/common/download?name='+cards[0].imgUrl"
+              @load="adjustImageSize($event)"
+            ></n-image>
+            <n-image class="carousel-img" :src="'http://localhost:8090/common/download?name='+cards[2].imgUrl"
+              @load="adjustImageSize($event)"
+            ></n-image>
+
+            <template #arrow="{ prev, next }">
+              <div class="custom-arrow">
+                <button type="button" class="custom-arrow--left" @click="prev">
+                  <n-icon><ArrowLeftBold /></n-icon>
+                </button>
+                <button type="button" class="custom-arrow--right" @click="next">
+                  <n-icon><ArrowRightBold /></n-icon>
+                </button>
+              </div>
+            </template>
+            <template #dots="{ total, currentIndex, to }">
+              <ul class="custom-dots">
+                <li
+                  v-for="index of total"
+                  :key="index"
+                  :class="{ ['is-active']: currentIndex === index - 1 }"
+                  @click="to(index - 1)"
+                />
+              </ul>
+            </template>
+          </n-carousel>
+
+          <el-scrollbar height="300">
+            
+          </el-scrollbar>
+        </div>
+
         <div v-infinite-scroll="loadMore" :infinite-scroll-disabled="disabled" :infinite-scroll-distance="200">
           <ViewCard :card_columns="card_columns" @show-detail="showMessage" ></ViewCard>
         </div>
@@ -31,8 +70,7 @@ import { queryPost, search } from '@/apis/found';
 import { getUserName } from '@/apis/user';
 import { useRoute } from 'vue-router';
 import { waterFallInit, waterFallMore, resizeWaterFall } from '@/utils/waterFall';
-import { Close } from '@element-plus/icons-vue';
-
+import { Close, ArrowLeftBold, ArrowRightBold } from '@element-plus/icons-vue';
 
 const cards = ref([]);  //包含了所有帖子的所有内容
 
@@ -108,6 +146,23 @@ const loadMore = async () => {
   }
 };
 
+// 顶部推荐 //////////////////////////////////////////////////////////////////
+
+//图片调整
+const adjustImageSize = (event) => {
+    const img = event.target;
+    const naturalWidth = img.naturalWidth;
+    const naturalHeight = img.naturalHeight;
+    const imageRatio = naturalWidth / naturalHeight;
+    if (imageRatio > 1) {
+      img.style.width = '100%';
+      img.style.height = 'auto';
+    } else {
+      img.style.height = '100%';
+      img.style.width = 'auto';
+    }
+  }
+
 // 卡片详情 //////////////////////////////////////////////////////////////////
 const show = ref(false);
 const overlayX = ref(0); // 覆盖层的水平位置
@@ -130,8 +185,6 @@ const close = () => {
   window.history.pushState({}, "", `/user/found`);
 }
 
-const needToLog = ref(false);
-
 onMounted(() => {
   if(route.query.input){
     querySearchPosts();
@@ -148,10 +201,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.waterfall::-webkit-scrollbar {
-    width: 0.1em; /* 设置滚动条宽度为0.1em */
-}
-
 .backover{
   position: fixed;
   top: 0;
@@ -184,6 +233,71 @@ onMounted(() => {
   cursor: pointer;
   transition: all .3s;
 }
+
+.push {
+  height: 350px;
+  padding-left: 30px;
+  margin-bottom: 45px;
+}
+
+.carousel-img {
+    background-color: rgb(242, 242, 242);
+    width: 300px;
+    height: 300px;
+    border-radius: 0.8rem;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .custom-arrow {
+  display: flex;
+  position: absolute;
+  bottom: 25px;
+  right: 10px;
+}
+
+.custom-arrow button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-right: 12px;
+  color: #666;
+  background-color: rgba(121, 121, 121, 0.5);
+  border-width: 0;
+  border-radius: 20px;
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.custom-dots {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+}
+
+.custom-dots li {
+  display: inline-block;
+  width: 12px;
+  height: 4px;
+  margin: 0 3px;
+  border-radius: 4px;
+  background-color: rgba(150, 150, 150, 0.4);
+  transition:
+    width 0.3s,
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.custom-dots li.is-active {
+  width: 40px;
+  background: #999;
+}
+
 
 .fade-enter-active {
   transition: all 0.3s ease;

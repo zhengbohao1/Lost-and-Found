@@ -7,14 +7,13 @@
           <div class="banner">
             <el-carousel height="600px" v-load="loading">
               <el-carousel-item>
-                <el-image
+                <n-image
                   class="carousel-item-center"
                   style="width: 100%; height: 100%"
                   fit="cover"
                   @load="adjustImageSize($event)"
                   ref="images"
                   :src="fileList.length>0 ?  fileList[0].url : 'http://localhost:8090/common/download?name='+post.imgUrl"
-                  :preview-src-list="previewList"
                 />
               </el-carousel-item>
             </el-carousel>
@@ -41,7 +40,7 @@
                 <div class="content">{{ post.description }}</div>
               </el-row>
               <el-row style="gap:15px">
-                <time class="timeF">发现时间：{{ post.foundDate }}</time>
+                <time class="timeF">发现时间：{{ formatDate(post.foundDate) }}</time>
                 <time class="pos">{{ post.foundLocation }}</time>
               </el-row>
               <el-row>
@@ -110,7 +109,7 @@
                         </el-upload>
                       </el-row>
                     <el-row style="margin-top: 10px;">
-                      <time class="time">{{ post.createdAt }}</time>
+                      <time class="time">{{ formatDate(post.createdAt) }}</time>
                     </el-row>
                   </div>
                 </div>
@@ -207,13 +206,10 @@ const adjustImageSize = (event) => {
   loading.value = false;
 }
 
-const previewList = ref([]);
-
 const fetchDetail = async () => {
   try {
     const response = await getPostById(postid.value);
     post.value = response.data;
-    previewList.value.push('http://localhost:8090/common/download?name='+post.value.imgUrl);
   } catch (error) {
     console.error(error);
   }
@@ -286,6 +282,13 @@ function handleError(){
     type: 'error',
   })
 }
+
+//时间显示
+const formatDate = (date) => {
+  if (!date) return '';
+  const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+  return new Date(date).toLocaleDateString('zh-CN', options);
+};
 
 onMounted(async () => {
   await fetchDetail();

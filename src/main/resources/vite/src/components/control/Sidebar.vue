@@ -37,6 +37,7 @@
           <span :style="{'color': (route.path.includes('/control/function/manageprize')) ? '#947fff' : ''}">奖品管理</span>
         </template>
         <el-menu-item index="/control/function/manageprize">管理奖品</el-menu-item>
+        <el-menu-item index="/control/function/prizeitem">兑奖记录</el-menu-item>
       </el-sub-menu>
       <el-menu-item index="/control/manageusers">用户管理</el-menu-item>
       <el-menu-item index="/control/manageadvises">用户建议</el-menu-item>

@@ -101,7 +101,7 @@ const errorState = showErrorState();
 
 // 用户数据
 const users = ref([]);
-const total = 100;
+const total = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(10);
 const selectedRows = ref([]);
@@ -113,15 +113,17 @@ const formLabelWidth = ref('120px');
 
 const fetchData = async () => {
   try {
-    const result = await queryAdvises();
-    users.value = result.data;
-    loading.value = false;
-    if (!Array.isArray(users.value)) {
-      console.error('获取的列表不是一个数组');
-    }
+    await queryAdvises().then((res) =>{
+      if(res.code==1){
+        users.value = res.data;
+        loading.value = false;
+        total.value = res.data.length;
+      }else{
+        ElMessage.error(res.msg);
+      }
+    });
   } catch (error) {
     console.error('获取列表失败', error);
-    showError.showErrorMsg('获取列表失败，请重试');
   }
 };
 
@@ -158,7 +160,6 @@ const handleView = (row) => {
 };
 
 const handleRetry = () => {
-  showError.hideErrorMsg(); // 关闭错误提示
   fetchData(); // 重新尝试加载数据
 };
 

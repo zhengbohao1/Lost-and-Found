@@ -10,7 +10,7 @@
                                 <el-avatar :src="'http://localhost:8090/user/getAvatarById?userId='+claim.userId" size="large"></el-avatar>
                             </a>
                         </el-col>
-                    <el-col :span="10">
+                    <el-col :span="20">
                         <el-row>
                             <span>{{ claim.userName }}<i class="text">向您发送了寻物申请</i></span>
                         </el-row>
