@@ -27,7 +27,7 @@ export default defineConfig({
         Components({
             // 1.配置elementPlus采用sass
             resolvers: [
-                ElementPlusResolver({importStyle: "sass"}),
+                ElementPlusResolver(),
                 NaiveUiResolver()
             ],
         }),

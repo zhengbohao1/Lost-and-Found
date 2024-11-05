@@ -75,6 +75,7 @@ const details = (id) => {
   const target = event.target;
   const left = target.x;
   const top = target.y;
+  console.log(left, top)
   emit('show-detail', id, left, top)
     //left, top确定详情页的显示位置
 }

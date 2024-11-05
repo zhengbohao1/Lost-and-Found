@@ -190,7 +190,7 @@
               <div v-else>
                 <div v-if="!willSendComment">
                     <el-row>
-                      <el-col :span="8">
+                      <el-col :span="9">
                         <el-input
                           placeholder="评论"
                           :prefix-icon="Edit"
@@ -199,7 +199,7 @@
                           @click="willSendComment = true"
                         />
                       </el-col>
-                      <el-col :span="2"> </el-col>
+                      <el-col :span="1"> </el-col>
                       <el-col :span="14">
                         <el-button class="button" @click="toClaim=true" 
                           v-if="userStore.userInfo.userId!=post.finderId&&!post.claimantId"
@@ -520,6 +520,10 @@ onMounted(async () => {
 .username {
   margin-left: 20px;
   font-size: 20px;
+}
+
+.main-content{
+  transition: height 0.4s ease-in-out;
 }
 
 .main-content::-webkit-scrollbar {

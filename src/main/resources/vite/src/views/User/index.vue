@@ -88,6 +88,7 @@
 </template>
 
 <script setup>
+import 'element-plus/dist/index.css'
 import { ref, computed, onMounted, watch } from 'vue';
 import { Fold, Expand, House, SwitchButton, Promotion, WarnTriangleFilled, User, Comment, Search, Close, BellFilled } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';

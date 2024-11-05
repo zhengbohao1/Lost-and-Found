@@ -9,40 +9,79 @@
 
         <!---试做-->
         <div class="push">
-          <h1 style="  margin-bottom: 30px;">可能与你有关的帖子</h1>
-          <n-carousel show-arrow autoplay style="width: 300px; height: 300px;">
-            <n-image class="carousel-img" :src="'http://localhost:8090/common/download?name='+cards[0].imgUrl"
-              @load="adjustImageSize($event)"
-            ></n-image>
-            <n-image class="carousel-img" :src="'http://localhost:8090/common/download?name='+cards[2].imgUrl"
-              @load="adjustImageSize($event)"
-            ></n-image>
+          <el-container>
+            <el-header>
+              <h1 style="">可能与你有关的帖子</h1>
+            </el-header>
+            <el-container>
+            <el-aside>
+              <n-carousel show-arrow autoplay style="width: 300px; height: 300px;">
+                <n-image class="carousel-img" :src="'http://localhost:8090/common/download?name='+cards[0].imgUrl"
+                  @load="adjustImageSize($event)"
+                  @click="showMessage(cards[0].id,0,0)"
+                ></n-image>
+                <n-image class="carousel-img" :src="'http://localhost:8090/common/download?name='+cards[2].imgUrl"
+                  @load="adjustImageSize($event)"
+                  @click="showMessage(cards[0].id,0,0)"
+                ></n-image>
 
-            <template #arrow="{ prev, next }">
-              <div class="custom-arrow">
-                <button type="button" class="custom-arrow--left" @click="prev">
-                  <n-icon><ArrowLeftBold /></n-icon>
-                </button>
-                <button type="button" class="custom-arrow--right" @click="next">
-                  <n-icon><ArrowRightBold /></n-icon>
-                </button>
-              </div>
-            </template>
-            <template #dots="{ total, currentIndex, to }">
-              <ul class="custom-dots">
-                <li
-                  v-for="index of total"
-                  :key="index"
-                  :class="{ ['is-active']: currentIndex === index - 1 }"
-                  @click="to(index - 1)"
-                />
-              </ul>
-            </template>
-          </n-carousel>
+                <template #arrow="{ prev, next }">
+                  <div class="custom-arrow">
+                    <button type="button" class="custom-arrow--left" @click="prev">
+                      <n-icon><ArrowLeftBold /></n-icon>
+                    </button>
+                    <button type="button" class="custom-arrow--right" @click="next">
+                      <n-icon><ArrowRightBold /></n-icon>
+                    </button>
+                  </div>
+                </template>
+                <template #dots="{ total, currentIndex, to }">
+                  <ul class="custom-dots">
+                    <li
+                      v-for="index of total"
+                      :key="index"
+                      :class="{ ['is-active']: currentIndex === index - 1 }"
+                      @click="to(index - 1)"
+                    />
+                  </ul>
+                </template>
+              </n-carousel>
+            </el-aside>
 
-          <el-scrollbar height="300">
-            
-          </el-scrollbar>
+            <el-main style="margin-top: -30px">
+              <v-window v-model="windows" show-arrows style="height: 330px; width: 700px; ">
+                <v-window-item v-for="(chunk, index) in chunkedCards" :key="index">
+                    <v-row style="width: 700px; height: 330px;">
+                      <v-col v-for="card in chunk" :key="card.id" style="width: 345px; min-height: 155px; max-height: 465px; padding: 5px;">
+                        <v-card v-if="card.finderId" style="min-height: 100%; max-height: 300%; margin-top: 15px; margin-left: 20px;" @click="showMessage(card.id,0,0)">
+                          <v-row no-gutters>
+                            <v-col cols="6" style="height: 155px;">
+                              <n-image :src="'http://localhost:8090/common/download?name='+card.imgUrl"
+                                @load="adjustImageSize($event)"
+                                @click.stop
+                               style="height: 100%; width: 100%; object-fit: cover; justify-content: center;"></n-image>
+                            </v-col>
+                            <v-col cols="6" style="height: 155px; padding: 10px;">
+                              <v-row>
+                                <el-avatar size="40" style="margin-top: 10px; margin-left: 15px" :src="'http://localhost:8090/user/getAvatarById?userId='+card.finderId"></el-avatar>
+                                <span style="margin-top: 20px; margin-left: 10px;">{{ card.nickName }}</span>
+                              </v-row>
+                              <v-card-text style="margin-left: 15px;">{{ card.itemName }}</v-card-text>
+                              <el-scrollbar style="height: 51px; width: 150px" @click.stop>
+                              <n-ellipsis expand-trigger="click"  style="max-width:150px" line-clamp="2" >
+                                  {{ card.description }}
+                              </n-ellipsis>
+                              </el-scrollbar>
+                            </v-col>
+                          </v-row>
+                        </v-card>
+                      </v-col>
+                    </v-row>
+                </v-window-item>
+              </v-window>
+            </el-main>
+          </el-container>
+          </el-container>
         </div>
 
         <div v-infinite-scroll="loadMore" :infinite-scroll-disabled="disabled" :infinite-scroll-distance="200">
@@ -53,8 +92,7 @@
       <transition name="fade">
           <div class="overlay" v-if="show">
             <el-button class="backPage" @click="close" :icon="Close"></el-button>
-            <CardDetail :postid="postid" @afterDoComment="afterDoComment" ref="overlay"></CardDetail>
-            <!--路由中携带了id，可以选择不用父子传递信息，而使用path传值或者pinia的方式-->
+            <CardDetail :postid="postid" ref="overlay"></CardDetail>
           </div>
         </transition>
     </div>
@@ -62,7 +100,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref, nextTick, watch } from 'vue';
+import { onMounted, onUnmounted, ref, nextTick, computed } from 'vue';
 import ViewCard from '@/components/user/Card.vue';
 import CardDetail from '@/components/user/FoundDetail.vue';
 import LoadView from '@/components/public/LoadView.vue';
@@ -162,6 +200,25 @@ const adjustImageSize = (event) => {
       img.style.width = 'auto';
     }
   }
+  
+//样例数据
+const windows = ref(0)
+
+const test = ref([]);
+
+const chunkedCards = computed(() => {
+  test.value = cards.value;
+
+  // 如果卡片数量不是 4 的倍数，补充空数据
+  while (test.value.length % 4 !== 0) {
+    test.value.push({ id: null, nickName: '', itemName: '', image: '' });
+  }
+
+  const size = 4
+  return test.value.reduce((acc, _, i) => 
+    (i % size ? acc : [...acc, test.value.slice(i, i + size)]), []
+  )
+})
 
 // 卡片详情 //////////////////////////////////////////////////////////////////
 const show = ref(false);
@@ -185,11 +242,11 @@ const close = () => {
   window.history.pushState({}, "", `/user/found`);
 }
 
-onMounted(() => {
+onMounted( async () => {
   if(route.query.input){
     querySearchPosts();
   }else{
-    queryPosts(); 
+    await queryPosts(); 
   }
   // 清理函数
   onUnmounted(() => {
@@ -234,14 +291,49 @@ onMounted(() => {
   transition: all .3s;
 }
 
+/*智能推送区块*/
+h1{
+		   font: 20px "微软雅黑"; /*设置字体和字体大小*/
+		   margin:10px; /*设置元素外边距*/
+		   font-weight: 500; /*设置字体粗细*/
+		   color: #f35626; /*设置文字颜色*/
+		   -webkit-animation:bounce 2s infinite;/*设置动画*/
+		}
+		@-webkit-keyframes bounce{/*创建动画*/
+		   0%,100%,20%,50%,80%{
+		      -webkit-transform:translateY(0);
+		   }40%{
+		      -webkit-transform:translateY(-30px);
+		   }60%{
+		      -webkit-transform:translateY(-15px);
+		   }
+		}
+
 .push {
+  padding: 0;
   height: 350px;
   padding-left: 30px;
-  margin-bottom: 45px;
+  margin-bottom: 65px;
 }
 
+.v-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%; /* 确保卡片高度与 v-col 一致 */
+  background-color: #fafafa;
+  border-radius: 12px;
+}
+
+.v-col {
+  width: 345px; /* 固定宽度 */
+  height: 155px; /* 增加卡片高度 */
+  padding: 5px; /* 卡片之间的间距 */
+}
+
+/*轮播用样式*/
 .carousel-img {
-    background-color: rgb(242, 242, 242);
+    background-color: rgba(0, 157, 255, 0.2);
     width: 300px;
     height: 300px;
     border-radius: 0.8rem;
@@ -298,7 +390,7 @@ onMounted(() => {
   background: #999;
 }
 
-
+/*过渡动画*/
 .fade-enter-active {
   transition: all 0.3s ease;
 }
