@@ -1,6 +1,7 @@
 package com.it.service.impl;
 
 import com.it.entity.LostFound;
+import com.it.entity.Matching;
 import com.it.entity.MessageNotification;
 import com.it.entity.MissingNotices;
 import com.it.enums.MessageType;
@@ -24,6 +25,8 @@ public class IntelligentMatchingServiceImpl implements IntelligentMatchingServic
     private ILostFoundService lostFoundService;
     @Resource
     private MessageNotificationService messageNotificationService;
+    @Resource
+    private MatchingService matchingService;
     @Async
     @Override
     public void processSmartPush(LostFound lostFound) {
@@ -57,15 +60,38 @@ public class IntelligentMatchingServiceImpl implements IntelligentMatchingServic
             }
             if (contentPercentage > 30) {
                 String ownerId = missingNotices.getOwnerId();
+                //首先，先发给对方。
                 MessageNotification messageNotification = new MessageNotification();
                 messageNotification.setRecipientId(ownerId);
                 messageNotification.setMessageType(MessageType.SYSTEM_NOTIFICATION);
                 messageNotification.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
-                messageNotification.setRelatedPostId(missingNotices.getId());
+                messageNotification.setRelatedPostId(lostFound.getId());
                 messageNotification.setIsRead(0);
                 messageNotification.setSenderId("系统");
-                messageNotification.setPostCategory(1);
+                messageNotification.setPostCategory(0);
                 messageNotificationService.save(messageNotification);
+                //其次，发给自己
+                MessageNotification messageNotification2 = new MessageNotification();
+                messageNotification2.setRecipientId(lostFound.getFinderId());
+                messageNotification2.setMessageType(MessageType.SYSTEM_NOTIFICATION);
+                messageNotification2.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
+                messageNotification2.setRelatedPostId(missingNotices.getId());
+                messageNotification2.setIsRead(0);
+                messageNotification2.setSenderId("系统");
+                messageNotification2.setPostCategory(1);
+                messageNotificationService.save(messageNotification2);
+                //最后，发匹配信息，发给对方
+                Matching matching1 = new Matching();
+                matching1.setUserId(ownerId);
+                matching1.setPostId(lostFound.getId());
+                matching1.setCategory(0);
+                matchingService.save(matching1);
+                //发matching信息，发给自己
+                Matching matching2 = new Matching();
+                matching2.setUserId(lostFound.getFinderId());
+                matching2.setPostId(missingNotices.getId());
+                matching2.setCategory(1);
+                matchingService.save(matching2);
             }
         }
     }
@@ -101,18 +127,39 @@ public class IntelligentMatchingServiceImpl implements IntelligentMatchingServic
                 System.out.println("gpt问答出了问题");
                 continue;
             }
-            if (contentPercentage > 60) {
-                System.out.println(lostFound.getItemName()+"与"+missingNotices.getItemName()+"相似度："+contentPercentage);
+            if (contentPercentage > 30) {
                 String ownerId = lostFound.getFinderId();
+                //首先，先发给对方。
                 MessageNotification messageNotification = new MessageNotification();
                 messageNotification.setRecipientId(ownerId);
                 messageNotification.setMessageType(MessageType.SYSTEM_NOTIFICATION);
                 messageNotification.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
-                messageNotification.setRelatedPostId(lostFound.getId());
+                messageNotification.setRelatedPostId(missingNotices.getId());
                 messageNotification.setIsRead(0);
                 messageNotification.setSenderId("系统");
-                messageNotification.setPostCategory(0);
+                messageNotification.setPostCategory(1);
                 messageNotificationService.save(messageNotification);
+                //其次，发给自己
+                MessageNotification messageNotification2 = new MessageNotification();
+                messageNotification2.setRecipientId(missingNotices.getOwnerId());
+                messageNotification2.setMessageType(MessageType.SYSTEM_NOTIFICATION);
+                messageNotification2.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
+                messageNotification2.setRelatedPostId(lostFound.getId());
+                messageNotification2.setIsRead(0);
+                messageNotification2.setSenderId("系统");
+                messageNotificationService.save(messageNotification2);
+                //最后，发匹配信息，发给对方
+                Matching matching1 = new Matching();
+                matching1.setUserId(ownerId);
+                matching1.setPostId(lostFound.getId());
+                matching1.setCategory(0);
+                matchingService.save(matching1);
+                //发matching信息，发给自己
+                Matching matching2 = new Matching();
+                matching2.setUserId(missingNotices.getOwnerId());
+                matching2.setPostId(missingNotices.getId());
+                matching2.setCategory(1);
+                matchingService.save(matching2);
             }
         }
     }

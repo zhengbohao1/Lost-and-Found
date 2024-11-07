@@ -69,10 +69,11 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
         List<LostFound> lostFounds= baseMapper.selectList(queryWrapper1).stream().filter(lostFound -> lostFound.getReviewProcess() == 1).toList();
         //
         List<LostFoundDto> lostFoundsDto = new ArrayList<>();
-        QueryWrapper<Image> queryWrapper = new QueryWrapper<>();
+
 
         for (LostFound lostFound : lostFounds) {
             String path = lostFound.getImgUrl();
+            QueryWrapper<Image> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("path", path);
             Image image = imageService.getOne(queryWrapper);
 
@@ -93,10 +94,11 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
     public List<LostFoundDto> get_list() {
         List<LostFound> lostFounds = this.list();
         List<LostFoundDto> lostFoundsDto = new ArrayList<>();
-        QueryWrapper<Image> queryWrapper = new QueryWrapper<>();
+
 
         for (LostFound lostFound : lostFounds) {
             String path = lostFound.getImgUrl();
+            QueryWrapper<Image> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("path", path);
             Image image = imageService.getOne(queryWrapper);
 
