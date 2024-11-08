@@ -1,6 +1,7 @@
 package com.it.controller;
 
 import com.it.common.R;
+import com.it.entity.TradingVolume;
 import com.it.entity.UserInfo;
 import com.it.service.AdminInfoService;
 import com.it.service.UserInfoService;
@@ -70,5 +71,15 @@ public class AdminController {
     public R<Long> get_todayMissing_post(){
         Long count = adminInfoService.get_todayMissing_post();
         return R.success(count);
+    }
+    @GetMapping("/getLostTradeVolumn")
+    public R<List<TradingVolume>> getLostTradeVolumn(){
+        List<TradingVolume> tradingVolumes = adminInfoService.get_LostTrading_volume();
+        return R.success(tradingVolumes);
+    }
+    @GetMapping("/getMissingTradeVolumn")
+    public R<List<TradingVolume>> getMissingTradeVolumn(){
+        List<TradingVolume> tradingVolumes = adminInfoService.get_MissingTrading_volume();
+        return R.success(tradingVolumes);
     }
 }

@@ -3,6 +3,9 @@ package com.it.service;
 import com.it.common.R;
 import com.it.entity.AdminInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.it.entity.TradingVolume;
+
+import java.util.List;
 
 /**
 * @author Yu
@@ -17,4 +20,6 @@ public interface AdminInfoService extends IService<AdminInfo> {
     int get_todayLost_trade();
     Long get_todayLost_post();
     Long get_todayMissing_post();
+    List<TradingVolume> get_LostTrading_volume();
+    List<TradingVolume> get_MissingTrading_volume();
 }

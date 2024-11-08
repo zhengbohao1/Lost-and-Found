@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -86,6 +87,18 @@ public class AdminInfoServiceImpl extends ServiceImpl<AdminInfoMapper, AdminInfo
         Date currentDate = Date.valueOf(LocalDate.now());
         queryWrapper.like("created_at", currentDate);
         return missingNoticesService.getBaseMapper().selectCount(queryWrapper);
+    }
+
+    @Override
+    public List<TradingVolume> get_LostTrading_volume() {
+        QueryWrapper<TradingVolume> queryWrapper = new QueryWrapper<>();
+        return tradingVolumeService.list(queryWrapper.eq("category", "失物招领"));
+    }
+
+    @Override
+    public List<TradingVolume> get_MissingTrading_volume() {
+        QueryWrapper<TradingVolume> queryWrapper = new QueryWrapper<>();
+        return tradingVolumeService.list(queryWrapper.eq("category", "寻物启事"));
     }
 }
 

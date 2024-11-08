@@ -61,25 +61,25 @@ public class IntelligentMatchingServiceImpl implements IntelligentMatchingServic
             if (contentPercentage > 30) {
                 String ownerId = missingNotices.getOwnerId();
                 //首先，先发给对方。
-                MessageNotification messageNotification = new MessageNotification();
-                messageNotification.setRecipientId(ownerId);
-                messageNotification.setMessageType(MessageType.SYSTEM_NOTIFICATION);
-                messageNotification.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
-                messageNotification.setRelatedPostId(lostFound.getId());
-                messageNotification.setIsRead(0);
-                messageNotification.setSenderId("系统");
-                messageNotification.setPostCategory(0);
-                messageNotificationService.save(messageNotification);
-                //其次，发给自己
-                MessageNotification messageNotification2 = new MessageNotification();
-                messageNotification2.setRecipientId(lostFound.getFinderId());
-                messageNotification2.setMessageType(MessageType.SYSTEM_NOTIFICATION);
-                messageNotification2.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
-                messageNotification2.setRelatedPostId(missingNotices.getId());
-                messageNotification2.setIsRead(0);
-                messageNotification2.setSenderId("系统");
-                messageNotification2.setPostCategory(1);
-                messageNotificationService.save(messageNotification2);
+//                MessageNotification messageNotification = new MessageNotification();
+//                messageNotification.setRecipientId(ownerId);
+//                messageNotification.setMessageType(MessageType.SYSTEM_NOTIFICATION);
+//                messageNotification.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
+//                messageNotification.setRelatedPostId(lostFound.getId());
+//                messageNotification.setIsRead(0);
+//                messageNotification.setSenderId("系统");
+//                messageNotification.setPostCategory(0);
+//                messageNotificationService.save(messageNotification);
+//                //其次，发给自己
+//                MessageNotification messageNotification2 = new MessageNotification();
+//                messageNotification2.setRecipientId(lostFound.getFinderId());
+//                messageNotification2.setMessageType(MessageType.SYSTEM_NOTIFICATION);
+//                messageNotification2.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
+//                messageNotification2.setRelatedPostId(missingNotices.getId());
+//                messageNotification2.setIsRead(0);
+//                messageNotification2.setSenderId("系统");
+//                messageNotification2.setPostCategory(1);
+//                messageNotificationService.save(messageNotification2);
                 //最后，发匹配信息，发给对方
                 Matching matching1 = new Matching();
                 matching1.setUserId(ownerId);
@@ -130,24 +130,24 @@ public class IntelligentMatchingServiceImpl implements IntelligentMatchingServic
             if (contentPercentage > 30) {
                 String ownerId = lostFound.getFinderId();
                 //首先，先发给对方。
-                MessageNotification messageNotification = new MessageNotification();
-                messageNotification.setRecipientId(ownerId);
-                messageNotification.setMessageType(MessageType.SYSTEM_NOTIFICATION);
-                messageNotification.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
-                messageNotification.setRelatedPostId(missingNotices.getId());
-                messageNotification.setIsRead(0);
-                messageNotification.setSenderId("系统");
-                messageNotification.setPostCategory(1);
-                messageNotificationService.save(messageNotification);
-                //其次，发给自己
-                MessageNotification messageNotification2 = new MessageNotification();
-                messageNotification2.setRecipientId(missingNotices.getOwnerId());
-                messageNotification2.setMessageType(MessageType.SYSTEM_NOTIFICATION);
-                messageNotification2.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
-                messageNotification2.setRelatedPostId(lostFound.getId());
-                messageNotification2.setIsRead(0);
-                messageNotification2.setSenderId("系统");
-                messageNotificationService.save(messageNotification2);
+//                MessageNotification messageNotification = new MessageNotification();
+//                messageNotification.setRecipientId(ownerId);
+//                messageNotification.setMessageType(MessageType.SYSTEM_NOTIFICATION);
+//                messageNotification.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
+//                messageNotification.setRelatedPostId(missingNotices.getId());
+//                messageNotification.setIsRead(0);
+//                messageNotification.setSenderId("系统");
+//                messageNotification.setPostCategory(1);
+//                messageNotificationService.save(messageNotification);
+//                //其次，发给自己
+//                MessageNotification messageNotification2 = new MessageNotification();
+//                messageNotification2.setRecipientId(missingNotices.getOwnerId());
+//                messageNotification2.setMessageType(MessageType.SYSTEM_NOTIFICATION);
+//                messageNotification2.setMessageContent("您有一条智能匹配信息推送！请点击详情查看！");
+//                messageNotification2.setRelatedPostId(lostFound.getId());
+//                messageNotification2.setIsRead(0);
+//                messageNotification2.setSenderId("系统");
+//                messageNotificationService.save(messageNotification2);
                 //最后，发匹配信息，发给对方
                 Matching matching1 = new Matching();
                 matching1.setUserId(ownerId);
