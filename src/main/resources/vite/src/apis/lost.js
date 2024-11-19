@@ -182,3 +182,11 @@ export const confirmOwner = (id, post) => {
         data: post,
     })
 }
+
+//智能推送
+export const getRecommend = (id) => {
+    return http({
+        url: `http://localhost:8090/matching/getMissingMatchPosts?userId=` + id,
+        method: 'GET',
+    })
+}

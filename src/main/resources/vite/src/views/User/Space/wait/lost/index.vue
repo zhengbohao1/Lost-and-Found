@@ -21,7 +21,7 @@
     <script setup>
     import { onMounted, onUnmounted, ref, nextTick, watch } from 'vue';
     import ViewCard from '@/components/user/Card.vue';
-    import CardDetail from '@/components/user/FoundDetail.vue';
+    import CardDetail from '@/components/user/LostDetail.vue';
     import { getPersonalWaitPost } from '@/apis/lost';
     import { useUserStore } from '@/stores/user';
     import { getUserName } from '@/apis/user';

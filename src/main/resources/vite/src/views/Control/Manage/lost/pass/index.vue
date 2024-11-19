@@ -210,6 +210,7 @@ const fetchData = async () => {
   try {
     const response = await queryAllPost();
     if (response && response.data) {
+      console.log(response);
       posts.value = response.data.filter(item => item.reviewProcess === 0);
 
       loading.value = false;

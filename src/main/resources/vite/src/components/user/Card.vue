@@ -5,7 +5,7 @@
         <div v-show="loading" class="card">
           <a :href="`/explore/${card.id}`" @click.prevent="details(card.id)">
             <img
-                :src="'http://localhost:8090/common/download?name=' + card.imgUrl"
+                :src="'http://localhost:8090/common/download?name='+card.imgUrl"
                 class="image"
                 @load="handleLoad"
                 alt=""
@@ -19,7 +19,7 @@
               <el-row style="display: flex; align-items: center;">
                 <router-link :to="`/user/index/${card.finderId}`">
                   <el-avatar
-                  :src="'http://localhost:8090/user/getAvatarById?userId='+card.userId" size="small"
+                  :src="'http://localhost:8090/user/getAvatarById?userId='+(card.finderId? card.finderId : card.ownerId)" size="small"
                   />
                 </router-link>
                 <div class="username">{{ card.nickName }}</div>

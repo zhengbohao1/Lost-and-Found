@@ -2,7 +2,7 @@
   <div>
     <div v-if="!loading">
       <el-card class="message-card" v-if="details.length > 0" v-for="item in details" :key="item.id" @click="readMessage(item.id)" title="点击查看详情">
-        <el-badge :is-dot="!item.isRead" style="margin-left: 750px; margin-top: -20px;"></el-badge>
+        <el-badge :is-dot="!item.isRead" style="margin-left: 550px;"></el-badge>
           <el-row :gutter="20">
             <el-col :span="50"><el-icon size="50" color="green"><SuccessFilled/></el-icon></el-col>
             <el-col :span="14">
@@ -41,6 +41,7 @@ const details = ref([])
 const fetchData = async () => {
     await postPass(userStore.userInfo.userId).then(res => {
         details.value = res.data;
+        console.log(details.value);
     });
     loading.value = false;
 }

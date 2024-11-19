@@ -527,7 +527,7 @@ document.body.appendChild(script2);
           await userStore.getUserInfo()
           ElMessage({type: 'success', message: '登录成功'})
           console.log(userStore.isAdmin)
-          router.push({path: '/control'})
+          router.push({path: '/control/adminhome'})
         }else{
           reloadImage() //改变验证码
         }
@@ -574,8 +574,8 @@ document.body.appendChild(script2);
   }
 
   onMounted(() => {
-    ElMessage.warning('不要重复登录')
     if(userStore.userToken){
+      ElMessage.warning('不要重复登录')
       router.push({path: '/user'})
     }
   })

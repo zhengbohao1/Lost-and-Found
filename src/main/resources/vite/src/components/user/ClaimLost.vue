@@ -271,7 +271,7 @@
 
   const thank = async () => {
   const data = {
-    goldCoin: goldCoin.value,
+      goldCoin: goldCoin.value,
       targetUserId: claimLost.value.userId,
       postId: claimLost.value.postId,
       category: '1'
@@ -306,10 +306,10 @@
       if (content.value.trim().length > 0) {
         if(!isreply.value){
           const newComment = {
-            is_parent: '0',
-            parent_id: '0',
+            isParent: '0',
+            parentId: '0',
             comment: content.value,
-            post_category: '',
+            postCategory: '',
             postId: postid.value,
             category: '0',
           }

@@ -50,7 +50,7 @@ export default defineConfig({
     },
 
     // 配置代理
-    server: {
+        server: {
         cors: true,
         proxy: {
         '/api': {

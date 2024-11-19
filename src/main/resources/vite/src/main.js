@@ -5,7 +5,6 @@ import App from './App.vue'
 import router from './router'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
-
 // Vuetify
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'

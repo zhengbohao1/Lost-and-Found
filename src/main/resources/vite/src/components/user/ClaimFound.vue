@@ -266,9 +266,9 @@
         if(!isreply.value){
           const newComment = {
             is_parent: '0',
-            parent_id: '0',
+            parentId: '0',
             comment: content.value,
-            post_category: '',
+            postCategory: '',
             postId: postid.value,
             category: '0',
           }

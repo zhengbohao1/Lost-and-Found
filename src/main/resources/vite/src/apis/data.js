@@ -73,3 +73,18 @@ export const lostAdd = () =>{
         method: "GET"
     })
 }
+
+//完成
+export const foundCompetedByDay = () =>{
+    return http({
+        url: "http://localhost:8090/admin/getLostTradeVolumn",
+        method: "GET"
+    })
+}
+
+export const lostCompetedByDay = () =>{
+    return http({
+        url: "http://localhost:8090/admin/getMissingTradeVolumn",
+        method: "GET"
+    })
+}

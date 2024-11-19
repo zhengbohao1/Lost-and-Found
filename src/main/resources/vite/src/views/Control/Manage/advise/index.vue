@@ -3,7 +3,7 @@
     <template #header>
       <div class="card-header">
         <span>用户建议</span>
-        <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleDelete">删除</el-button>
+        <el-button type="danger" :disabled="selectedRows.length === 0" @click="deleteAds">删除</el-button>
       </div>
     </template>
 
@@ -66,10 +66,10 @@
     :destroy-on-close="true"
   >
     <div class="drawer-content" v-if="editingUser">
-      <p style="text-align: center;">用户编号: {{ editingUser.userId }}</p>
-      <p style="text-align: center;">类别: {{ editingUser.category }}</p>
-      <p style="text-align: center;">创建时间: {{ editingUser.createdAt }}</p>
-      <p style="text-align: center;">内容: {{ editingUser.content }}</p>
+      <p style="text-align: center; margin-top: 20px;">用户编号: {{ editingUser.userId }}</p>
+      <p style="text-align: center; margin-top: 20px;">类别: {{ editingUser.category }}</p>
+      <p style="text-align: center; margin-top: 20px;">创建时间: {{ editingUser.createdAt }}</p>
+      <p style="text-align: center; margin-top: 20px;">内容: {{ editingUser.content }}</p>
       <el-popconfirm
         confirm-button-text='确定'
         cancel-button-text='取消'
@@ -91,7 +91,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { queryAdvises } from '@/apis/advise';
+import { queryAdvises, deleteAdvise, deleteAdvises } from '@/apis/advise';
 import { showErrorState } from '@/stores/showErrorState';
 import { ElMessage } from 'element-plus'; // 导入消息提示模块
 import { Delete, InfoFilled } from '@element-plus/icons-vue';
@@ -109,7 +109,6 @@ const tableRef = ref(null);
 const loading = ref(true);
 const drawerVisible = ref(false);
 const editingUser = ref({});
-const formLabelWidth = ref('120px');
 
 const fetchData = async () => {
   try {
@@ -140,19 +139,47 @@ const handleCurrentChange = (val) => {
 };
 
 const handleSelectionChange = (selection) => {
-  selectedRows.value = selection;
+  selectedRows.value.push(selection);
 };
 
 const deleteUser = async (item) => {
   try {
-    await updateUser(item.userId, { status: 0 });
-    ElMessage.success('删除成功');
-    fetchData(); // 刷新表格数据
-    drawerVisible.value = false; // 关闭抽屉
+    await deleteAdvise(item.id).then(res => {
+      if(res.code==1){
+        ElMessage.success('删除成功');
+        fetchData(); // 刷新表格数据
+        drawerVisible.value = false; // 关闭抽屉
+      }else{
+        ElMessage.error(res.data);
+      }
+    });
   } catch (error) {
     ElMessage.error('删除失败，请稍后再试');
   }
 };
+
+const deleteAds = async () => {
+  try {
+    let deleteRows = ''
+    for(let i=0;i<selectedRows.value.length;i++){
+      if(i<selectedRows.value.length-1){
+        deleteRows += selectedRows.value[i][i].id + ','
+      }else{
+        deleteRows += selectedRows.value[i][i].id
+      }
+    }
+    await deleteAdvises(deleteRows).then(res => {
+      if(res.code==1){
+        ElMessage.success('删除成功');
+        fetchData(); // 刷新表格数据
+      }else{
+        ElMessage.error(res.data);
+      }
+    });
+  } catch (error) {
+    ElMessage.error('删除失败，请稍后再试');
+  }
+}
 
 const handleView = (row) => {
   drawerVisible.value = true;

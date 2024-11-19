@@ -14,6 +14,15 @@
           </el-row>
         </div>
         <div class="indatacard" style="margin-left: 50px; background: linear-gradient(135deg, #4a148c, #ab47bc);">
+          <span style="font-size: 18px;">今日新增</span>
+          <el-row style="margin-top: 10px">
+            <el-icon style="margin-right: 135px;" :size="30"><Plus/></el-icon>
+            失物招领
+            <n-number-animation ref="numberAnimationInstRef" show-separator :from="0" :to="passFound" />
+            <span style="margin: 15px;"></span>
+            寻物启事
+            <n-number-animation ref="numberAnimationInstRef" show-separator :from="0" :to="passLost" />
+          </el-row>
         </div>
       </el-row>
       <el-row>
@@ -48,16 +57,21 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
-import { userCount, foundAllPost, lostAllPost, foundAll, lostAll } from '@/apis/data';
-import { User, ChatLineRound, ChatLineSquare } from "@element-plus/icons-vue";
+import { userCount, foundAllPost, lostAllPost, foundAll, lostAll, foundCompetedByDay, lostCompetedByDay } from '@/apis/data';
+import { User, ChatLineRound, ChatLineSquare, Plus } from "@element-plus/icons-vue";
 import * as echarts from 'echarts';
-import { ElCard } from 'element-plus';
 
 const userNum = ref(0);
 const foundPostNum = ref(0);
 const lostPostNum = ref(0);
 const passFound = ref(0);
 const passLost = ref(0);
+
+const foundDaily = ref([]);
+const foundDate = ref([]);
+const foundNum = ref([]);
+const lostDaily = ref([]);
+const lostNum = ref([]);
 
 const fetchData = async () => {
   await userCount().then((res) => {
@@ -74,6 +88,31 @@ const fetchData = async () => {
   })
   await lostAll().then((res) => {
     passLost.value = res.data;
+  })
+  await foundCompetedByDay().then((res) => {
+    foundDaily.value = res.data;
+// 假设 foundDaily.value 是一个包含日期的对象数组
+for (let i = 0; i < foundDaily.value.length; i++) {
+  const dateStr = foundDaily.value[i].date;
+  foundNum.value[i] = foundDaily.value[i].num;
+  const dateObj = new Date(dateStr);
+  if (!isNaN(dateObj.getTime())) {
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    foundDate.value.push(formattedDate);
+  } else {
+    console.error(`Invalid date: ${dateStr}`);
+  }
+}
+  })
+  await lostCompetedByDay().then((res) => {
+    lostDaily.value = res.data;
+    console.log(lostDaily.value);
+    for (let i = 0; i < lostDaily.value.length; i++) {
+      lostNum.value[i] = lostDaily.value[i].num;
+    }
   })
 }
 
@@ -136,11 +175,114 @@ onMounted(async () => {
     ],
   };
   chartInstance.setOption(option);
+
+  chartInstancePostDay = echarts.init(chartDomPostDay.value);
+  const option2 = {
+  color: ['#80FFA5', '#00DDFF', '#37A2FF', '#FF0087', '#FFBF00'],
+  title: {
+    text: '每日数据'
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross',
+      label: {
+        backgroundColor: '#6a7985'
+      }
+    }
+  },
+  legend: {
+    data: ['失物招领', '寻物启事']
+  },
+  toolbox: {
+    feature: {
+      saveAsImage: {}
+    }
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '3%',
+    containLabel: true
+  },
+  xAxis: [
+    {
+      type: 'category',
+      boundaryGap: false,
+      data: foundDate.value
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value'
+    }
+  ],
+  series: [
+    {
+      name: '失物招领',
+      type: 'line',
+      stack: 'Total',
+      smooth: true,
+      lineStyle: {
+        width: 0
+      },
+      showSymbol: false,
+      areaStyle: {
+        opacity: 0.8,
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          {
+            offset: 0,
+            color: 'rgb(128, 255, 165)'
+          },
+          {
+            offset: 1,
+            color: 'rgb(1, 191, 236)'
+          }
+        ])
+      },
+      emphasis: {
+        focus: 'series'
+      },
+      data: foundNum.value
+    },
+    {
+      name: '寻物启事',
+      type: 'line',
+      stack: 'Total',
+      smooth: true,
+      lineStyle: {
+        width: 0
+      },
+      showSymbol: false,
+      areaStyle: {
+        opacity: 0.8,
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          {
+            offset: 0,
+            color: 'rgb(0, 221, 255)'
+          },
+          {
+            offset: 1,
+            color: 'rgb(77, 119, 255)'
+          }
+        ])
+      },
+      emphasis: {
+        focus: 'series'
+      },
+      data: lostNum.value
+    },
+  ]
+};
+chartInstancePostDay.setOption(option2);
 });
 
 onUnmounted(() => {
   if (chartInstance != null && chartInstance.dispose) {
     chartInstance.dispose();
+  }
+  if (chartInstancePostDay != null && chartInstancePostDay.dispose) {
+    chartInstancePostDay.dispose();
   }
 });
 </script>

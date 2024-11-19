@@ -7,22 +7,18 @@
       </div>
       <div v-else>
 
-        <!---试做-->
-        <div class="push">
+        <div class="push" v-if="userStore.userToken&&temp.length>0">
           <el-container>
             <el-header>
-              <h1 style="">可能与你有关的帖子</h1>
+              <h1>可能与你有关的帖子</h1>
             </el-header>
             <el-container>
             <el-aside>
               <n-carousel show-arrow autoplay style="width: 300px; height: 300px;">
-                <n-image class="carousel-img" :src="'http://localhost:8090/common/download?name='+cards[0].imgUrl"
+                <n-image class="carousel-img" v-for="item in temp" :src="'http://localhost:8090/common/download?name='+item.imgUrl"
                   @load="adjustImageSize($event)"
-                  @click="showMessage(cards[0].id,0,0)"
-                ></n-image>
-                <n-image class="carousel-img" :src="'http://localhost:8090/common/download?name='+cards[2].imgUrl"
-                  @load="adjustImageSize($event)"
-                  @click="showMessage(cards[0].id,0,0)"
+                  @click="showMessage(item.id,0,0)"
+                  preview-disabled
                 ></n-image>
 
                 <template #arrow="{ prev, next }">
@@ -53,7 +49,7 @@
                 <v-window-item v-for="(chunk, index) in chunkedCards" :key="index">
                     <v-row style="width: 700px; height: 330px;">
                       <v-col v-for="card in chunk" :key="card.id" style="width: 345px; min-height: 155px; max-height: 465px; padding: 5px;">
-                        <v-card v-if="card.finderId" style="min-height: 100%; max-height: 300%; margin-top: 15px; margin-left: 20px;" @click="showMessage(card.id,0,0)">
+                        <v-card v-if="card.finderId" style="min-height: 100%; max-height: 300%; margin-top: 15px; margin-left: 20%;" @click="showMessage(card.id,0,0)">
                           <v-row no-gutters>
                             <v-col cols="6" style="height: 155px;">
                               <n-image :src="'http://localhost:8090/common/download?name='+card.imgUrl"
@@ -83,10 +79,14 @@
           </el-container>
           </el-container>
         </div>
-
-        <div v-infinite-scroll="loadMore" :infinite-scroll-disabled="disabled" :infinite-scroll-distance="200">
-          <ViewCard :card_columns="card_columns" @show-detail="showMessage" ></ViewCard>
+        <div v-else style="margin-bottom: 20px;">
+          <div v-if="userStore.userToken">站内活跃，定制你的相关推荐</div>
+          <div v-else>前往登录，开启相关推荐</div>
         </div>
+
+          <div v-infinite-scroll="loadMore" :infinite-scroll-disabled="disabled" :infinite-scroll-distance="200">
+            <ViewCard :card_columns="card_columns" @show-detail="showMessage" ></ViewCard>
+          </div>
       </div>
       <div class="backover" v-if="show"></div>
       <transition name="fade">
@@ -104,13 +104,16 @@ import { onMounted, onUnmounted, ref, nextTick, computed } from 'vue';
 import ViewCard from '@/components/user/Card.vue';
 import CardDetail from '@/components/user/FoundDetail.vue';
 import LoadView from '@/components/public/LoadView.vue';
-import { queryPost, search } from '@/apis/found';
+import { queryPost, search, getRecommend } from '@/apis/found';
 import { getUserName } from '@/apis/user';
 import { useRoute } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 import { waterFallInit, waterFallMore, resizeWaterFall } from '@/utils/waterFall';
 import { Close, ArrowLeftBold, ArrowRightBold } from '@element-plus/icons-vue';
 
 const cards = ref([]);  //包含了所有帖子的所有内容
+
+const userStore = useUserStore();
 
 // 主页卡片 //////////////////////////////////////////////////////////////////
 
@@ -122,7 +125,11 @@ const columns = ref(0);
 const card_columns = ref({});
 const arrHeight = ref([]);
 
-const addSenderName = async () => {
+const reCommends = ref([])
+const temp = ref([])
+
+const addSenderName = async (cards) => {
+
   cards.value = cards.value.map((card) => ({
     ...card,
     nickName: '',
@@ -141,13 +148,25 @@ const queryPosts = async () => {
     return;
   }
   cards.value = res.data
-  addSenderName()
+  addSenderName(cards)
   nextTick(() => {
     waterFallInit(columns, card_columns, arrHeight, cards)
   })
   loading.value = false;
   disabled.value = false; // 启用滚动加载
 };
+
+const queryRecommend = async () => {
+  const res = await getRecommend(userStore.userInfo.userId)
+  if(res.code == 0){
+    console.log(res)
+    return;
+  }
+  reCommends.value = res.data
+  temp.value = res.data
+  console.log(reCommends.value)
+  addSenderName(reCommends)
+}
 
 const querySearchPosts = async () => {
   loading.value = true;
@@ -204,19 +223,15 @@ const adjustImageSize = (event) => {
 //样例数据
 const windows = ref(0)
 
-const test = ref([]);
-
 const chunkedCards = computed(() => {
-  test.value = cards.value;
-
   // 如果卡片数量不是 4 的倍数，补充空数据
-  while (test.value.length % 4 !== 0) {
-    test.value.push({ id: null, nickName: '', itemName: '', image: '' });
+  while (reCommends.value.length % 4 !== 0) {
+    reCommends.value.push({ id: null, nickName: '', itemName: '', image: '' });
   }
 
   const size = 4
-  return test.value.reduce((acc, _, i) => 
-    (i % size ? acc : [...acc, test.value.slice(i, i + size)]), []
+  return reCommends.value.reduce((acc, _, i) => 
+    (i % size ? acc : [...acc, reCommends.value.slice(i, i + size)]), []
   )
 })
 
@@ -247,6 +262,7 @@ onMounted( async () => {
     querySearchPosts();
   }else{
     await queryPosts(); 
+    await queryRecommend()
   }
   // 清理函数
   onUnmounted(() => {

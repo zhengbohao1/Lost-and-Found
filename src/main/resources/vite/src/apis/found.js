@@ -184,3 +184,11 @@ export const iAmOwner = (id) => {
         method: 'GET',
     })
 }
+
+//智能推送
+export const getRecommend = (id) => {
+    return http({
+        url: 'http://localhost:8090/matching/getLostMatchPosts?userId=' + id,
+        method: 'GET',
+    })
+}

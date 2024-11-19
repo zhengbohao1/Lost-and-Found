@@ -128,7 +128,11 @@ export const useUserStore = defineStore('user', () => {
 
     const testLink = async () => {
         if(userToken){
-          await queryUserInfo()}
+          await queryUserInfo().then(res => {
+            if((res.code == 0))
+              loginOut();
+          })
+          }
     }
 
     return {
