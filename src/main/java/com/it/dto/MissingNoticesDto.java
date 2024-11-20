@@ -56,4 +56,7 @@ public class MissingNoticesDto implements Serializable {
     @Getter
     @Setter
     private int height;
+    @Getter
+    @Setter
+    private String finderId;
 }
