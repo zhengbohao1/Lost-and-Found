@@ -8,16 +8,16 @@ const http = axios.create({
     baseURL: 'api',
     timeout: 5000,
     retry: 6, //设置全局重试请求次数（最多重试几次请求）
-    retryDelay: 2000, //设置全局请求间隔
+    retryDelay: 1500, //设置全局请求间隔
 });
 
 // axios请求拦截器
 http.interceptors.request.use(config => {
-    const errorState = showErrorState()
-    errorState.errorProblem.failJoin = false
+    const shoeError = showErrorState()
+    shoeError.showError.value = false
     const userStore = useUserStore();
-    if (userStore.userToken) {
-        config.headers.Authorization = `${userStore.userToken}`
+    if (userStore.userInfo.token) {
+        config.headers.Authorization = `Bearer ${userStore.token}`
     }
     return config
 }, e => Promise.reject(e))
@@ -30,18 +30,6 @@ http.interceptors.response.use(
     },
     (error) => {
       var config = error.config;
-
-      if (error.response && error.response.status === 401) {
-        // 处理401状态码
-        const userStore = useUserStore();
-        
-        if(userStore.userToken){
-          ElMessage.error('会话已过期，请重新登录！');
-          userStore.loginOut();
-        }
-        
-        return Promise.reject(error);
-    }
   
       if (!config || !config.retry) return Promise.reject(error);
   
@@ -49,8 +37,9 @@ http.interceptors.response.use(
   
       if (config.__retryCount >= config.retry) {
         // 显示错误信息
-        const errorState = showErrorState()
-        errorState.errorProblem.failJoin = false
+        const shoeError = showErrorState()
+        shoeError.showError.value = true
+        console.log( shoeError.showError.value);
         ElMessage.error('请求失败，请稍后再试！');
         return Promise.reject(error);
       }

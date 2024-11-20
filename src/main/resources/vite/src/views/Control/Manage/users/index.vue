@@ -1,5 +1,5 @@
 <template>
-  <el-card class="manage-card" style="height: 610px;">
+  <el-card class="manage-card" style="height: calc(100vh - 20px); overflow-y: auto;">
       <template #header>
           <div class="card-header">
               <span>用户管理</span>
@@ -8,7 +8,7 @@
       </template>
 
       <!-- 添加 ElResult 组件 -->
-      <el-result v-if="errorState.errorProblem.failJoin" icon="error" title="连接失败">
+      <el-result v-if="showError.showError.value" icon="error" title="连接失败">
           <template #extra>
               <el-button @click="handleRetry">重试</el-button>
           </template>
@@ -39,9 +39,6 @@
                       :inactive-value="0"
                       @change="updateStatus(scope.row)"
                   />
-                  <el-tag :type="scope.row.status === 1 ? 'success' : 'warning'" style="margin-left: 50px" size="large">
-                    {{ scope.row.status === 1 ? '启用' : '禁用'}}
-                  </el-tag>
               </template>
           </el-table-column>
           <el-table-column label="操作">
@@ -95,11 +92,11 @@ import { ElMessage, ElResult } from 'element-plus'; // 导入消息提示模块
 import { Delete, InfoFilled } from '@element-plus/icons-vue';
 
 // 从 store 获取错误显示状态
-const errorState = showErrorState();
+const showError = showErrorState();
 
 // 用户数据
 const users = ref([]);
-const total = ref(0);
+const total = 100;
 const currentPage = ref(1);
 const pageSize = ref(10);
 const selectedRows = ref([]);
@@ -107,20 +104,19 @@ const tableRef = ref(null);
 const loading = ref(true);
 const drawerVisible = ref(false);
 const editingUser = ref({});
+const formLabelWidth = ref('120px');
 
 const fetchData = async () => {
   try {
-    await getUserList().then(res => {
-      if(res.code == 1){
-        users.value = res.data;
-        total.value = res.data.length;
-        loading.value = false;
-      }else{
-        ElMessgage.error(res.msg);
-      }
-    })
+    const result = await getUserList();
+    users.value = result.data;
+    loading.value = false;
+    if (!Array.isArray(users.value)) {
+      console.error('获取的用户列表不是一个数组');
+    }
   } catch (error) {
     console.error('获取用户列表失败', error);
+    showError.showErrorMsg('获取用户列表失败，请重试');
   }
 };
 
@@ -142,7 +138,9 @@ const handleSelectionChange = (selection) => {
 
 const deleteUser = async (item) => {
   try {
-    ElMessage.info('暂停使用');
+    await updateUser(item.userId, { status: 0 });
+    ElMessage.success('删除成功');
+    fetchData(); // 刷新表格数据
   } catch (error) {
     ElMessage.error('删除失败，请稍后再试');
   }
@@ -150,18 +148,8 @@ const deleteUser = async (item) => {
 
 const updateStatus = async (user) => {
   try {
-    if(user.status == 0){
-      await updateUser(user.userId, { status: user.status }).then(res => {
-        if(res.code == 1){
-          ElMessage.success('用户状态更新成功');
-        }else{
-          ElMessage.error(res.msg);
-        }
-      })
-    }else{
-      user.status = 0;
-      ElMessage.info('我也不知道他们为什么不加个启用功能');
-    }
+    await updateUser(user.userId, { status: user.status });
+    ElMessage.success('状态更新成功');
   } catch (error) {
     ElMessage.error('状态更新失败，请稍后再试');
     user.status = user.status === 0 ? 1 : 0; // 恢复原状态
@@ -182,6 +170,7 @@ const formatEmail = (email) => {
 };
 
 const handleRetry = () => {
+  showError.hideErrorMsg(); // 关闭错误提示
   fetchData(); // 重新尝试加载数据
 };
 

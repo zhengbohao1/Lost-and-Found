@@ -2,8 +2,6 @@ import {createRouter, createWebHistory} from 'vue-router';
 import {useUserStore} from "@/stores/user";
 import { routes } from "./routes";
 
-import { ElMessage } from 'element-plus'
-
 const router = createRouter({
     history: createWebHistory(),  //取消hash模式，换为history模式，防止'#'和'/'自动添加
     routes,
@@ -11,50 +9,44 @@ const router = createRouter({
   scrollBehavior: () => ({ left: 0, top: 0 }),
   });
 
-  router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
     // 获取目标路由的相关信息，例如路由元信息 meta
-    const { meta } = to;  
-  
+    const {meta} = to;
+
     // 获取用户信息
     const userStore = useUserStore();
     const userInfo = userStore.userInfo;
-  
+
+    // 根据用户信息动态设置网页标题
+    if (userInfo.username && meta.title) {
+        meta.title = `${userInfo.username} - ${meta.title}`;
+    }
     // 路由守卫
     if (meta.requireAuth) { // 判断该路由是否需要登录权限
-      if (userStore.userToken) { // 用户已登录
-        if (!checkRoleAccess(meta, userStore)) {
-          ElMessage.error('用户权限不足');
-          next(from.path);
-          return;
+        if (userStore.userToken) { 
+          if(meta.admin){
+            if(userStore.isAdmin){
+              next()//存在就说明登录了，放行
+            }else{
+              from();
+            }
+          }else if(from.path=''&&userStore.userToken){
+            next({ path: '/user',})//登录后不会进入初始页面
+          }else{
+            next();//存在就说明登录了，放行
+          }
         }
+        else {
+          next({  //不存在，回退到一个页面，例如登录页面
+            path: '/login',
+            //query: {redirect: to.fullPath} // 将跳转的路由path作为参数，登录成功后跳转到该路由
+          })
+        }
+      }
+      else {
         next();
-      } else {
-        // 用户未登录，重定向到登录页面
-        next({
-          path: '/login',
-          query: { redirect: to.fullPath }
-        });
       }
-    } else {
-      if( meta.isNotAdmin && userStore.isAdmin)
-      {
-        ElMessage.error('请退出管理员登录');
-        next({ path: from.path });
-      }
-      next();
-    }
-  });
-  
-  // 辅助函数检查用户角色
-  function checkRoleAccess(meta, userStore) {
-    if (meta.admin && !userStore.isAdmin) {
-      return false;
-    }
-    if (meta.isUser && !userStore.isUser) {
-      return false;
-    }
-    return true;
-  }
+});
 
 router.afterEach((to, from) => {
     // 根据当前路由信息来设置新的 title

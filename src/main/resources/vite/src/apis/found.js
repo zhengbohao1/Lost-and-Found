@@ -8,6 +8,7 @@ export const deletePost = (id) => {
         headers: {
             'Content-Type': 'application/json'
         },
+        data: {}
     })
 }
 
@@ -16,179 +17,15 @@ export const queryAllPost = () => {
     return http({
         url: 'http://localhost:8090/lost_found/list',
         method: 'GET',
+        data: {}
     })
 }
 
 export const queryPost = () => {
+    console.log("queryAdvises")
     return http({
         url: 'http://localhost:8090/lost_found/legal_list',
         method: 'GET',
-    })
-}
-
-export const addFoundPost = (data) => {
-    return http({
-        url: 'http://localhost:8090/lost_found',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        data: data
-    })
-}
-
-export const passPost = (id) => {
-    return http({
-        url: 'http://localhost:8090/lost_found/approve_by_id?id='+id,
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    })  
-}
-
-export const backPost = (id) => {
-    return http({
-        url: 'http://localhost:8090/lost_found/reject_by_id?id='+id,
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-}
-
-export const getPostById = (id) => {
-    return http({
-        url: 'http://localhost:8090/lost_found/getbyid?id='+id,
-        method: 'GET',
-    })
-}
-
-export const deletePosts = (ids) => {
-    return http({
-        url: 'http://localhost:8090/lost_found/deleteIds?ids='+ids,
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    })
-}
-
-//获取评论
-export const getComment = (id) => {
-    return http({
-        url: 'http://localhost:8090/user/getLostParentComments?postId='+id,
-        method: 'GET',
-    })  
-}
-
-export const getChildComment = (id) => {
-    return http({
-        url: 'http://localhost:8090/user/getLostChildComments?parentId='+id,
-        method: 'GET',
-    })
-}
-
-//发评论
-export const postComment = (data) => {
-    return http({
-        url: 'http://localhost:8090/user/sendLostParentComments',
-        method: 'POST',
-        data: data,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-}
-
-export const postChildComment = (data) => {
-    return http({
-        url: 'http://localhost:8090/user/sendLostChildComments',
-        method: 'POST',
-        data: data,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-}
-
-//查询
-export const search = (data) => {
-    return http({
-        url: 'http://localhost:8090/lost_found/query?content=' + data,
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-}
-
-//认领
-export const claim = (data) => {
-    return http({
-        url: 'http://localhost:8090/user/sendClaimInfo',
-        method: 'POST',
-        data: data,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-}
-
-// 个人帖子获得
-export const getPersonalPassPost = (id) => {
-    return http({
-        url: 'http://localhost:8090/lost_found/getLegalPostByUserId?userId='+id,
-        method: 'GET',
-    })
-}
-
-export const getPersonalWaitPost = (id) => {
-    return http({
-        url: 'http://localhost:8090/lost_found/getWaitByUserId?userId='+id,
-        method: 'GET',
-    })
-}
-
-export const getPersonalBackPost = (id) => {
-    return http({
-        url: 'http://localhost:8090/lost_found/getIllegalByUserId?userId='+id,
-        method: 'GET',
-    })
-}
-
-// 修改帖子
-export const updatePost = (data) => {
-    return http({
-        url: 'http://localhost:8090/lost_found/updateLostFound',
-        method: 'PUT',
-        data: data,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-}
-
-//确认失主
-export const confirmOwner = (id, post) => {
-    return http({
-        url: `http://localhost:8090/user/confirmClaim?user_id=${encodeURIComponent(id)}&post_id=${encodeURIComponent(post)}`,
-        method: 'PUT',
-    });
-};
-
-//我是失主
-export const iAmOwner = (id) => {
-    return http({
-        url: 'http://localhost:8090/notice/getAllConfirmMessages?userId='+id,
-        method: 'GET',
-    })
-}
-
-//智能推送
-export const getRecommend = (id) => {
-    return http({
-        url: 'http://localhost:8090/matching/getLostMatchPosts?userId=' + id,
-        method: 'GET',
+        data: {}
     })
 }

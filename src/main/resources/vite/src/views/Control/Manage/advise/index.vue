@@ -1,13 +1,14 @@
 <template>
-  <el-card class="manage-card" style="height: 610px">
+  <el-card class="manage-card" style="height: calc(100vh - 20px); overflow-y: auto;">
     <template #header>
       <div class="card-header">
-        <span>用户建议</span>
-        <el-button type="danger" :disabled="selectedRows.length === 0" @click="deleteAds">删除</el-button>
+        <span>用户管理</span>
+        <el-button type="danger" :disabled="selectedRows.length === 0" @click="handleDelete">删除</el-button>
       </div>
     </template>
 
-    <el-result v-if="errorState.errorProblem.failJoin" icon="error" title="连接失败">
+    <!-- 添加 ElResult 组件 -->
+    <el-result v-if="showError.showError.value" icon="error" title="连接失败">
       <template #extra>
         <el-button @click="handleRetry">重试</el-button>
       </template>
@@ -66,10 +67,10 @@
     :destroy-on-close="true"
   >
     <div class="drawer-content" v-if="editingUser">
-      <p style="text-align: center; margin-top: 20px;">用户编号: {{ editingUser.userId }}</p>
-      <p style="text-align: center; margin-top: 20px;">类别: {{ editingUser.category }}</p>
-      <p style="text-align: center; margin-top: 20px;">创建时间: {{ editingUser.createdAt }}</p>
-      <p style="text-align: center; margin-top: 20px;">内容: {{ editingUser.content }}</p>
+      <p style="text-align: center;">用户编号: {{ editingUser.userId }}</p>
+      <p style="text-align: center;">类别: {{ editingUser.category }}</p>
+      <p style="text-align: center;">创建时间: {{ editingUser.createdAt }}</p>
+      <p style="text-align: center;">内容: {{ editingUser.content }}</p>
       <el-popconfirm
         confirm-button-text='确定'
         cancel-button-text='取消'
@@ -91,17 +92,17 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { queryAdvises, deleteAdvise, deleteAdvises } from '@/apis/advise';
+import { queryAdvises } from '@/apis/advise';
 import { showErrorState } from '@/stores/showErrorState';
 import { ElMessage } from 'element-plus'; // 导入消息提示模块
 import { Delete, InfoFilled } from '@element-plus/icons-vue';
 
 // 从 store 获取错误显示状态
-const errorState = showErrorState();
+const showError = showErrorState();
 
 // 用户数据
 const users = ref([]);
-const total = ref(0);
+const total = 100;
 const currentPage = ref(1);
 const pageSize = ref(10);
 const selectedRows = ref([]);
@@ -109,20 +110,19 @@ const tableRef = ref(null);
 const loading = ref(true);
 const drawerVisible = ref(false);
 const editingUser = ref({});
+const formLabelWidth = ref('120px');
 
 const fetchData = async () => {
   try {
-    await queryAdvises().then((res) =>{
-      if(res.code==1){
-        users.value = res.data;
-        loading.value = false;
-        total.value = res.data.length;
-      }else{
-        ElMessage.error(res.msg);
-      }
-    });
+    const result = await queryAdvises();
+    users.value = result.data;
+    loading.value = false;
+    if (!Array.isArray(users.value)) {
+      console.error('获取的列表不是一个数组');
+    }
   } catch (error) {
     console.error('获取列表失败', error);
+    showError.showErrorMsg('获取列表失败，请重试');
   }
 };
 
@@ -139,47 +139,19 @@ const handleCurrentChange = (val) => {
 };
 
 const handleSelectionChange = (selection) => {
-  selectedRows.value.push(selection);
+  selectedRows.value = selection;
 };
 
 const deleteUser = async (item) => {
   try {
-    await deleteAdvise(item.id).then(res => {
-      if(res.code==1){
-        ElMessage.success('删除成功');
-        fetchData(); // 刷新表格数据
-        drawerVisible.value = false; // 关闭抽屉
-      }else{
-        ElMessage.error(res.data);
-      }
-    });
+    await updateUser(item.userId, { status: 0 });
+    ElMessage.success('删除成功');
+    fetchData(); // 刷新表格数据
+    drawerVisible.value = false; // 关闭抽屉
   } catch (error) {
     ElMessage.error('删除失败，请稍后再试');
   }
 };
-
-const deleteAds = async () => {
-  try {
-    let deleteRows = ''
-    for(let i=0;i<selectedRows.value.length;i++){
-      if(i<selectedRows.value.length-1){
-        deleteRows += selectedRows.value[i][i].id + ','
-      }else{
-        deleteRows += selectedRows.value[i][i].id
-      }
-    }
-    await deleteAdvises(deleteRows).then(res => {
-      if(res.code==1){
-        ElMessage.success('删除成功');
-        fetchData(); // 刷新表格数据
-      }else{
-        ElMessage.error(res.data);
-      }
-    });
-  } catch (error) {
-    ElMessage.error('删除失败，请稍后再试');
-  }
-}
 
 const handleView = (row) => {
   drawerVisible.value = true;
@@ -187,6 +159,7 @@ const handleView = (row) => {
 };
 
 const handleRetry = () => {
+  showError.hideErrorMsg(); // 关闭错误提示
   fetchData(); // 重新尝试加载数据
 };
 

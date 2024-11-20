@@ -34,7 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "/lost_found/query","/missing_notices/query"
                 ,"/lost_found/getLegalPostByUserId"
                 ,"/notice/getUnreadCount"
-                ,"/matching/getLostMatchPosts"
+                ,"/matching/getLostMatchPosts","/missing_notices/query"
         );
     }
 }
