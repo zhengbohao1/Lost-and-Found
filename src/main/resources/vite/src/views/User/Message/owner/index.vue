@@ -2,7 +2,7 @@
     <div>
        <LoadView v-if="loading"></LoadView>
        <div v-else>
-            <el-card class="message-card" v-if="details.length > 0" v-for="item in details" :key="item.id" @click="readMessage(item)" title="点击查看详情">
+            <el-card class="message-card" v-if="details.length > 0" v-for="item in details" :key="item.id" @click="readMessage(item.id)" title="点击查看详情">
                 <el-badge :is-dot="!item.isRead" style="margin-left: 750px; margin-top: -20px;"></el-badge>
                     <el-row :gutter="20">
                         <el-col :span="10">
@@ -37,6 +37,7 @@
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { iAmOwner } from '@/apis/found'
+import { markCommentAsRead } from '@/apis/msg'
 import ClaimFound from '@/components/user/ClaimFound.vue'
 import LoadView from '@/components/public/LoadView.vue'
 import { ElMessage } from 'element-plus'
@@ -57,7 +58,7 @@ const fetchData = async () =>{
     })
 }
 
-const readMessage = async () => {
+const readMessage = async (messageId) => {
     await markCommentAsRead(messageId).then(res => {
         fetchData();
         userStore.coutMsg();
@@ -66,6 +67,7 @@ const readMessage = async () => {
 
 const getDetails = (item) => {
     detail.value = item
+    console.log(detail.value)
     showDetails.value = true
 }
 

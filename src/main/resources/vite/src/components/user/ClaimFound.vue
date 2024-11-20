@@ -102,7 +102,7 @@
                       </div>
                     </div>
                     <div v-else>
-                      <div class="claim-info">
+                      <div class="claim-info" v-if="claimFound.userName">
                         <p>你好</p>
                         <p>我是 {{ claimFound.userName }}</p>
                         <p>学工号：{{ claimFound.studentId }}</p>
@@ -339,13 +339,14 @@ const thankForSender =ref(false)
 
   const thank = async () => {
   const data = {
-      goldCoin: goldCoin.value,
-      targetUserId: claimFound.value.userId,
-      postId: claimFound.value.postId,
+      goldCoin: String(goldCoin.value),
+      targetUserId: claimFound.value.recipientId,
+      postId: claimFound.value.relatedPostId,
       category: '0'
     }
     await sendCoin(data).then(res => {
-      if(res.cod == 1){
+      console.log(data)
+      if(res.code == 1){
         ElMessage.success('我们已传达你的谢意');
       }else{
         ElMessage.error(res.data);
@@ -432,7 +433,7 @@ const verifyOwner = async () => {
   };
   
   onMounted(async () => {
-    postid.value = claimFound.value.postId;
+    postid.value = (claimFound.value.postId ? claimFound.value.postId: claimFound.value.relatedPostId );
     await fetchDetail();
     await fetchComment();
     await fetchComments();

@@ -58,9 +58,15 @@
                                 <el-avatar size="40" style="margin-top: 10px; margin-left: 15px" :src="'http://localhost:8090/user/getAvatarById?userId='+card.ownerId"></el-avatar>
                                 <span style="margin-top: 20px; margin-left: 10px;">{{ card.nickName }}</span>
                               </v-row>
-                              <v-card-text style="margin-left: 15px;">{{ card.itemName }}</v-card-text>
-                              <el-scrollbar style="height: 51px; width: 150px" @click.stop>
-                              <n-ellipsis expand-trigger="click"  style="max-width:150px" line-clamp="2" >
+                              <v-card-text>
+                                <el-scrollbar style="height: 30px; width: 130px" @click.stop>
+                                  <n-ellipsis expand-trigger="click"  style="max-width:120px" line-clamp="1" >
+                                    {{ card.itemName }}
+                                  </n-ellipsis>
+                                </el-scrollbar>
+                              </v-card-text>
+                              <el-scrollbar style="height: 51px; width: 130px" @click.stop>
+                              <n-ellipsis expand-trigger="click"  style="max-width:120px" line-clamp="1" >
                                   {{ card.description }}
                               </n-ellipsis>
                               </el-scrollbar>
@@ -165,6 +171,7 @@ const queryRecommend = async () => {
     console.log(res)
     return;
   }
+  console.log(await getRecommend(userStore.userInfo.userId))
   reCommends.value = res.data
   temp.value = res.data
   console.log(reCommends.value)

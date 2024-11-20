@@ -174,7 +174,9 @@
   
                         <!-- 提交按钮 -->
                           <div style="display: flex; margin-top: 30px; gap: 90px">
-                            <el-button class="button" @click="sendClaim()" @keyup.enter="sendClaim()">确认认领</el-button>
+                            <el-button class="button" @click="sendClaim()"
+                            v-if="userStore.userInfo.userId!=post.finderId&&!post.claimantId"
+                             @keyup.enter="sendClaim()">确认认领</el-button>
                             <el-button class="button2" @click="toClaim=false">取消</el-button>
                           </div>
                       </el-form>
@@ -186,57 +188,58 @@
             </div>
   
             <div class="bottomArea">
-              <div v-if="!userStore.userToken">
-                <el-link @click="router.push('/login');">请先登录</el-link>
-              </div>
-                <div v-else>
-                  <div v-if="!willSendComment">
-                      <el-row>
-                        <el-col :span="8">
-                          <el-input
-                            placeholder="评论"
-                            :prefix-icon="Edit"
-                            clearable
-                            :disabled="toClaim"
-                            @click="willSendComment = true"
-                          />
-                        </el-col>
-                        <el-col :span="2"> </el-col>
-                        <el-col :span="14">
-                          <el-button class="button" @click="toClaim=true" 
-                            v-if="'!userStore.userInfo.userId==post.finderId'"
-                            :disabled="toClaim"
-                          >认领</el-button>
-                          <el-button class="button2">暂无</el-button>
-                        </el-col>
-                      </el-row>
-                      </div>
-                      <div v-else>
-                        <el-row>
-                        <el-col :span="22">
-                          <el-input
-                            v-model="content"
-                            :placeholder=" !isreply? '说点什么…' : commentInput "
-                            :prefix-icon="Edit"
-                            @keyup.enter="sendComment()"
-                            clearable
-                            style="margin-top: 5px"
-                          />
-                        </el-col>
-                        <el-col :span="8">
-                          <el-button class="button" style="margin-top: 20px" @click="sendComment()" >发送</el-button>
-                        </el-col>
-                        <el-col :span="8"></el-col>
-                        <el-col :span="8">
-                          <el-button class="button2" style="margin-top: 20px" @click="willSendComment = false;isreply = false" >
-                                取消
-                            </el-button>
-                        </el-col>
-                      </el-row>
-                    </div>
-                </div>
-  
+            <div v-if="!userStore.userToken">
+              <el-link @click="router.push('/login');">请先登录</el-link>
             </div>
+              <div v-else>
+                <div v-if="!willSendComment">
+                    <el-row>
+                      <el-col :span="9">
+                        <el-input
+                          placeholder="评论"
+                          :prefix-icon="Edit"
+                          clearable
+                          :disabled="toClaim"
+                          @click="willSendComment = true"
+                        />
+                      </el-col>
+                      <el-col :span="1"> </el-col>
+                      <el-col :span="14">
+                        <el-button class="button" @click="toClaim=true" 
+                          v-if="userStore.userInfo.userId!=post.finderId&&!post.claimantId"
+                          :disabled="toClaim"
+                        >认领</el-button>
+                        <el-button v-if="!post.claimantId" class="button2">暂无</el-button>
+                        <span v-if="post.claimantId">此贴已完结</span>
+                      </el-col>
+                    </el-row>
+                    </div>
+                    <div v-else>
+                      <el-row>
+                      <el-col :span="22">
+                        <el-input
+                          v-model="content"
+                          :placeholder=" !isreply? '说点什么…' : commentInput "
+                          :prefix-icon="Edit"
+                          @keyup.enter="sendComment()"
+                          clearable
+                          style="margin-top: 5px"
+                        />
+                      </el-col>
+                      <el-col :span="8">
+                        <el-button class="button" style="margin-top: 20px" @click="sendComment()" >发送</el-button>
+                      </el-col>
+                      <el-col :span="8"></el-col>
+                      <el-col :span="8">
+                        <el-button class="button2" style="margin-top: 20px" @click="willSendComment = false;isreply = false" >
+                              取消
+                          </el-button>
+                      </el-col>
+                    </el-row>
+                  </div>
+              </div>
+
+          </div>
           </el-col>
         </el-row>
       </div>
