@@ -278,13 +278,13 @@ public class UserController extends CommonController{
         // 从ThreadLocal中获取用户id
         Map<String,Object> claims = ThreadLocalUtil.get();
         String userId = (String) claims.get("userId");
-        // baseFolder是到项目的file层级目录的路径
         File avatarsFolder = new File(appConfig.getProjectFolder() + Constants.FILE_FOLDER_AVATAR_NAME);
         // 判断头像文件夹是否存在，不存在则创建
         if(!avatarsFolder.exists()){
             avatarsFolder.mkdirs();
         }
-        File targetFile = new File(avatarsFolder.getPath() + userId + Constants.AVATAR_SUFFIX);
+        System.out.println(avatarsFolder.getPath());
+        File targetFile = new File(avatarsFolder.getPath() + "/" + userId + Constants.AVATAR_SUFFIX);
         try {
             avatar.transferTo(targetFile);
         } catch (IOException e) {
