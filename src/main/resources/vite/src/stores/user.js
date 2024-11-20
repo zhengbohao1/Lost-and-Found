@@ -1,17 +1,20 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
-import {login, queryUserFocus, Register, sendCode, queryUserInfo} from "@/apis/main";
+import {login, Register, sendCode, queryUserInfo } from "@/apis/main";
+import { getCoin } from "@/apis/prize";
+import { countMessage } from "@/apis/user";
+import { adminLogin } from "@/apis/admin";
+import { resetPsw } from "@/apis/user";
 
-//之后补写错误处理的逻辑
+import { ElMessage } from 'element-plus'
 
 export const useUserStore = defineStore('user', () => {
     const isAdmin = ref(false);
-    const userToken = ref('');
+    const isUser = ref(true);
+    const userToken = ref(null);
     const userInfo = ref({});
-    const userFocus = ref([]);
-    const userCollect = ref([]);
-    const userFavorite = ref([]);
-    const headersObj = ref({})
+    const coinNum  =ref(0);
+    const messageNum = ref(0);
 
     const userSendCode = async (email,type) => {
         await sendCode({email,type});
@@ -40,6 +43,7 @@ export const useUserStore = defineStore('user', () => {
                 const res = await login({ email, password, checkCode });
                 if (res.code === 1) {
                   userToken.value = res.data;
+                  isUser.value = true;
                   return 1;
                 } else {
                   ElMessage({
@@ -49,16 +53,13 @@ export const useUserStore = defineStore('user', () => {
                   return 0; 
                 }
               } catch (error) {
-                ElMessage({
-                  type: 'error',
-                  message: `网络请求失败。${error.message}`
-                });
+                console.log(error);
               }
         };
 
-    const adminLogin = async ({email, password, checkCode}) => {
+    const adminLog = async ({email, password, checkCode}) => {
         try {
-            const res = await login({ email, password, checkCode });
+            const res = await adminLogin({ email, password, checkCode });
             if (res.code === 1) {
               userToken.value = res.data;
               isAdmin.value = true;
@@ -71,73 +72,88 @@ export const useUserStore = defineStore('user', () => {
               return 0; 
             }
           } catch (error) {
-            ElMessage({
-              type: 'error',
-              message: `网络请求失败。${error.message}`
-            });
+            console.log(error);
           }
     }
 
+    const userReset = async ({email, password, emailCode}) => {
+      const res = await resetPsw({email, password, emailCode});
+      if (res.code === 1) {
+        ElMessage({
+          type: 'success',
+          message: `密码重置成功。`
+        })
+      }else{
+        ElMessage({
+          type: 'error',
+          message: `${res.data}`
+        })
+      }
+    }
+
     const getUserInfo = async () => {
-        userInfo.value = await queryUserInfo();
-    };
-
-    const extendUserInfo = (type, id) => {
-        if (type === 1) {
-            userFocus.value = [...userFocus.value, id];
-        } else if (type === 2) {
-            userFavorite.value = [...userFavorite.value, id];
-        } else if (type === 3) {
-            userCollect.value = [...userCollect.value, id];
+        await queryUserInfo().then(res => {
+          userInfo.value = res.data;
         }
-    };
-
-    const removeFocus = (type, id) => {
-        if (type === 1) {
-            const index = userFocus.value.indexOf(id);
-            if (index !== -1) {
-                userFocus.value.splice(index, 1);
-            }
-        } else if (type === 2) {
-            const index = userFavorite.value.indexOf(id);
-            if (index !== -1) {
-                userFavorite.value.splice(index, 1);
-            }
-        } else if (type === 3) {
-            const index = userCollect.value.indexOf(id);
-            if (index !== -1) {
-                userCollect.value.splice(index, 1);
-            }
-        }
+        )
     };
 
     const userLogout = async () => {
         userInfo.value = {};
-        return {info: "成功退出登录"};
+        userToken.value = null;
+        isAdmin.value = false;
+        isUser.value = false;
+        ElMessage({ type: "success", message: "退出登录成功" });
     };
 
-    const changeInfo = ({username, signature, avatar}) => {
-        userInfo.value.username = username;
-        userInfo.value.signature = signature;
-        userInfo.value.avatar = avatar;
-    };
+    const loginOut = async () => {
+      userInfo.value = {};
+      userToken.value = null;
+      isAdmin.value = false;
+      isUser.value = false;
+  };
+
+  const getCoinNum = async () => {
+    await getCoin().then(res => {
+      coinNum.value = res.data;
+    }
+    )
+  }
+
+  const coutMsg = async () => {
+    await countMessage(userInfo.value.userId).then(res => {
+      messageNum.value = res.data;
+    })
+  }
+
+    const testLink = async () => {
+        if(userToken){
+          await queryUserInfo().then(res => {
+            if((res.code == 0))
+              loginOut();
+          })
+          }
+    }
 
     return {
         isAdmin,
+        isUser,
         userToken,
         userInfo,
-        getUserInfo,
+        coinNum,
+        messageNum,
         userLogin,
-        userLogout,
+        adminLog,
+        userReset,
+        getUserInfo,
         userSendCode,
+        userLogout,
+        loginOut,
         userRegister,
-        extendUserInfo,
-        userFocus,
-        removeFocus,
-        changeInfo,
-        userCollect,
-        userFavorite,
-        headersObj
+        getCoinNum,
+        coutMsg,
+
+        testLink
     };
 }, {
     persist: true,

@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const showErrorState = defineStore('showErrorState', () => {
-    const showError = ref({ value: false });
+    const errorProblem = ref({ failJoin: false });
     const errorMessage = ref('');
 
     const showErrorMsg = (msg) => {
@@ -11,12 +11,12 @@ export const showErrorState = defineStore('showErrorState', () => {
     }
 
     const hideErrorMsg = () => {
-        showError.value.value = false;
+        errorProblem.value.value = false;
         errorMessage.value = '';
     }
 
     return {
-        showError,
+        errorProblem,
         errorMessage,
         showErrorMsg,
         hideErrorMsg

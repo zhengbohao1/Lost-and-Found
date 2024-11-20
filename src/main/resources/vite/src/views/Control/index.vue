@@ -21,6 +21,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import 'element-plus/dist/index.css'
 import Sidebar from '@/components/control/Sidebar.vue';
 import Header from '@/components/control/Header.vue';
 import MainContent from '@/components/control/MainContent.vue';
@@ -39,7 +40,7 @@ const RemoveScroll = () => {
 RemoveScroll()  //禁用滚动条
 </script>
 
-<style>
+<style scoped>
 .aside-shadow {
   height: 96vh;
   box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1); /* X轴偏移量，Y轴偏移量，模糊半径，颜色 */
