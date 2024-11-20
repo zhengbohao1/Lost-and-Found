@@ -168,8 +168,10 @@ const queryRecommend = async () => {
     console.log(res)
     return;
   }
-  reCommends.value = res.data
-  temp.value = res.data
+  let data = res.data;
+  data = data.filter(item => item.reviewProcess == 1);
+  reCommends.value = data
+  temp.value = data
   addSenderName(reCommends)
 }
 
