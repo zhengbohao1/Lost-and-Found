@@ -30,6 +30,7 @@ public class MatchingServiceImpl extends ServiceImpl<MatchingMapper, Matching> i
     private IMissingNoticesService missingNotices;
     @Resource
     private ImageService imageService;
+
     @Override
     public R<List<MissingNoticesDto>> getMatchPosts(String userId){
         QueryWrapper<Matching> queryWrapper = new QueryWrapper<>();
@@ -79,5 +80,20 @@ public class MatchingServiceImpl extends ServiceImpl<MatchingMapper, Matching> i
             lostFoundsDto.add(dto);
         }
         return R.success(lostFoundsDto);
+    }
+
+    @Override
+    public void my_save(Matching matching) {
+        String userId = matching.getUserId();
+        int postId = matching.getPostId();
+        int category = matching.getCategory();
+        QueryWrapper<Matching> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId)
+                .eq("post_id", postId)
+                .eq("category", category);
+        boolean exists = exists(queryWrapper);
+        if (!exists) {
+            save(matching);
+        }
     }
 }

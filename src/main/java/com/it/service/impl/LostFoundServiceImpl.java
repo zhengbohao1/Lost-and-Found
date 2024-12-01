@@ -141,6 +141,7 @@ public class LostFoundServiceImpl extends ServiceImpl<LostFoundMapper, LostFound
         }
     }
 
+    //同意申请
     @Override
     public String confirmClaim(int id, String user_id) {
         try {

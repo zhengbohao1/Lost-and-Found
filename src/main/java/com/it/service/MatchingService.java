@@ -14,4 +14,5 @@ import java.util.List;
 public interface MatchingService extends IService<Matching> {
     public R<List<MissingNoticesDto>> getMatchPosts(String userId);
     public R<List<LostFoundDto>> getLostMatchPosts(String userId);
+    void my_save(Matching matching);
 }

@@ -13,6 +13,7 @@ import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -106,13 +107,12 @@ public class MissingNoticesController {
     }
     @GetMapping("/query")
     public R<List<MissingNoticesDto>> query(String content){
-        List<MissingNoticesDto> missingNotices = null;
         try {
-            missingNotices = missingNoticesService.selectByCondition(content);
+            List<MissingNoticesDto> missingNotices = missingNoticesService.selectByCondition(content);
+            return R.success(missingNotices);
         } catch (Exception e) {
             throw new BusinessException(e.getMessage());
         }
-        return R.success(missingNotices);
     }
     @GetMapping("/getbyid")
     public R<MissingNoticesDto> getById(@RequestParam int id){

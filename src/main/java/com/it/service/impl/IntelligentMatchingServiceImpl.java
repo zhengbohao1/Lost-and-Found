@@ -1,5 +1,6 @@
 package com.it.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.it.entity.LostFound;
 import com.it.entity.Matching;
 import com.it.entity.MessageNotification;
@@ -30,7 +31,10 @@ public class IntelligentMatchingServiceImpl implements IntelligentMatchingServic
     @Async
     @Override
     public void processSmartPush(LostFound lostFound) {
-        List<MissingNotices> missingNoticesList = missingNoticesService.list();
+        String finderId = lostFound.getFinderId();
+        QueryWrapper<MissingNotices> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ne("owner_id", finderId);
+        List<MissingNotices> missingNoticesList = missingNoticesService.list(queryWrapper);
         for (MissingNotices missingNotices : missingNoticesList) {
             String answer=aiManager.doSyncUnStableRequest("使用系统默认", "请问"+lostFound.getItemName() +
                     "和"+missingNotices.getItemName()+"的相似度为多少？" +
@@ -85,13 +89,13 @@ public class IntelligentMatchingServiceImpl implements IntelligentMatchingServic
                 matching1.setUserId(ownerId);
                 matching1.setPostId(lostFound.getId());
                 matching1.setCategory(0);
-                matchingService.save(matching1);
+                matchingService.my_save(matching1);
                 //发matching信息，发给自己
                 Matching matching2 = new Matching();
                 matching2.setUserId(lostFound.getFinderId());
                 matching2.setPostId(missingNotices.getId());
                 matching2.setCategory(1);
-                matchingService.save(matching2);
+                matchingService.my_save(matching2);
             }
         }
     }
@@ -99,7 +103,10 @@ public class IntelligentMatchingServiceImpl implements IntelligentMatchingServic
     @Async
     @Override
     public void processSmartPush2(MissingNotices missingNotices) {
-        List<LostFound> lostFoundsList = lostFoundService.list();
+        String ownerId2 = missingNotices.getOwnerId();
+        QueryWrapper<LostFound> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ne("finder_id", ownerId2);
+        List<LostFound> lostFoundsList = lostFoundService.list(queryWrapper);
         for (LostFound lostFound : lostFoundsList) {
             String answer=aiManager.doSyncUnStableRequest("使用系统默认", "请问"+lostFound.getItemName() +
                     "和"+missingNotices.getItemName()+"的相似度为多少？" +
@@ -153,13 +160,13 @@ public class IntelligentMatchingServiceImpl implements IntelligentMatchingServic
                 matching1.setUserId(ownerId);
                 matching1.setPostId(lostFound.getId());
                 matching1.setCategory(0);
-                matchingService.save(matching1);
+                matchingService.my_save(matching1);
                 //发matching信息，发给自己
                 Matching matching2 = new Matching();
                 matching2.setUserId(missingNotices.getOwnerId());
                 matching2.setPostId(missingNotices.getId());
                 matching2.setCategory(1);
-                matchingService.save(matching2);
+                matchingService.my_save(matching2);
             }
         }
     }

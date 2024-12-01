@@ -50,4 +50,7 @@ public class ClaimRequest {
     @Getter
     @Setter
     private int  readStatus;
+    @Getter
+    @Setter
+    private String imageName;
 }
