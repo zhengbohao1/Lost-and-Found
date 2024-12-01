@@ -171,9 +171,10 @@ const queryRecommend = async () => {
     console.log(res)
     return;
   }
-  console.log(await getRecommend(userStore.userInfo.userId))
-  reCommends.value = res.data
-  temp.value = res.data
+  let data = res.data;
+  data = data.filter(item => item.reviewProcess == 1);
+  reCommends.value = data
+  temp.value = data
   console.log(reCommends.value)
   addSenderName(reCommends)
 }
@@ -254,7 +255,7 @@ const postid = ref(null)
 
 //显示卡片详情
 const showMessage = async (id, left, top) => {
-  window.history.pushState({}, "", `/user/found/${id}`);
+  window.history.pushState({}, "", `/user/lost/${id}`);
   overlayX.value = left;
   overlayY.value = top;
   postid.value = id;
@@ -264,7 +265,7 @@ const showMessage = async (id, left, top) => {
 
 const close = () => {
   show.value = false;
-  window.history.pushState({}, "", `/user/found`);
+  window.history.pushState({}, "", `/user/lost`);
 }
 
 onMounted( async () => {

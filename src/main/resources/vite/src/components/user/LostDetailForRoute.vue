@@ -50,7 +50,7 @@
                 <!-- 卡片内容结束 -->
                 <hr />
                 <div class="comments" v-if="comments" :infinite-scroll-disabled="disabled">
-                  <el-empty description="现在还没有评论" v-if="comments.length === 0"/>
+                  <el-empty description="现在还没有评论" v-if="comments.length === 0 && !toClaim"/>
   
                   <!-- 评论列表 -->
                   <div v-else class="commentBox">
@@ -207,7 +207,7 @@
                       <el-col :span="2"> </el-col>
                       <el-col :span="14">
                         <el-button class="button" @click="toClaim=true" 
-                        v-if="!userStore.userInfo.userId==post.finderId && !post.ownerId"
+                        v-if="!userStore.userInfo.userId==post.ownerId && !post.finderId"
                         :disabled="toClaim"
                       >我捡到了</el-button>
                       <el-button v-if="!post.finderId" class="button2">暂无</el-button>
@@ -305,7 +305,7 @@
   const postid = ref(route.params.id);
 
   const close = () => {
-    router.push({ path: '/user' });
+    router.push({ path: '/user/lost' });
   }
   
   const adjustImageSize = (event) => {

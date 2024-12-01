@@ -50,7 +50,7 @@
                 <!-- 卡片内容结束 -->
                 <hr />
                 <div class="comments" v-if="comments" :infinite-scroll-disabled="disabled">
-                  <el-empty description="现在还没有评论" v-if="comments.length === 0"/>
+                  <el-empty description="现在还没有评论" v-if="comments.length === 0 && !toClaim"/>
   
                   <!-- 评论列表 -->
                   <div v-else class="commentBox">
@@ -270,7 +270,7 @@
   const postid = ref(route.params.id);
 
   const close = () => {
-    router.push({ path: '/user' });
+    router.push({ path: '/user/found' });
   }
   
   const formRef = ref(null);
