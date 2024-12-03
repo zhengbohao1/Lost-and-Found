@@ -52,140 +52,126 @@
                 <div class="comments" v-if="comments" :infinite-scroll-disabled="disabled">
                   <el-empty description="现在还没有评论" v-if="comments.length === 0 && !toClaim"/>
   
-                  <!-- 评论列表 -->
-                  <div v-else class="commentBox">
-                    <div v-if="!toClaim">
-                      <div class="commentTitle" style="margin-bottom: 5px;">共{{ comments.length }}条评论</div>
-                        <div  style="margin-top: 20px;" v-for="item in comments" :key="item.id">
-                          <el-row :gutter="20">
-                            <el-col :span="2.5">
-                              <a :href="`/user/index/${item.userId}`"> 
-                                <el-avatar :src="'http://localhost:8090/user/getAvatarById?userId='+item.userId" :size="30"></el-avatar>
-                              </a>
-                            </el-col>
-                            <el-col :span="20" style="font-size: 14px">
-                              <div style="color:#33333399; display: flex; gap: 30px;">
-                                {{ item.userName }} 
-                                <div v-if="post.ownerId==item.userId">
-                                  <el-tag>作者</el-tag>
-                                </div>
+                                  <!-- 评论列表 -->
+                <div v-else class="commentBox">
+                  <div v-if="!toClaim">
+                    <div class="commentTitle" style="margin-bottom: 5px;">共{{ comments.length }}条评论</div>
+                      <div  style="margin-top: 20px;" v-for="item in comments" :key="item.id">
+                        <el-row :gutter="20">
+                          <el-col :span="2.5">
+                            <a :href="`/user/index/${item.userId}`"> 
+                              <el-avatar :src="'http://localhost:8090/user/getAvatarById?userId='+item.userId" :size="30"></el-avatar>
+                            </a>
+                          </el-col>
+                          <el-col :span="20" style="font-size: 14px">
+                            <div style="color:#33333399; display: flex; gap: 30px;">
+                              {{ item.userName }} 
+                              <div v-if="post.ownerId==item.userId">
+                                <el-tag>作者</el-tag>
                               </div>
-                              <div style="color:#333333;margin-top: 2px;margin-bottom: 5px;">{{ item.comment }}</div>
-                              <time class="time">{{ formatDate(item.createdAt) }}</time>
-                              <el-icon style="margin-left:60px; margin-top: 0px; font-size: small" @click="commentMain(item)">
-                                <ChatRound/>
-                              </el-icon>
-                            </el-col>
-                            <el-col style="margin-top: 5px;">
-                              <div v-for="(reply, index) in shouldShowMore(item) ? item.replies : item.replies.slice(0, 3)" :key="reply.id" style="margin-left: 30px">
-                                <el-row :gutter="20">
-                                  <el-col :span="2.5">
-                                    <a :href="`/user/index/${reply.userId}`">
-                                      <el-avatar :src="'http://localhost:8090/user/getAvatarById?userId='+reply.userId" :size="25"></el-avatar>
-                                    </a>
-                                  </el-col>
-                                  <el-col :span="20" style="font-size: 12px">
-                                    <div style="color:#33333399; display: flex; gap: 30px;">
-                                      {{ reply.userName }} 
-                                      <div v-if="post.ownerId==reply.userId">
-                                        <el-tag size="small">作者</el-tag>
-                                      </div>
+                            </div>
+                            <div style="color:#333333;margin-top: 2px;margin-bottom: 5px;">{{ item.comment }}</div>
+                            <time class="time">{{ formatDate(item.createdAt) }}</time>
+                            <el-icon style="margin-left:60px; margin-top: 0px; font-size: small" @click="commentMain(item)">
+                              <ChatRound/>
+                            </el-icon>
+                          </el-col>
+                          <el-col style="margin-top: 5px;">
+                            <div v-for="(reply, index) in shouldShowMore(item) ? item.replies : item.replies.slice(0, 3)" :key="reply.id" style="margin-left: 30px">
+                              <el-row :gutter="20">
+                                <el-col :span="2.5">
+                                  <a :href="`/user/index/${reply.userId}`">
+                                    <el-avatar :src="'http://localhost:8090/user/getAvatarById?userId='+reply.userId" :size="25"></el-avatar>
+                                  </a>
+                                </el-col>
+                                <el-col :span="20" style="font-size: 12px">
+                                  <div style="color:#33333399; display: flex; gap: 30px;">
+                                    {{ reply.userName }} 
+                                    <div v-if="post.ownerId==reply.userId">
+                                      <el-tag size="small">作者</el-tag>
                                     </div>
-                                    <div style="color:#333333;margin-top: 2px;margin-bottom: 10px;">{{ reply.comment }}</div>
-                                    <time class="time">{{ formatDate(reply.createdAt) }}</time>
-                                  </el-col>
-                                </el-row>
-                              </div>
-                              <div class="more" @click="loadReply(item)" v-if="item.replies.length > 0">{{ !shouldShowMore(item)? '展开'+item.replies.length+'条回复': '收起'}}
-                              </div>
-                            </el-col>  
-                          </el-row>
-                          <el-divider/>
-                        </div>
+                                  </div>
+                                  <div style="color:#333333;margin-top: 2px;margin-bottom: 10px;">{{ reply.comment }}</div>
+                                  <time class="time">{{ formatDate(reply.createdAt) }}</time>
+                                </el-col>
+                              </el-row>
+                            </div>
+                            <div class="more" @click="loadReply(item)" v-if="item.replies.length > 0">{{ !shouldShowMore(item)? '展开'+item.replies.length+'条回复': '收起'}}
+                            </div>
+                          </el-col>  
+                        </el-row>
+                        <el-divider/>
                       </div>
-                      <div v-else>
-                      <el-form :model="form" :rules="rules" ref="formRef">
-                        <!-- 联系方式 -->
-                        <el-form-item prop="contact_details" >
-                          <el-input
-                            style="margin-top: 10px;"
-                            v-model="form.contact_details"
-                            maxlength="200"
-                            :prefix-icon="Phone"
-                            placeholder="输入联系方式"
-                            :disabled="!form.selectedType"
-                          ></el-input>
-                        </el-form-item>
-                        
-                        <el-form-item prop="selectedType" style="margin-top: 10px; width: 100%;">
-                          <el-select v-model="form.selectedType" placeholder="请选择类型">
-                            <el-option label="QQ" value="qq"></el-option>
-                            <el-option label="微信" value="wechat"></el-option>
-                            <el-option label="电话" value="phone"></el-option>
-                            <el-option label="邮件" value="email"></el-option>
-                            <el-option label="X" value="x"></el-option>
-                            <el-option label="LINE" value="line"></el-option>
-                            <el-option label="TIM" value="tim"></el-option>
-                          </el-select>
-                        </el-form-item>
-  
-                        <el-form-item prop="evidence">
-                          <el-input
-                            style="margin-top: 10px;"
-                            type="textarea"
-                            v-model="form.evidence"
-                            maxlength="200"
-                            placeholder="认领证词"
-                          ></el-input>
-                        </el-form-item>
-  
-                        <!-- 备注 -->
-                        <el-form-item prop="notes" >
-                          <el-input
-                            style="margin-top: 10px;"
-                            v-model="form.notes"
-                            maxlength="200"
-                            :prefix-icon="Paperclip"
-                            placeholder="备注"
-                          ></el-input>
-                        </el-form-item>
-  
-                        <!-- 学工号 -->
-                        <el-form-item prop="student_id">
-                          <el-input
-                            style="margin-top: 10px;"
-                            v-model="form.student_id"
-                            maxlength="200"
-                            :prefix-icon="EditPen"
-                            placeholder="学工号"
-                          ></el-input>
-                        </el-form-item>
-  
-                        <!-- 真实姓名 -->
-                        <el-form-item prop="user_name" >
-                          <el-input
-                            style="margin-top: 10px;"
-                            v-model="form.user_name"
-                            maxlength="200"
-                            :prefix-icon="User"
-                            placeholder="真实姓名"
-                          ></el-input>
-                        </el-form-item>
-  
-                        <!-- 提交按钮 -->
-                          <div style="display: flex; margin-top: 30px; gap: 90px">
-                            <el-button class="button" @click="sendClaim()" @keyup.enter="sendClaim()">确认认领</el-button>
-                            <el-button class="button2" @click="toClaim=false">取消</el-button>
-                          </div>
-                      </el-form>
                     </div>
+                    <div v-else>
+                    <el-form :model="form" :rules="rules" ref="formRef">
+                      <el-form-item prop="selectedType" style="margin-top: 10px; width: 100%;">
+                        <el-select v-model="form.selectedType" placeholder="请选择类型">
+                          <el-option label="QQ" value="qq"></el-option>
+                          <el-option label="微信" value="wechat"></el-option>
+                          <el-option label="电话" value="phone"></el-option>
+                          <el-option label="邮件" value="email"></el-option>
+                          <el-option label="X" value="x"></el-option>
+                          <el-option label="LINE" value="line"></el-option>
+                          <el-option label="TIM" value="tim"></el-option>
+                        </el-select>
+                      </el-form-item>
+
+                      <!-- 联系方式 -->
+                      <el-form-item prop="contact_details" >
+                        <el-input
+                          style="margin-top: 10px;"
+                          v-model="form.contact_details"
+                          maxlength="200"
+                          :prefix-icon="Phone"
+                          placeholder="输入联系方式"
+                          :disabled="!form.selectedType"
+                        ></el-input>
+                      </el-form-item>
+
+                      <el-form-item prop="evidence">
+                        <el-input
+                          style="margin-top: 10px;"
+                          type="textarea"
+                          v-model="form.evidence"
+                          maxlength="200"
+                          placeholder="说点让人信服的话？"
+                        ></el-input>
+                      </el-form-item>
+
+                      <el-form-item prop="photo">
+                        <el-upload
+                          class="avatar-uploader"
+                          action="http://localhost:8090/common/upload2"
+                          list-type="picture-card"
+                          ref="upload"
+                          :on-preview="handlePictureCardPreview"
+                          :on-remove="handleRemove"
+                          :on-change="handleChange"
+                          :pn-error="handleError"
+                          v-model:file-list="fileList"
+                          :auto-upload="false"
+                          :on-exceed="handleExceed"
+                          :limit="1"
+                        >
+                          <el-icon class="avatar-uploader-icon"><Plus /></el-icon>
+                        </el-upload>
+                      </el-form-item>
+
+                      <!-- 提交按钮 -->
+                        <div style="display: flex; margin-top: 30px; gap: 90px">
+                          <el-button class="button" @click="sendClaim()" @keyup.enter="sendClaim()">确认拾取</el-button>
+                          <el-button class="button2" @click="toClaim=false">取消</el-button>
+                        </div>
+                    </el-form>
                   </div>
                 </div>
               </div>
-              <el-divider />
             </div>
-  
-            <div class="bottomArea">
+            <el-divider />
+          </div>
+
+          <div class="bottomArea">
             <div v-if="!userStore.userToken">
               <el-link @click="router.push('/login');">请先登录</el-link>
             </div>
@@ -207,7 +193,7 @@
                       <el-col :span="2"> </el-col>
                       <el-col :span="14">
                         <el-button class="button" @click="toClaim=true" 
-                        v-if="!userStore.userInfo.userId==post.ownerId && !post.finderId"
+                        v-if="userStore.userInfo.userId!=post.ownerId&&!finderId"
                         :disabled="toClaim"
                       >我捡到了</el-button>
                       <el-button v-if="!post.finderId" class="button2">暂无</el-button>
@@ -228,7 +214,7 @@
                         />
                       </el-col>
                       <el-col :span="8">
-                        <el-button class="button" style="margin-top: 20px" @click="sendComment()" >发送</el-button>
+                        <el-button class="button" style="margin-top: 20px" @click="sendComment()">发送</el-button>
                       </el-col>
                       <el-col :span="8"></el-col>
                       <el-col :span="8">
@@ -241,12 +227,13 @@
               </div>
 
           </div>
-          </el-col>
-        </el-row>
-      </div>
+        </el-col>
+      </el-row>
     </div>
+  </div>
 </div>
-  </template>
+</template>
+
   
   <script setup>
   import { ref, defineEmits, watch, toRef, onMounted, reactive  } from 'vue';

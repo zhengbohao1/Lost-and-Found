@@ -22,3 +22,11 @@ export const deleteAdvises = (advises) => {
         method: 'Delete',
     })
 }
+
+export const addAdvise = (data) => {
+    return http({
+        url: 'http://localhost:8090/advises/insert',
+        method: 'POST',
+        data: data
+    })
+}

@@ -107,6 +107,7 @@
                         <p>我是 {{ claimFound.userName }}</p>
                         <p>学工号：{{ claimFound.studentId }}</p>
                         <p style="margin-top: 15px; margin-bottom: 15px;">{{ claimFound.evidence }}</p>
+                        <n-image width="250px" :src="'http://localhost:8090/common/download2?name='+claimFound.imageName" alt="凭证图片"/>
                         <p style="font-size: 15px; color: #999;">提示：{{ claimFound.notes ? '无' : claimFound.notes }}</p>
                         <p style="font-size: 15px; color: #777;">联系方式：</p>
                         <p style="font-size: 16px; color: #555; margin-left: 30px">{{ claimFound.contactWay }}：{{ claimFound.contactDetails }}</p>

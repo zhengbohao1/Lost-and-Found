@@ -20,8 +20,9 @@
   
   <script setup>
   import { ref, reactive, onMounted, computed } from 'vue';
-  import { useUserStore } from '@/stores/user'; // 确保路径正确
+  import { useUserStore } from '@/stores/user';
   import { ElMessage, ElNotification } from 'element-plus';
+  import { addAdvise } from '@/apis/advise';
   
   const formRef = ref(null);
   const form = reactive({
@@ -43,7 +44,7 @@
     formRef.value.validate(async valid => {
       if (valid) {
         form.createdAt = new Date().toISOString();
-        form.userId = userInfo.value.user_id; // 使用用户的userId
+        form.userId = userInfo.value.userId; // 使用用户的userId
         await saveData(form);
         ElNotification({
           title: '成功',
@@ -59,7 +60,7 @@
   
   const saveData = async formData => {
     // 这里可以添加保存数据的逻辑，例如发送到服务器
-    console.log(formData);
+    await addAdvise(formData);
   };
   
   const resetForm = () => {

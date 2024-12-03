@@ -137,6 +137,23 @@
                         ></el-input>
                       </el-form-item>
 
+                      <el-form-item prop="photo">
+                        <el-upload
+                          class="avatar-uploader"
+                          action="http://localhost:8090/common/upload2"
+                          list-type="picture-card"
+                          ref="upload"
+                          :on-preview="handlePictureCardPreview"
+                          :on-remove="handleRemove"
+                          :on-change="handleChange"
+                          :pn-error="handleError"
+                          v-model:file-list="fileList"
+                          :auto-upload="false"
+                          :on-exceed="handleExceed"
+                          :limit="1"
+                        ></el-upload>
+                      </el-form-item>
+
                       <!-- 备注 -->
                       <el-form-item prop="notes" >
                         <el-input
@@ -244,7 +261,7 @@
 
 <script setup>
 import { ref, defineEmits, watch, toRef, onMounted, reactive  } from 'vue';
-import { Edit, ChatRound, Promotion, Phone, Paperclip, EditPen, User } from "@element-plus/icons-vue";
+import { Edit, ChatRound, Promotion, Phone, Paperclip, EditPen, User, Plus } from "@element-plus/icons-vue";
 import { useUserStore } from '@/stores/user';
 import { getPostById, getComment, getChildComment, postComment, postChildComment, claim } from '@/apis/found';
 import { getUserName } from '@/apis/user';
@@ -333,7 +350,8 @@ const sendClaim = async () => {
         userName: form.user_name,
         postId: postid.value,
         finderId: post.value.finderId,
-        readStatus: '0'
+        readStatus: '0',
+        imageNsame: imgUrl.value
       }
       try {
         await claim(data).then(res => {
@@ -476,6 +494,48 @@ const shouldShowMore = (item) => {
 watch(postid, async (newPostId) => {
   await fetchDetail();
 });
+
+const upload = ref(null)
+const fileList = ref([]);
+const imgUrl = ref('');
+
+const dialogImageUrl = ref('');
+const dialogVisible = ref(false);
+const uploadSuccess = ref(true);
+
+//图片上传
+function handlePictureCardPreview(file) {
+  dialogImageUrl.value = file.url;
+  dialogVisible.value = true;
+}
+
+const handleRemove = (file, fileList) => {
+  ElMessage.warning('替换图片');
+}
+
+function handleChange(uploadFile, uploadFiles) {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+  if (!allowedTypes.includes(uploadFile.raw.type)) {
+    ElMessage.error('只允许上传 JPG/PNG/GIF 类型的图片');
+    return false;
+  }
+  imgUrl.value = uploadFile.name;
+  return true;
+}
+
+const handleExceed = () => {
+  ElMessage.warning(
+      '最多添加1张图片!'
+  )
+}
+
+function handleError(){
+  uploadSuccess.value = false;
+  ElMessage({
+    message: '上传失败',
+    type: 'error',
+  })
+}
 
 //时间显示
 const formatDate = (date) => {

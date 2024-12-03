@@ -48,7 +48,7 @@
               <!-- 卡片内容结束 -->
               <hr />
               <div class="comments" v-if="comments" :infinite-scroll-disabled="disabled">
-                <el-empty description="现在还没有评论" v-if="comments.length === 0"/>
+                <el-empty description="现在还没有评论" v-if="comments.length === 0 && showComment"/>
 
                 <!-- 评论列表 -->
                 <div v-else class="commentBox">
@@ -101,17 +101,17 @@
                         <el-divider/>
                       </div>
                     </div>
-                    <div v-else>
+                </div>
+                <div v-if="!showComment">
                       <div class="claim-info">
                         <p>你好</p>
                         <p>我是 {{ claimLost.userName }}，我似乎找到了你掉的东西</p>
                         <p style="margin-top: 15px; margin-bottom: 15px;">{{ claimLost.content }}</p>
-                        <n-image :src="'http://localhost:8090/common/download2?name='+claimLost.imgUrl"></n-image>
+                        <n-image width="250px" :src="'http://localhost:8090/common/download2?name='+claimLost.imgUrl"></n-image>
                         <p style="font-size: 15px; color: #777;">联系方式：</p>
                         <p style="font-size: 16px; color: #555; margin-left: 30px">{{ claimLost.contactWay }}：{{ claimLost.contactDetails }}</p>
                       </div>
                   </div>
-                </div>
               </div>
             </div>
             <el-divider />
@@ -124,7 +124,7 @@
                     <el-button class="button" @click="showComment=true" >显示评论</el-button>
                     </el-col>
                     <el-row :span="16">
-                      <div v-if="!post.ownerId">
+                      <div v-if="!post.finderId">
                         <el-button class="button-red" @click="">不是我的</el-button>
                         <el-button class="button-green" @click="verifyOwner">我的东西</el-button>
                       </div>
@@ -146,7 +146,7 @@
                         <el-col :span="2"> </el-col>
                         <el-col :span="14">
                           <el-button class="button" @click="showComment=false" 
-                            v-if="'!userStore.userInfo.userId==post.finderId'"
+                            
                           >找回信息</el-button>
                           <el-button class="button-red">暂无</el-button>
                         </el-col>

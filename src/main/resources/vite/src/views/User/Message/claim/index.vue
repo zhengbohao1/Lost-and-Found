@@ -61,6 +61,7 @@ const fetchData = async () => {
     await claimToMe().then(res => {
         details.value = res.data;
         loading.value = false
+        console.log(details.value)
     });
 }
 
